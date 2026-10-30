@@ -1,0 +1,12 @@
+{
+ "label": "v2c 对称强化 + 自定义条目名",
+ "note": "占用 Campaign01 槽位，但显示名/描述改为自定义本地化键，需同时替换本地化 bundle",
+ "target_bundle": "b56aa8ad35f9c2e1694994f384e51bbe.bundle",
+ "textasset": "Campaign01",
+ "extra_file": "DuneImperium_Data/StreamingAssets/Localization/win/localization",
+ "localization_keys": {
+  "scenariomod.spicetide.name": "香料洪流",
+  "scenariomod.spicetide.desc": "三方的开局条件完全相同：10 张同款起手牌、3 名特工、开局即有剑术大师，并携带 3 太阳币 / 2 香料 / 2 水。胜利点阈值提高到 15。",
+  "scenariomod.spicetide.flavor": "谁掌控香料，谁就掌控沙丘。"
+ }
+}

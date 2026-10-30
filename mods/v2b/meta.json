@@ -1,0 +1,6 @@
+{
+ "label": "v2b 仅全局参数",
+ "note": "只把胜利点阈值改为 15，其余与原版完全一致（对照组的绝对公平基线）",
+ "target_bundle": "b56aa8ad35f9c2e1694994f384e51bbe.bundle",
+ "textasset": "Campaign01"
+}
