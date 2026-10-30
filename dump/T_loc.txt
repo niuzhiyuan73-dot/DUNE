@@ -1,0 +1,89 @@
+================================================================
+TYPE Canis.utils.localization.LocalizableText
+  BASE Il2CppSystem.Object
+  PROP Canis.utils.localization.LocalizableText Empty
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Char> trimChars
+  PROP String ID
+  PROP String DisplayText
+  METHOD Void .cctor()
+  METHOD Void .ctor(String id)
+  METHOD String get_DisplayText()
+  METHOD Boolean HasId(String id)
+  METHOD String ToString()
+  METHOD String TryLocalize()
+  METHOD String op_Implicit(Canis.utils.localization.LocalizableText text)
+  METHOD Boolean Equals(Canis.utils.localization.LocalizableText other)
+  METHOD Boolean Equals(Il2CppSystem.Object obj)
+  METHOD Int32 GetHashCode()
+  METHOD Boolean op_Equality(Canis.utils.localization.LocalizableText left, Canis.utils.localization.LocalizableText right)
+  METHOD Boolean op_Inequality(Canis.utils.localization.LocalizableText left, Canis.utils.localization.LocalizableText right)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.utils.localization.LocalizableText get_Empty()
+  METHOD Void set_Empty(Canis.utils.localization.LocalizableText)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Char> get_trimChars()
+  METHOD Void set_trimChars(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Char>)
+  METHOD String get_ID()
+  METHOD Void set_ID(String)
+
+================================================================
+TYPE Canis.utils.localization.LocalizableTextVariables
+  BASE Canis.utils.localization.LocalizableText
+  PROP Canis.utils.localization.LocalizableTextVariables Empty
+  PROP Canis.utils.localization.TextVariables TextVars
+  PROP String DisplayText
+  METHOD Void .cctor()
+  METHOD Void .ctor(String id)
+  METHOD Void .ctor(String id, Canis.utils.localization.TextVariables textVars)
+  METHOD Void .ctor(Canis.utils.localization.LocalizableTextVariables original)
+  METHOD Canis.utils.localization.LocalizableTextVariables WithNumber(String key, Int32 val)
+  METHOD Canis.utils.localization.LocalizableTextVariables WithNumber(Int32 indexKey, Int32 val)
+  METHOD Canis.utils.localization.LocalizableTextVariables WithVar(String key, String val)
+  METHOD Canis.utils.localization.LocalizableTextVariables WithVar(Int32 indexKey, String val)
+  METHOD Canis.utils.localization.LocalizableTextVariables WithObject(String key, Il2CppSystem.Object val)
+  METHOD Canis.utils.localization.LocalizableTextVariables WithObject(Int32 indexKey, Il2CppSystem.Object val)
+  METHOD String IndexKey(Int32 indexKey)
+  METHOD String get_DisplayText()
+  METHOD String TryLocalize()
+  METHOD Canis.utils.localization.LocalizableTextVariables Clone()
+  METHOD Canis.utils.localization.LocalizableTextVariables op_Implicit(String id)
+  METHOD Boolean Equals(Canis.utils.localization.LocalizableText other)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.utils.localization.LocalizableTextVariables get_Empty()
+  METHOD Void set_Empty(Canis.utils.localization.LocalizableTextVariables)
+  METHOD Canis.utils.localization.TextVariables get_TextVars()
+  METHOD Void set_TextVars(Canis.utils.localization.TextVariables)
+
+================================================================
+TYPE Canis.utils.localization.LocalizationLookup
+  BASE Canis.utils.VersionedModel
+  PROP Il2CppSystem.Collections.Generic.Dictionary<String, String> checksums
+  PROP Il2CppSystem.Collections.Generic.Dictionary<String, String> lookup
+  PROP Boolean _Disabled
+  PROP Boolean Initialized
+  PROP Boolean Disabled
+  METHOD Void .cctor()
+  METHOD Boolean get_Initialized()
+  METHOD Boolean get_Disabled()
+  METHOD Void set_Disabled(Boolean value)
+  METHOD String formatKey(String key)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<String, String> GetChecksums()
+  METHOD Void SetChecksums(Il2CppSystem.Collections.Generic.IEnumerable<Il2CppSystem.Collections.Generic.KeyValuePair<String, String>> pairs)
+  METHOD String Localize(Params locParams)
+  METHOD Boolean TryLocalize(Params locParams, ref String value)
+  METHOD Boolean TryLocalizeWithWarning(Params locParams, Boolean warn, ref String value)
+  METHOD Boolean BeginTransaction()
+  METHOD Void EndTransaction()
+  METHOD Void SetPairs(Il2CppSystem.Collections.Generic.IEnumerable<Il2CppSystem.Collections.Generic.KeyValuePair<String, String>> pairs)
+  METHOD Void RemoveKeys(Il2CppSystem.Collections.Generic.IEnumerable<String> keys)
+  METHOD Void Clear()
+  METHOD Boolean Has(String key)
+  METHOD Boolean GetKeysWithPrefix(String prefix, Il2CppSystem.Collections.Generic.ICollection<String> list)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<String, String> get_checksums()
+  METHOD Void set_checksums(Il2CppSystem.Collections.Generic.Dictionary<String, String>)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<String, String> get_lookup()
+  METHOD Void set_lookup(Il2CppSystem.Collections.Generic.Dictionary<String, String>)
+  METHOD Boolean get__Disabled()
+  METHOD Void set__Disabled(Boolean)
+

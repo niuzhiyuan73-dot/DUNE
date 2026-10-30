@@ -1,4 +1,17 @@
 ================================================================
+TYPE Canis.utils.ids.AbilityID
+  BASE Canis.utils.ids.TypedID
+  PROP Canis.utils.ids.AbilityID Empty
+  METHOD Void .cctor()
+  METHOD Void .ctor(String id)
+  METHOD Void .ctor(Il2CppSystem.Guid id)
+  METHOD Void .ctor()
+  METHOD Canis.utils.ids.TypedID CreateID(String guid)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.utils.ids.AbilityID get_Empty()
+  METHOD Void set_Empty(Canis.utils.ids.AbilityID)
+
+================================================================
 TYPE Canis.utils.ids.ArchetypeID
   BASE Canis.utils.ids.TypedID
   PROP Canis.utils.ids.ArchetypeID Empty
@@ -11,17 +24,4 @@ TYPE Canis.utils.ids.ArchetypeID
   METHOD Void .ctor(IntPtr pointer)
   METHOD Canis.utils.ids.ArchetypeID get_Empty()
   METHOD Void set_Empty(Canis.utils.ids.ArchetypeID)
-
-================================================================
-TYPE Canis.utils.ids.EntityID
-  BASE Canis.utils.ids.TypedID
-  PROP Canis.utils.ids.EntityID Empty
-  METHOD Void .cctor()
-  METHOD Void .ctor(String id)
-  METHOD Void .ctor(Il2CppSystem.Guid id)
-  METHOD Void .ctor()
-  METHOD Canis.utils.ids.TypedID CreateID(String guid)
-  METHOD Void .ctor(IntPtr pointer)
-  METHOD Canis.utils.ids.EntityID get_Empty()
-  METHOD Void set_Empty(Canis.utils.ids.EntityID)
 

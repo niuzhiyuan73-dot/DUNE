@@ -1,0 +1,78 @@
+================================================================
+TYPE worm.TopEntityPileView
+  BASE lotus.ContainerView
+  PROP UnityEngine.Transform topEntityContainer
+  PROP lotus.UnitView cachedView
+  METHOD Void .cctor()
+  METHOD Void LayoutViews()
+  METHOD UnityEngine.Transform ContainerForViewAndSlot(lotus.UnitView view, Int32 slot)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD UnityEngine.Transform get_topEntityContainer()
+  METHOD Void set_topEntityContainer(UnityEngine.Transform)
+  METHOD lotus.UnitView get_cachedView()
+  METHOD Void set_cachedView(lotus.UnitView)
+
+================================================================
+TYPE worm.match.components.WormPlayerPileMoz
+  BASE boardgames.moz.DBGTooltip
+  PROP UnityEngine.GameObject mozContainerPrefab
+  PROP UnityEngine.GameObject mozContainerInstance
+  PROP UnityEngine.RectTransform overlayCanvasRect
+  PROP lotus.ContainerView mozPile
+  PROP Boolean tooltipActive
+  METHOD Void .cctor()
+  METHOD Void Start()
+  METHOD Void initMoz(UnityEngine.EventSystems.PointerEventData eventData)
+  METHOD Void endMoz()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD UnityEngine.GameObject get_mozContainerPrefab()
+  METHOD Void set_mozContainerPrefab(UnityEngine.GameObject)
+  METHOD UnityEngine.GameObject get_mozContainerInstance()
+  METHOD Void set_mozContainerInstance(UnityEngine.GameObject)
+  METHOD UnityEngine.RectTransform get_overlayCanvasRect()
+  METHOD Void set_overlayCanvasRect(UnityEngine.RectTransform)
+  METHOD lotus.ContainerView get_mozPile()
+  METHOD Void set_mozPile(lotus.ContainerView)
+  METHOD Boolean get_tooltipActive()
+  METHOD Void set_tooltipActive(Boolean)
+
+================================================================
+TYPE PileData
+  BASE Il2CppSystem.ValueType
+  PROP lotus.ContainerView view
+  PROP UnityEngine.UI.Toggle toggle
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<UnityEngine.GameObject> displays
+  METHOD Void .cctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Void .ctor()
+  METHOD lotus.ContainerView get_view()
+  METHOD Void set_view(lotus.ContainerView)
+  METHOD UnityEngine.UI.Toggle get_toggle()
+  METHOD Void set_toggle(UnityEngine.UI.Toggle)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<UnityEngine.GameObject> get_displays()
+  METHOD Void set_displays(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<UnityEngine.GameObject>)
+
+================================================================
+TYPE PileData
+  BASE Il2CppSystem.ValueType
+  PROP String name
+  PROP lotus.ContainerView view
+  PROP UnityEngine.UI.Toggle toggle
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<UnityEngine.GameObject> displays
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray combineWithPiles
+  METHOD Void .cctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Void .ctor()
+  METHOD String get_name()
+  METHOD Void set_name(String)
+  METHOD lotus.ContainerView get_view()
+  METHOD Void set_view(lotus.ContainerView)
+  METHOD UnityEngine.UI.Toggle get_toggle()
+  METHOD Void set_toggle(UnityEngine.UI.Toggle)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<UnityEngine.GameObject> get_displays()
+  METHOD Void set_displays(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<UnityEngine.GameObject>)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray get_combineWithPiles()
+  METHOD Void set_combineWithPiles(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray)
+

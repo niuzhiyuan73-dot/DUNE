@@ -1,0 +1,33 @@
+================================================================
+TYPE worm.canis.data.WormGameOptions
+  BASE Il2CppSystem.Object
+  PROP String LeaderAssignmentMode
+  PROP String PlayerColor
+  PROP String IsTwoPlayerHagal
+  PROP String IsEpicGamemode
+  PROP String IsRiseOfIx
+  PROP String IsImmortality
+  PROP String IsUprising
+  PROP String GoTo11Gamemode
+  PROP String Sets
+  METHOD Void .cctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD String get_LeaderAssignmentMode()
+  METHOD Void set_LeaderAssignmentMode(String)
+  METHOD String get_PlayerColor()
+  METHOD Void set_PlayerColor(String)
+  METHOD String get_IsTwoPlayerHagal()
+  METHOD Void set_IsTwoPlayerHagal(String)
+  METHOD String get_IsEpicGamemode()
+  METHOD Void set_IsEpicGamemode(String)
+  METHOD String get_IsRiseOfIx()
+  METHOD Void set_IsRiseOfIx(String)
+  METHOD String get_IsImmortality()
+  METHOD Void set_IsImmortality(String)
+  METHOD String get_IsUprising()
+  METHOD Void set_IsUprising(String)
+  METHOD String get_GoTo11Gamemode()
+  METHOD Void set_GoTo11Gamemode(String)
+  METHOD String get_Sets()
+  METHOD Void set_Sets(String)
+

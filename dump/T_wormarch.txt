@@ -1,0 +1,84 @@
+================================================================
+TYPE worm.canis.archetypes.WormArchetype
+  BASE canis.archetypes.Archetype
+  PROP Canis.utils.ids.ArchetypeID ArchetypeID
+  PROP Canis.attributes.AttributeDefinition<Il2CppSystem.Collections.Generic.List<Canis.utils.ids.AbilityID>> AbilityIDsAttribute
+  METHOD Void .cctor()
+  METHOD Canis.utils.ids.ArchetypeID get_ArchetypeID()
+  METHOD Void .ctor()
+  METHOD Canis.attributes.AttributeDefinition<Il2CppSystem.Collections.Generic.List<Canis.utils.ids.AbilityID>> get_AbilityIDsAttribute()
+  METHOD Void ConstructAbilities(worm.canis.WormMatch wormMatch, worm.canis.entities.WormPlayer owner, Canis.entities.IHasAbilities<worm.canis.WormMatch, worm.canis.abilities.WormAbilityDefinition> hasAbilities)
+  METHOD Canis.entities.Entity MatchConstructor(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Il2CppSystem.Object> parameters, Il2CppSystem.Func<worm.canis.WormMatch, Canis.entities.PlayerEntity, Canis.entities.Entity, Canis.entities.Entity> build, Il2CppSystem.Func<Canis.messages.SerializedEntity, worm.canis.WormMatch, Canis.entities.Entity, Canis.entities.Entity> deserialize)
+  METHOD Canis.entities.Entity Make(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Il2CppSystem.Object> parameters)
+  METHOD Canis.entities.Entity Build(Canis.Match m, Canis.entities.PlayerEntity owner, Canis.entities.Entity parent)
+  METHOD Canis.entities.Entity Deserialize(Canis.messages.SerializedEntity se, Canis.Match m, Canis.entities.Entity parent)
+  METHOD Canis.entities.Entity _Make_b__7_0(worm.canis.WormMatch m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent)
+  METHOD Canis.entities.Entity _Make_b__7_2(worm.canis.WormMatch m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent)
+  METHOD Canis.entities.Entity _Make_b__7_4(worm.canis.WormMatch m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent)
+  METHOD Canis.entities.Entity _Make_b__7_6(worm.canis.WormMatch m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent)
+  METHOD Canis.entities.Entity _Make_b__7_8(worm.canis.WormMatch m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent)
+  METHOD Canis.entities.Entity _Make_b__7_10(worm.canis.WormMatch m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent)
+  METHOD Canis.entities.Entity _Make_b__7_12(worm.canis.WormMatch m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent)
+  METHOD Canis.entities.Entity _Make_b__7_14(worm.canis.WormMatch m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent)
+  METHOD Canis.entities.Entity _Make_b__7_16(worm.canis.WormMatch m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent)
+  METHOD Canis.entities.Entity Make(Il2CppSystem.Object[] parameters)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE worm.canis.archetypes.WormArchetypeExtensions
+  BASE Il2CppSystem.Object
+  METHOD Void .cctor()
+  METHOD Boolean IsSpaceArchetype(canis.archetypes.Archetype arch, Il2CppSystem.Nullable<worm.canis.data.enums.AgentIcons> actionIcon)
+  METHOD Boolean IsImperiumArchetype(canis.archetypes.Archetype arch, Il2CppSystem.Nullable<worm.canis.data.enums.ImperiumTypes> imperiumType)
+  METHOD Boolean IsIntrigueArchetype(canis.archetypes.Archetype arch, Il2CppSystem.Nullable<worm.canis.data.enums.IntrigueTypes> intrigueType)
+  METHOD Boolean IsConflictArchetype(canis.archetypes.Archetype arch, Il2CppSystem.Nullable<Int32> conflictLevel)
+  METHOD Boolean IsLeaderArchetype(canis.archetypes.Archetype arch)
+  METHOD Boolean IsHagalArchetype(canis.archetypes.Archetype arch)
+  METHOD Boolean IsTechTileArchetype(canis.archetypes.Archetype arch)
+  METHOD Boolean IsTleilaxuArchetype(canis.archetypes.Archetype arch, Il2CppSystem.Nullable<worm.canis.data.enums.ImperiumTypes> imperiumType)
+  METHOD Boolean IsContractArchetype(canis.archetypes.Archetype arch)
+  METHOD Boolean IsConflictRewardArchetype(canis.archetypes.Archetype arch)
+  METHOD Boolean IsImperiumOrTleilaxuArchetype(canis.archetypes.Archetype arch)
+  METHOD Boolean IsInSet(canis.archetypes.Archetype arch, worm.canis.data.enums.Set checkSet)
+  METHOD Boolean IsInSets(canis.archetypes.Archetype arch, Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.data.enums.Set> setList)
+  METHOD Boolean IsRemovedFromSet(canis.archetypes.Archetype arch, worm.canis.data.enums.Set checkSet)
+  METHOD Boolean IsRemovedFromSets(canis.archetypes.Archetype arch, Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.data.enums.Set> setList)
+  METHOD Boolean IsSwordmasterSpace(canis.archetypes.Archetype arch)
+  METHOD Boolean IsHighCouncilSpace(canis.archetypes.Archetype arch)
+  METHOD Boolean IsResearchStationSpace(canis.archetypes.Archetype arch)
+  METHOD Boolean IsHeighlinerSpace(canis.archetypes.Archetype arch)
+  METHOD Boolean IsTheSpiceMustFlowImperium(canis.archetypes.Archetype arch)
+  METHOD Boolean IsTheSpiceMustFlowArchetypeID(Canis.utils.ids.ArchetypeID archID)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE worm.canis.archetypes.WormArchetypes
+  BASE canis.archetypes.Archetypes
+  PROP worm.canis.archetypes.WormArchetypes _instance
+  PROP Il2CppSystem.Object Lock
+  PROP worm.canis.abilities.WormAbilityFactory abilityFactory
+  PROP Il2CppSystem.Lazy<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<worm.canis.archetypes.WormArchetype>> archs
+  PROP worm.canis.archetypes.WormArchetypes Instance
+  PROP canis.archetypes.IAbilityEntityFactory AbilityFactory
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD worm.canis.archetypes.WormArchetypes get_Instance()
+  METHOD canis.archetypes.IAbilityEntityFactory get_AbilityFactory()
+  METHOD Void BaseConfigure()
+  METHOD Canis.entities.Entity CreateEntity(Canis.utils.ids.ArchetypeID archID, Canis.Match m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent)
+  METHOD Canis.entities.Entity CreateEntity(canis.archetypes.Archetype arch, Canis.Match m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent)
+  METHOD Void CreateEntities(Canis.utils.ids.ArchetypeID archID, Canis.Match m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent, Int32 num)
+  METHOD Canis.entities.Entity DeserializeEntity(Canis.utils.ids.ArchetypeID archID, Canis.messages.SerializedEntity se, Canis.Match m, Canis.entities.Entity parent)
+  METHOD Void CreateEntities(canis.archetypes.Archetype arch, Canis.Match m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent, Int32 num)
+  METHOD Canis.entities.Entity CreateDeserializedEntity(Canis.utils.ids.AbilityID abilityID, Canis.messages.SerializedEntity se, Canis.Match m, Canis.entities.Entity parent)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<canis.archetypes.Archetype> AllArchetypes()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD worm.canis.archetypes.WormArchetypes get__instance()
+  METHOD Void set__instance(worm.canis.archetypes.WormArchetypes)
+  METHOD Il2CppSystem.Object get_Lock()
+  METHOD Void set_Lock(Il2CppSystem.Object)
+  METHOD worm.canis.abilities.WormAbilityFactory get_abilityFactory()
+  METHOD Void set_abilityFactory(worm.canis.abilities.WormAbilityFactory)
+  METHOD Il2CppSystem.Lazy<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<worm.canis.archetypes.WormArchetype>> get_archs()
+  METHOD Void set_archs(Il2CppSystem.Lazy<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<worm.canis.archetypes.WormArchetype>>)
+

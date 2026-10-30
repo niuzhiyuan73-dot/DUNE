@@ -1,0 +1,10 @@
+================================================================
+TYPE worm.canis.archetypes.ImperiumArchetypes.BaseSet.Dagger
+  BASE worm.canis.archetypes.WormArchetype
+  PROP Canis.utils.ids.ArchetypeID archID
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.utils.ids.ArchetypeID get_archID()
+  METHOD Void set_archID(Canis.utils.ids.ArchetypeID)
+

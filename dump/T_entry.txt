@@ -1,0 +1,55 @@
+================================================================
+TYPE dwd.core.prefabs.PrefabLookupEntry
+  BASE Il2CppSystem.Object
+  PROP String ResourcePath
+  METHOD Void .cctor()
+  METHOD Void .ctor(String resourcePath)
+  METHOD String ToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD String get_ResourcePath()
+  METHOD Void set_ResourcePath(String)
+
+================================================================
+TYPE dwd.core.prefabs.PrefabLookupEntry`1
+  BASE dwd.core.prefabs.PrefabLookupEntry
+  PROP T0 Metadata
+  METHOD Void .cctor()
+  METHOD Void .ctor(T0 Metadata, String resourcePath)
+  METHOD String ToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD T0 get_Metadata()
+  METHOD Void set_Metadata(T0)
+
+================================================================
+TYPE LogEntry
+  BASE Il2CppSystem.ValueType
+  PROP String Log
+  PROP String Stack
+  PROP UnityEngine.LogType Type
+  METHOD Void .cctor()
+  METHOD Void .ctor(String log, String stack, UnityEngine.LogType type)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Void .ctor()
+  METHOD String get_Log()
+  METHOD Void set_Log(String)
+  METHOD String get_Stack()
+  METHOD Void set_Stack(String)
+  METHOD UnityEngine.LogType get_Type()
+  METHOD Void set_Type(UnityEngine.LogType)
+
+================================================================
+TYPE MethodInfoStoreGeneric_Lookup_Private_Static_Boolean_PrefabLookup_1_TMeta_IMetadataMatcher_1_TMeta_Object_Boolean_byref_PrefabLookupEntry_1_TMeta_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE Entry
+  BASE TypeSpecification
+  METHOD Void .cctor()
+  METHOD Void .ctor(dwd.core.prefabs.PrefabLookupEntry<dwd.core.prefabs.implementations.byflavor.PrefabFlavorsMetaData> other)
+  METHOD Void .ctor(dwd.core.prefabs.implementations.byflavor.PrefabFlavorsMetaData metadata, String resourcePath)
+  METHOD Void UnityEngine_ISerializationCallbackReceiver_OnBeforeSerialize()
+  METHOD Void UnityEngine_ISerializationCallbackReceiver_OnAfterDeserialize()
+  METHOD Void .ctor(IntPtr pointer)
+

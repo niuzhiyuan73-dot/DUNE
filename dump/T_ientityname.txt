@@ -1,0 +1,43 @@
+================================================================
+TYPE Canis.attributes.IEntity
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  PROP String EntityName
+  PROP Canis.utils.ids.EntityID EntityID
+  PROP Canis.utils.ids.AccountID OwningPlayerID
+  PROP Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IEntity> Children
+  PROP Canis.attributes.IEntity Parent
+  PROP Canis.entities.IHasEntities EntityLookup
+  METHOD Void .cctor()
+  METHOD String get_EntityName()
+  METHOD Canis.utils.ids.EntityID get_EntityID()
+  METHOD Canis.utils.ids.AccountID get_OwningPlayerID()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IEntity> get_Children()
+  METHOD Canis.attributes.IEntity get_Parent()
+  METHOD Canis.entities.IHasEntities get_EntityLookup()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.attributes.IEntityExtensions
+  BASE Il2CppSystem.Object
+  METHOD Void .cctor()
+  METHOD Boolean IsArchetype(Canis.attributes.IEntity self, Canis.utils.ids.ArchetypeID archID)
+  METHOD Boolean IsArchetype(Canis.attributes.IEntity self, canis.archetypes.Archetype archetype)
+  METHOD Canis.utils.ids.ArchetypeID ArchID(Canis.attributes.IEntity self)
+  METHOD canis.archetypes.Archetype LookupArchetype(Canis.attributes.IEntity self)
+  METHOD canis.archetypes.Archetype Archetype(Canis.attributes.IEntity self)
+  METHOD Canis.utils.ids.ArchetypeID ArchetypeID(Canis.attributes.IEntity self)
+  METHOD Canis.attributes.IEntity GetEntity(Canis.attributes.IEntity self, Canis.attributes.AttributeDefinition<Canis.utils.ids.EntityID> attribute)
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyCollection<Canis.attributes.IEntity> GetEntities(Canis.attributes.IEntity self, Canis.attributes.AttributeDefinition<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID>> attribute)
+  METHOD Canis.attributes.IEntity OwningPlayer(Canis.attributes.IEntity self)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.entities.IEntityName
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  PROP String Name
+  METHOD Void .cctor()
+  METHOD Canis.entities.Entity DeserializeEntity(Canis.messages.SerializedEntity se, Canis.Match m, Canis.entities.Entity parent)
+  METHOD Void ParentEntity(Canis.entities.Entity child)
+  METHOD String get_Name()
+  METHOD Void .ctor(IntPtr pointer)
+

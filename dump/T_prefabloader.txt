@@ -1,0 +1,42 @@
+================================================================
+TYPE dwd.core.direBytes.DireBytesPrefabLoader
+  BASE TypeSpecification
+  PROP String resourcePath
+  METHOD Void .cctor()
+  METHOD Void modelChanged()
+  METHOD Il2CppSystem.Collections.IEnumerator waitForBroadcastProvider(boardgames.src.broadcast.motd.BroadcastContentProvider broadcast)
+  METHOD Void loadPrefab(boardgames.src.broadcast.motd.BroadcastContentProvider broadcast)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD String get_resourcePath()
+  METHOD Void set_resourcePath(String)
+
+================================================================
+TYPE boardgames.attributes.AttributePrefabLoaderView
+  BASE boardgames.attributes.AttributeView
+  PROP dwd.core.prefabs.implementations.byflavor.PrefabByFlavorLoader prefabByFlavorLoader
+  PROP String flavorFormat
+  PROP String flavorIfNoneFound
+  PROP Boolean deleteOldOnNewPrefabLoaded
+  PROP UnityEngine.Transform rootAnchor
+  PROP dwd.core.util.BoolUnityEvents onPrefabLoaded
+  PROP dwd.core.prefabs.implementations.byflavor.BasePrefabByFlavorMetadata loadedPrefab
+  METHOD Void .cctor()
+  METHOD Void dirtyUpdate()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD dwd.core.prefabs.implementations.byflavor.PrefabByFlavorLoader get_prefabByFlavorLoader()
+  METHOD Void set_prefabByFlavorLoader(dwd.core.prefabs.implementations.byflavor.PrefabByFlavorLoader)
+  METHOD String get_flavorFormat()
+  METHOD Void set_flavorFormat(String)
+  METHOD String get_flavorIfNoneFound()
+  METHOD Void set_flavorIfNoneFound(String)
+  METHOD Boolean get_deleteOldOnNewPrefabLoaded()
+  METHOD Void set_deleteOldOnNewPrefabLoaded(Boolean)
+  METHOD UnityEngine.Transform get_rootAnchor()
+  METHOD Void set_rootAnchor(UnityEngine.Transform)
+  METHOD dwd.core.util.BoolUnityEvents get_onPrefabLoaded()
+  METHOD Void set_onPrefabLoaded(dwd.core.util.BoolUnityEvents)
+  METHOD dwd.core.prefabs.implementations.byflavor.BasePrefabByFlavorMetadata get_loadedPrefab()
+  METHOD Void set_loadedPrefab(dwd.core.prefabs.implementations.byflavor.BasePrefabByFlavorMetadata)
+

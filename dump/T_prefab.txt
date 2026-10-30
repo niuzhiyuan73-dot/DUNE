@@ -1,0 +1,68 @@
+================================================================
+TYPE boardgames.match.data.AttributePrefabLookupData
+  BASE boardgames.match.data.PrefabLookupData
+  PROP Canis.attributes.IAttribute attribute
+  PROP Il2CppSystem.Collections.Generic.HashSet<String> flavors
+  PROP UInt64 cachedAttributeVersion
+  PROP Il2CppSystem.Collections.Generic.HashSet<String> Flavors
+  PROP UInt64 Version
+  METHOD Void .cctor()
+  METHOD Void .ctor(Canis.attributes.IAttribute attribute)
+  METHOD Il2CppSystem.Collections.Generic.HashSet<String> get_Flavors()
+  METHOD UInt64 get_Version()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.attributes.IAttribute get_attribute()
+  METHOD Void set_attribute(Canis.attributes.IAttribute)
+  METHOD Il2CppSystem.Collections.Generic.HashSet<String> get_flavors()
+  METHOD Void set_flavors(Il2CppSystem.Collections.Generic.HashSet<String>)
+  METHOD UInt64 get_cachedAttributeVersion()
+  METHOD Void set_cachedAttributeVersion(UInt64)
+
+================================================================
+TYPE boardgames.match.data.AttributesPrefabLookupData
+  BASE boardgames.match.data.PrefabLookupData
+  PROP Il2CppSystem.Collections.Generic.HashSet<String> flavors
+  PROP Il2CppSystem.Collections.Generic.HashSet<String> Flavors
+  PROP UInt64 Version
+  METHOD Void .cctor()
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute> attributes)
+  METHOD Il2CppSystem.Collections.Generic.HashSet<String> get_Flavors()
+  METHOD UInt64 get_Version()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.HashSet<String> get_flavors()
+  METHOD Void set_flavors(Il2CppSystem.Collections.Generic.HashSet<String>)
+
+================================================================
+TYPE boardgames.match.data.PrefabLookupData
+  BASE dwd.core.data.composition.DataComponent
+  PROP Il2CppSystem.Collections.Generic.HashSet<String> Flavors
+  PROP UInt64 Version
+  METHOD Void .cctor()
+  METHOD Il2CppSystem.Collections.Generic.HashSet<String> get_Flavors()
+  METHOD UInt64 get_Version()
+  METHOD String ToString()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE boardgames.match.data.VFXTagsPrefabLookupData
+  BASE boardgames.match.data.PrefabLookupData
+  PROP Canis.attributes.IAttribute<Il2CppSystem.Collections.Generic.List<String>> vfxTagsAttribute
+  PROP Il2CppSystem.Collections.Generic.HashSet<String> flavors
+  PROP UInt64 cachedVersion
+  PROP Il2CppSystem.Collections.Generic.HashSet<String> Flavors
+  PROP UInt64 Version
+  METHOD Void .cctor()
+  METHOD Void .ctor(Canis.attributes.IAttribute<Il2CppSystem.Collections.Generic.List<String>> vfxTagsAttribute)
+  METHOD Void .ctor(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray vfxTags)
+  METHOD Il2CppSystem.Collections.Generic.HashSet<String> get_Flavors()
+  METHOD UInt64 get_Version()
+  METHOD Void .ctor(String[] vfxTags)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.attributes.IAttribute<Il2CppSystem.Collections.Generic.List<String>> get_vfxTagsAttribute()
+  METHOD Void set_vfxTagsAttribute(Canis.attributes.IAttribute<Il2CppSystem.Collections.Generic.List<String>>)
+  METHOD Il2CppSystem.Collections.Generic.HashSet<String> get_flavors()
+  METHOD Void set_flavors(Il2CppSystem.Collections.Generic.HashSet<String>)
+  METHOD UInt64 get_cachedVersion()
+  METHOD Void set_cachedVersion(UInt64)
+

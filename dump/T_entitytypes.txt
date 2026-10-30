@@ -1,0 +1,17 @@
+================================================================
+TYPE worm.canis.data.enums.EntityTypes
+  BASE System.Enum
+  FIELD Int32 value__   [Public, SpecialName, RTSpecialName, HasDefault]
+  FIELD worm.canis.data.enums.EntityTypes None   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.EntityTypes Imperium   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.EntityTypes Intrigue   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.EntityTypes Leader   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.EntityTypes Space   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.EntityTypes Hagal   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.EntityTypes Conflict   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.EntityTypes TechTile   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.EntityTypes Tleilaxu   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.EntityTypes Contract   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.EntityTypes ConflictReward   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.EntityTypes LeaderUpgrade   [Public, Static, Literal, HasDefault]
+

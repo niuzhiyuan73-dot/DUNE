@@ -10,3 +10,17 @@ backup/
 *.tmp
 __pycache__/
 *.pyc
+
+# 生成产物：预设剧本包（由 mods/tools/build_presets.py 重建，共 100+ 个）
+mods/out/
+
+# 生成产物：插件编译输出（源码在 probe_plugin/Plugin.cs）
+probe_plugin/bin/
+probe_plugin/obj/
+
+# 分析用的超大类型转储（可由 tools/TypeDump 重新导出）
+dump/api_boardgames.txt
+dump/api_worm_client.txt
+
+# 会话内的工作记忆
+.workbuddy/

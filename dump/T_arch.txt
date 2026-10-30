@@ -1,0 +1,116 @@
+================================================================
+TYPE canis.archetypes.AbilityArchetype
+  BASE canis.archetypes.Archetype
+  PROP Canis.utils.ids.AbilityID ArchetypeAbilityID
+  METHOD Void .cctor()
+  METHOD Canis.utils.ids.AbilityID get_ArchetypeAbilityID()
+  METHOD Canis.entities.Entity Build(Canis.Match m, Canis.entities.PlayerEntity owner, Canis.entities.Entity parent)
+  METHOD Canis.entities.Entity Deserialize(Canis.messages.SerializedEntity se, Canis.Match m, Canis.entities.Entity parent)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE canis.archetypes.Archetype
+  BASE Canis.attributes.ObjectAttributes
+  PROP Canis.utils.ids.ArchetypeID randomArchetypeID
+  PROP Canis.utils.ids.ArchetypeID archetypeID
+  PROP canis.archetypes.Archetypes archetypes
+  PROP Canis.utils.ids.ArchetypeID ArchetypeID
+  PROP Canis.attributes.AttributeDefinition<Il2CppSystem.Collections.Generic.List<Canis.utils.ids.AbilityID>> AbilityIDsAttribute
+  PROP Canis.entities.IEntityName EntityName
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Canis.utils.ids.ArchetypeID archID)
+  METHOD Void .ctor(Canis.attributes.SerializableAttributes attributes)
+  METHOD Void .ctor(Canis.utils.ids.ArchetypeID archID, Canis.attributes.SerializableAttributes attributes)
+  METHOD Canis.utils.ids.ArchetypeID get_ArchetypeID()
+  METHOD Canis.attributes.AttributeDefinition<Il2CppSystem.Collections.Generic.List<Canis.utils.ids.AbilityID>> get_AbilityIDsAttribute()
+  METHOD Canis.entities.IEntityName get_EntityName()
+  METHOD Canis.entities.Entity Build(Canis.Match m, Canis.entities.PlayerEntity owner, Canis.entities.Entity parent)
+  METHOD Canis.entities.Entity Deserialize(Canis.messages.SerializedEntity se, Canis.Match m, Canis.entities.Entity parent)
+  METHOD Void ConstructAbilities(Canis.Match match, Canis.entities.PlayerEntity owner, Canis.entities.IHasAbilities hasAbilities)
+  METHOD canis.archetypes.Archetype Get(Canis.utils.ids.ArchetypeID archetypeID)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.utils.ids.ArchetypeID get_randomArchetypeID()
+  METHOD Void set_randomArchetypeID(Canis.utils.ids.ArchetypeID)
+  METHOD Canis.utils.ids.ArchetypeID get_archetypeID()
+  METHOD Void set_archetypeID(Canis.utils.ids.ArchetypeID)
+  METHOD canis.archetypes.Archetypes get_archetypes()
+  METHOD Void set_archetypes(canis.archetypes.Archetypes)
+
+================================================================
+TYPE canis.archetypes.ArchetypeIDUtils
+  BASE Il2CppSystem.Object
+  METHOD Void .cctor()
+  METHOD canis.archetypes.Archetype Lookup(Canis.utils.ids.ArchetypeID archetypeID)
+  METHOD canis.archetypes.Archetype Lookup(Canis.utils.ids.ArchetypeID archetypeID, canis.archetypes.Archetypes archetypes)
+  METHOD canis.archetypes.Archetype Lookup(Canis.utils.ids.ArchetypeID archetypeID, canis.archetypes.IHasArchetypes ha)
+  METHOD canis.archetypes.Archetype TryLookup(Canis.utils.ids.ArchetypeID archetypeID)
+  METHOD Boolean TryLookup(Canis.utils.ids.ArchetypeID archetypeID, ref canis.archetypes.Archetype archetype)
+  METHOD Boolean TryLookup(Canis.utils.ids.ArchetypeID archetypeID, canis.archetypes.Archetypes archetypes, ref canis.archetypes.Archetype archetype)
+  METHOD Boolean TryLookup(Canis.utils.ids.ArchetypeID archetypeID, canis.archetypes.IHasArchetypes ha, ref canis.archetypes.Archetype archetype)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE canis.archetypes.Archetypes
+  BASE Il2CppSystem.Object
+  PROP String project
+  PROP Il2CppSystem.Lazy<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<canis.archetypes.Archetype>> archs
+  PROP Il2CppSystem.Lazy<canis.archetypes.IAbilityEntityFactory> abilityFactory
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.ArchetypeID, canis.archetypes.Archetype> archetypes
+  PROP canis.archetypes.Archetypes _instance
+  PROP Il2CppSystem.Object archetypesLock
+  PROP Utils.Cached<Il2CppSystem.Collections.Concurrent.ConcurrentDictionary<String, Canis.utils.ids.ArchetypeID>> _nameCache
+  PROP canis.archetypes.IAbilityEntityFactory AbilityFactory
+  METHOD Void .cctor()
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<canis.archetypes.Archetype> InitializeArchetypes(String project)
+  METHOD canis.archetypes.IAbilityEntityFactory get_AbilityFactory()
+  METHOD canis.archetypes.Archetypes GetInstance(String project)
+  METHOD Void .ctor(String project)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<canis.archetypes.Archetype> AllArchetypes()
+  METHOD canis.archetypes.Archetype Get(Canis.utils.ids.ArchetypeID archetypeID)
+  METHOD M0 Get()
+  METHOD Boolean TryGet(Canis.utils.ids.ArchetypeID archetypeID, ref canis.archetypes.Archetype archetype)
+  METHOD Boolean HasKey(Canis.utils.ids.ArchetypeID archetypeID)
+  METHOD Void Configure()
+  METHOD Void ConfigureArchetype(canis.archetypes.Archetype archetype)
+  METHOD Canis.entities.Entity CreateEntity(Canis.utils.ids.ArchetypeID archID, Canis.Match m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent)
+  METHOD Canis.entities.Entity CreateEntity(canis.archetypes.Archetype arch, Canis.Match m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent)
+  METHOD Canis.entities.Entity DeserializeEntity(Canis.utils.ids.ArchetypeID archID, Canis.messages.SerializedEntity se, Canis.Match m, Canis.entities.Entity parent)
+  METHOD Void CreateEntities(canis.archetypes.Archetype arch, Canis.Match m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent, Int32 num)
+  METHOD Void CreateEntities(Canis.utils.ids.ArchetypeID archID, Canis.Match m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent, Int32 num)
+  METHOD Canis.entities.Entity CreateEntity(Canis.Match m, Canis.utils.ids.ArchetypeID archetypeID, Canis.entities.Entity parent, Canis.entities.PlayerEntity player, Il2CppSystem.Nullable<Int32> positionInParent)
+  METHOD Canis.entities.Entity CreateEntity(Canis.Match m, canis.archetypes.Archetype archetype, Canis.entities.Entity parent, Canis.entities.PlayerEntity player, Il2CppSystem.Nullable<Int32> positionInParent)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<canis.archetypes.Archetype> CreateArchetypesFromSheet(String sheet, Il2CppSystem.Collections.Generic.IReadOnlyList<Il2CppSystem.Collections.Generic.IReadOnlyList<Il2CppSystem.Object>> values)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<canis.archetypes.Archetype> CreateGenericArchetypes(Il2CppSystem.Collections.Generic.IReadOnlyList<Il2CppSystem.Collections.Generic.IReadOnlyList<Il2CppSystem.Object>> values)
+  METHOD Canis.entities.Entity CreateDeserializedEntity(Canis.utils.ids.AbilityID abilityID, Canis.messages.SerializedEntity se, Canis.Match m, Canis.entities.Entity parent)
+  METHOD canis.archetypes.Archetypes All()
+  METHOD Canis.utils.ids.ArchetypeID LookupByName(String name)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.ArchetypeID> MatchesByName(String name)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD String get_project()
+  METHOD Void set_project(String)
+  METHOD Il2CppSystem.Lazy<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<canis.archetypes.Archetype>> get_archs()
+  METHOD Void set_archs(Il2CppSystem.Lazy<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<canis.archetypes.Archetype>>)
+  METHOD Il2CppSystem.Lazy<canis.archetypes.IAbilityEntityFactory> get_abilityFactory()
+  METHOD Void set_abilityFactory(Il2CppSystem.Lazy<canis.archetypes.IAbilityEntityFactory>)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.ArchetypeID, canis.archetypes.Archetype> get_archetypes()
+  METHOD Void set_archetypes(Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.ArchetypeID, canis.archetypes.Archetype>)
+  METHOD canis.archetypes.Archetypes get__instance()
+  METHOD Void set__instance(canis.archetypes.Archetypes)
+  METHOD Il2CppSystem.Object get_archetypesLock()
+  METHOD Void set_archetypesLock(Il2CppSystem.Object)
+  METHOD Utils.Cached<Il2CppSystem.Collections.Concurrent.ConcurrentDictionary<String, Canis.utils.ids.ArchetypeID>> get__nameCache()
+  METHOD Void set__nameCache(Utils.Cached<Il2CppSystem.Collections.Concurrent.ConcurrentDictionary<String, Canis.utils.ids.ArchetypeID>>)
+
+================================================================
+TYPE canis.archetypes.ArchetypesSingleton
+  BASE Il2CppSystem.Object
+  PROP canis.archetypes.Archetypes _archetypes
+  METHOD Void .cctor()
+  METHOD Void setArchetypes(canis.archetypes.Archetypes archetypes)
+  METHOD canis.archetypes.Archetypes getArchetypes()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD canis.archetypes.Archetypes get__archetypes()
+  METHOD Void set__archetypes(canis.archetypes.Archetypes)
+

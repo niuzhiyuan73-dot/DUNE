@@ -1,0 +1,66 @@
+================================================================
+TYPE worm.canis.match.WormPlayerMatchSoloOptions
+  BASE Il2CppSystem.Object
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> StartingDiscard
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> StartingDeckOrder
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> Reshuffle1DeckOrder
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> Reshuffle2DeckOrder
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> Reshuffle3DeckOrder
+  PROP Int32 BonusStartingGarrison
+  PROP Int32 BonusStartingWater
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> ControlLocations
+  PROP Int32 BonusStartingVP
+  PROP Boolean StartingSwordmaster
+  PROP Boolean StartingHighCouncil
+  PROP Int32 StartingSolari
+  PROP Int32 StartingSpice
+  PROP Int32 StartingWater
+  PROP Int32 StartingGarrison
+  PROP Int32 StartingSpecimens
+  PROP Il2CppSystem.Collections.Generic.Dictionary<worm.canis.data.enums.Factions, Int32> StartingInfluence
+  PROP Il2CppSystem.Collections.Generic.List<worm.canis.data.enums.BattleIcons> StartingBattleIcons
+  PROP Boolean StartingMakerHooks
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(worm.canis.match.WormPlayerMatchSoloOptions other)
+  METHOD worm.canis.match.WormPlayerMatchSoloOptions Clone()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_StartingDiscard()
+  METHOD Void set_StartingDiscard(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_StartingDeckOrder()
+  METHOD Void set_StartingDeckOrder(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_Reshuffle1DeckOrder()
+  METHOD Void set_Reshuffle1DeckOrder(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_Reshuffle2DeckOrder()
+  METHOD Void set_Reshuffle2DeckOrder(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_Reshuffle3DeckOrder()
+  METHOD Void set_Reshuffle3DeckOrder(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Int32 get_BonusStartingGarrison()
+  METHOD Void set_BonusStartingGarrison(Int32)
+  METHOD Int32 get_BonusStartingWater()
+  METHOD Void set_BonusStartingWater(Int32)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_ControlLocations()
+  METHOD Void set_ControlLocations(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Int32 get_BonusStartingVP()
+  METHOD Void set_BonusStartingVP(Int32)
+  METHOD Boolean get_StartingSwordmaster()
+  METHOD Void set_StartingSwordmaster(Boolean)
+  METHOD Boolean get_StartingHighCouncil()
+  METHOD Void set_StartingHighCouncil(Boolean)
+  METHOD Int32 get_StartingSolari()
+  METHOD Void set_StartingSolari(Int32)
+  METHOD Int32 get_StartingSpice()
+  METHOD Void set_StartingSpice(Int32)
+  METHOD Int32 get_StartingWater()
+  METHOD Void set_StartingWater(Int32)
+  METHOD Int32 get_StartingGarrison()
+  METHOD Void set_StartingGarrison(Int32)
+  METHOD Int32 get_StartingSpecimens()
+  METHOD Void set_StartingSpecimens(Int32)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<worm.canis.data.enums.Factions, Int32> get_StartingInfluence()
+  METHOD Void set_StartingInfluence(Il2CppSystem.Collections.Generic.Dictionary<worm.canis.data.enums.Factions, Int32>)
+  METHOD Il2CppSystem.Collections.Generic.List<worm.canis.data.enums.BattleIcons> get_StartingBattleIcons()
+  METHOD Void set_StartingBattleIcons(Il2CppSystem.Collections.Generic.List<worm.canis.data.enums.BattleIcons>)
+  METHOD Boolean get_StartingMakerHooks()
+  METHOD Void set_StartingMakerHooks(Boolean)
+

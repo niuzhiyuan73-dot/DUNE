@@ -1,0 +1,264 @@
+================================================================
+TYPE Canis.attributes.ObjectAttributes
+  BASE Il2CppSystem.Object
+  PROP Canis.attributes.ObjectAttributes parentAttributes
+  PROP Canis.attributes.MutableAttributes attributes
+  PROP Il2CppSystem.Collections.Generic.HashSet<Int32> actualAttributes
+  PROP Canis.attributes.IHasAttributes ParentAttributes
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Canis.attributes.ObjectAttributes parentAttributes)
+  METHOD Void .ctor(Canis.attributes.SerializableAttributes attributes)
+  METHOD Canis.attributes.IHasAttributes get_ParentAttributes()
+  METHOD Canis.attributes.MutableAttribute<M0> GetAttribute(Canis.attributes.AttributeDefinition<M0> definition)
+  METHOD Canis.attributes.IMutableAttribute GetAttribute(Canis.attributes.IAttributeDefinition definition)
+  METHOD Canis.attributes.IAttribute Canis_attributes_IHasAttributes_GetAttribute(Canis.attributes.IAttributeDefinition definition)
+  METHOD Canis.attributes.IAttribute<M0> Canis_attributes_IHasAttributes_GetAttribute(Canis.attributes.AttributeDefinition<M0> definition)
+  METHOD M0 GetAttributeValue(Canis.attributes.AttributeDefinition<M0> definition, M0 defaultValue)
+  METHOD M0 GetAttributeValue(Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<M0>> definition, M0 defaultValue)
+  METHOD Boolean AttributeEquals(Canis.attributes.AttributeDefinition<M0> definition, M0 value)
+  METHOD Void HasParent(Canis.attributes.ObjectAttributes parent)
+  METHOD Canis.attributes.ObjectAttributes Has(Canis.attributes.AttributeDefinition<M0> attribute, M0 value)
+  METHOD Void SetAttribute(Canis.attributes.AttributeDefinition<M0> attribute, M0 value)
+  METHOD Void EnsureHasAttribute(Canis.attributes.IAttributeDefinition definition)
+  METHOD Void AddMod(Canis.attributes.IAttributeDefinition definition, Canis.attributes.IMod mod)
+  METHOD Canis.attributes.IMod RemoveMod(Canis.attributes.IAttributeDefinition definition, Canis.attributes.ModID modID)
+  METHOD Canis.attributes.Mod<M0> RemoveMod(Canis.attributes.AttributeDefinition<M0> definition, Canis.attributes.ModID modID)
+  METHOD Void Canis_attributes_IMutableHasAttributes_SetAttribute(Canis.attributes.IAttribute attribute)
+  METHOD Void RemoveAttribute(Canis.attributes.AttributeDefinition<M0> attribute)
+  METHOD Void RemoveAttribute(Canis.attributes.IAttributeDefinition attribute)
+  METHOD Void ChangeParentAttributes(Canis.attributes.ObjectAttributes newParentAttributes)
+  METHOD Boolean HasAttribute(Int32 key)
+  METHOD Canis.attributes.MutableAttributes SerializeAttributes()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerator<Canis.attributes.IAttribute> GetEnumerator()
+  METHOD Il2CppSystem.Collections.IEnumerator System_Collections_IEnumerable_GetEnumerator()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.attributes.ObjectAttributes get_parentAttributes()
+  METHOD Void set_parentAttributes(Canis.attributes.ObjectAttributes)
+  METHOD Canis.attributes.MutableAttributes get_attributes()
+  METHOD Void set_attributes(Canis.attributes.MutableAttributes)
+  METHOD Il2CppSystem.Collections.Generic.HashSet<Int32> get_actualAttributes()
+  METHOD Void set_actualAttributes(Il2CppSystem.Collections.Generic.HashSet<Int32>)
+
+================================================================
+TYPE Canis.entities.Entity
+  BASE Canis.attributes.ObjectAttributes
+  PROP Canis.entities.PlayerEntity OwningPlayer
+  PROP String entityName
+  PROP Canis.Match Match
+  PROP Canis.entities.Entity _Parent_k__BackingField
+  PROP Il2CppSystem.Collections.Generic.List<Canis.entities.Entity> children
+  PROP Utils.Cached<Il2CppSystem.Collections.Generic.List<Canis.entities.Entity>> descendents
+  PROP Canis.utils.ids.EntityID entityID
+  PROP Utils.Cached<Canis.entities.TransientData> _transientData
+  PROP Canis.entities.Entity Parent
+  PROP Canis.entities.IHasEntities EntityLookup
+  PROP Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IEntity> Canis.attributes.IEntity.Children
+  PROP Canis.attributes.IEntity Canis.attributes.IEntity.Parent
+  PROP String EntityName
+  PROP Canis.utils.ids.EntityID EntityID
+  PROP Canis.utils.ids.AccountID OwningPlayerID
+  PROP Int32 PositionInParent
+  PROP Il2CppSystem.Collections.Generic.List<Canis.entities.Entity> Children
+  PROP Il2CppSystem.Collections.Generic.List<Canis.entities.Entity> Descendents
+  PROP Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> OrderedDescendents
+  PROP Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> Ancestors
+  METHOD Void .cctor()
+  METHOD canis.archetypes.Archetype GetArchetype()
+  METHOD Canis.entities.Entity get_Parent()
+  METHOD Void set_Parent(Canis.entities.Entity value)
+  METHOD Canis.entities.IHasEntities get_EntityLookup()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IEntity> Canis_attributes_IEntity_get_Children()
+  METHOD Canis.attributes.IEntity Canis_attributes_IEntity_get_Parent()
+  METHOD String get_EntityName()
+  METHOD Canis.utils.ids.EntityID get_EntityID()
+  METHOD Canis.utils.ids.AccountID get_OwningPlayerID()
+  METHOD Void .ctor(Canis.Match m, String name)
+  METHOD Void InitializeFromSerialized(Canis.messages.SerializedEntity se, Canis.entities.Entity parent)
+  METHOD Void .ctor(Canis.messages.SerializedEntity se, Canis.Match match, Canis.entities.Entity parent, Canis.attributes.ObjectAttributes parentAttributes)
+  METHOD Void .ctor(Canis.messages.SerializedEntity se, Canis.Match match, Canis.entities.Entity parent)
+  METHOD Void .ctor(Canis.Match m, Canis.entities.PlayerEntity owningPlayer, canis.archetypes.Archetype archetype, String entityName)
+  METHOD Void ForceParent(Canis.entities.Entity parent)
+  METHOD Void SetPlayer(Canis.entities.PlayerEntity player)
+  METHOD Void SetPlayerAndReturnChildren(Canis.entities.PlayerEntity player, Il2CppSystem.Collections.Generic.List<Canis.entities.Entity> allUpdated)
+  METHOD Int32 get_PositionInParent()
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.entities.Entity> get_Children()
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.entities.Entity> get_Descendents()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> get_OrderedDescendents()
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.entities.Entity> buildDescendents()
+  METHOD Void AddDescendent(Canis.entities.Entity descendent)
+  METHOD Void RemoveDescendent(Canis.entities.Entity descendent)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> get_Ancestors()
+  METHOD Canis.entities.Entity MoveTo(Canis.entities.Entity newParent, Il2CppSystem.Nullable<Int32> positionInParent)
+  METHOD Int32 TreeDepth()
+  METHOD Canis.entities.Entity LowestCommonAncestor(Canis.entities.Entity oldParent, Canis.entities.Entity newParent)
+  METHOD Void AddChild(Canis.entities.Entity child, Il2CppSystem.Nullable<Int32> position)
+  METHOD Void RemoveChild(Canis.entities.Entity child)
+  METHOD Canis.messages.SerializedEntity Serialize()
+  METHOD Canis.actions.Action Shuffle()
+  METHOD Void ShuffleNoAction()
+  METHOD Void ShuffleNoAction(Int32 seed)
+  METHOD Canis.entities.Entity GetChild(String name)
+  METHOD Canis.entities.Entity ChildAt(Int32 index)
+  METHOD String ToString()
+  METHOD Boolean Is(Canis.entities.IEntityName entityNameOb)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> AncestorChain()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> RawAncestorChain()
+  METHOD Boolean IsInPlay()
+  METHOD String ToString(String format, Il2CppSystem.IFormatProvider formatProvider)
+  METHOD Void AddTransientData(TransientDataKey<M0> key, M0 data)
+  METHOD Boolean TryGetTransientData(TransientDataKey<M0> key, ref M0 data)
+  METHOD M0 GetOrAddTransientData(TransientDataKey<M0> key, Il2CppSystem.Func<M0> dataFactory)
+  METHOD Void RemoveTransientData(TransientDataKey<M0> key)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.entities.PlayerEntity get_OwningPlayer()
+  METHOD Void set_OwningPlayer(Canis.entities.PlayerEntity)
+  METHOD String get_entityName()
+  METHOD Void set_entityName(String)
+  METHOD Canis.Match get_Match()
+  METHOD Void set_Match(Canis.Match)
+  METHOD Canis.entities.Entity get__Parent_k__BackingField()
+  METHOD Void set__Parent_k__BackingField(Canis.entities.Entity)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.entities.Entity> get_children()
+  METHOD Void set_children(Il2CppSystem.Collections.Generic.List<Canis.entities.Entity>)
+  METHOD Utils.Cached<Il2CppSystem.Collections.Generic.List<Canis.entities.Entity>> get_descendents()
+  METHOD Void set_descendents(Utils.Cached<Il2CppSystem.Collections.Generic.List<Canis.entities.Entity>>)
+  METHOD Canis.utils.ids.EntityID get_entityID()
+  METHOD Void set_entityID(Canis.utils.ids.EntityID)
+  METHOD Utils.Cached<Canis.entities.TransientData> get__transientData()
+  METHOD Void set__transientData(Utils.Cached<Canis.entities.TransientData>)
+
+================================================================
+TYPE Canis.entities.EntityExtensions
+  BASE Il2CppSystem.Object
+  METHOD Void .cctor()
+  METHOD Canis.entities.UnboundChangeAttribute<M0> Set(Canis.entities.Entity entity, Canis.attributes.AttributeDefinition<M0> attr)
+  METHOD Void SafeDelete(Canis.entities.Entity ent)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.entities.EntityFactory`2
+  BASE Il2CppSystem.Object
+  PROP Il2CppSystem.Collections.Generic.Dictionary<T0, Il2CppSystem.Func<Canis.Match, T1>> entityMap
+  PROP Il2CppSystem.Collections.Generic.Dictionary<T0, Il2CppSystem.Func<Canis.messages.SerializedEntity, Canis.Match, Canis.entities.Entity, T1>> deserializeMap
+  METHOD Void .cctor()
+  METHOD Void initializeEntities()
+  METHOD Void AddEntry(T0 id, Il2CppSystem.Func<Canis.Match, T1> factoryMethod, Il2CppSystem.Func<Canis.messages.SerializedEntity, Canis.Match, Canis.entities.Entity, T1> deserializeMethod)
+  METHOD Boolean HasEntry(T0 id)
+  METHOD T1 CreateEntity(T0 id, Canis.Match m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent)
+  METHOD T1 CreateDeserializedEntity(T0 id, Canis.messages.SerializedEntity se, Canis.Match m, Canis.entities.Entity parent)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<T0, Il2CppSystem.Func<Canis.Match, T1>> get_entityMap()
+  METHOD Void set_entityMap(Il2CppSystem.Collections.Generic.Dictionary<T0, Il2CppSystem.Func<Canis.Match, T1>>)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<T0, Il2CppSystem.Func<Canis.messages.SerializedEntity, Canis.Match, Canis.entities.Entity, T1>> get_deserializeMap()
+  METHOD Void set_deserializeMap(Il2CppSystem.Collections.Generic.Dictionary<T0, Il2CppSystem.Func<Canis.messages.SerializedEntity, Canis.Match, Canis.entities.Entity, T1>>)
+
+================================================================
+TYPE Canis.entities.EntityHierarchyExtensions
+  BASE Il2CppSystem.Object
+  METHOD Void .cctor()
+  METHOD Boolean Is(Canis.attributes.IEntity entity, Canis.entities.IEntityName entityNameOb)
+  METHOD Canis.attributes.IEntity AsPlaymat(Canis.attributes.IEntity entity)
+  METHOD Canis.attributes.IEntity Playmat(Canis.attributes.IEntity entity)
+  METHOD Canis.entities.Entity Playmat(Canis.entities.Entity entity)
+  METHOD Canis.attributes.IEntity Player(Canis.attributes.IEntity entity)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IEntity> Players(Canis.attributes.IEntity entity)
+  METHOD Boolean IsBox(Canis.attributes.IEntity entity)
+  METHOD Canis.attributes.IEntity Box(Canis.attributes.IEntity entity)
+  METHOD Boolean IsLogStack(Canis.attributes.IEntity entity)
+  METHOD Canis.entities.Entity LogStack(Canis.attributes.IEntity entity)
+  METHOD Boolean IsActiveAbilityStack(Canis.attributes.IEntity entity)
+  METHOD Canis.attributes.IEntity ActiveAbilityStack(Canis.attributes.IEntity entity)
+  METHOD Canis.entities.ActiveAbility OfActiveAbility(Canis.attributes.IEntity entity)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.ActiveAbility> ActiveAbilities(Canis.attributes.IEntity entity)
+  METHOD Boolean IsSelectionFilter(Canis.attributes.IEntity entity)
+  METHOD Canis.attributes.IEntity SelectionFilter(Canis.attributes.IEntity entity)
+  METHOD Boolean IsUndoStack(Canis.attributes.IEntity entity)
+  METHOD Canis.attributes.IEntity UndoStack(Canis.attributes.IEntity entity)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.AbilityInstance> AbilityInstances(Canis.attributes.IEntity entity)
+  METHOD Canis.entities.IUndoAbility UndoAbility(Canis.attributes.IEntity entity)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.entities.EntityName
+  BASE TypeSpecification
+  METHOD Void .cctor()
+  METHOD Void .ctor(String name, Il2CppSystem.Func<Canis.messages.SerializedEntity, Canis.Match, Canis.entities.Entity, Canis.entities.Entity> entityGen, Il2CppSystem.Action<Canis.entities.Entity, Canis.entities.Entity> assignEntToParent)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.entities.EntityNameForParent`1
+  BASE Il2CppSystem.Object
+  PROP String _name
+  PROP Il2CppSystem.Func<Canis.messages.SerializedEntity, Canis.Match, Canis.entities.Entity, Canis.entities.Entity> _entityGen
+  PROP Il2CppSystem.Action<Canis.entities.Entity, T0> _assignEntToParent
+  PROP String Name
+  METHOD Void .cctor()
+  METHOD String get_Name()
+  METHOD Void .ctor(String name, Il2CppSystem.Func<Canis.messages.SerializedEntity, Canis.Match, Canis.entities.Entity, Canis.entities.Entity> entityGen, Il2CppSystem.Action<Canis.entities.Entity, T0> assignEntToParent)
+  METHOD String op_Implicit(Canis.entities.EntityNameForParent<T0> en)
+  METHOD String ToString()
+  METHOD Canis.entities.Entity DeserializeEntity(Canis.messages.SerializedEntity se, Canis.Match m, Canis.entities.Entity parent)
+  METHOD Void ParentEntity(Canis.entities.Entity child)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD String get__name()
+  METHOD Void set__name(String)
+  METHOD Il2CppSystem.Func<Canis.messages.SerializedEntity, Canis.Match, Canis.entities.Entity, Canis.entities.Entity> get__entityGen()
+  METHOD Void set__entityGen(Il2CppSystem.Func<Canis.messages.SerializedEntity, Canis.Match, Canis.entities.Entity, Canis.entities.Entity>)
+  METHOD Il2CppSystem.Action<Canis.entities.Entity, T0> get__assignEntToParent()
+  METHOD Void set__assignEntToParent(Il2CppSystem.Action<Canis.entities.Entity, T0>)
+
+================================================================
+TYPE Canis.entities.EntityNameUtils
+  BASE Il2CppSystem.Object
+  PROP Il2CppSystem.Func<Canis.messages.SerializedEntity, Canis.Match, Canis.entities.Entity, Canis.entities.Entity> PlainEntityDeser
+  METHOD Void .cctor()
+  METHOD Il2CppSystem.Func<Canis.messages.SerializedEntity, Canis.Match, Canis.entities.Entity, Canis.entities.Entity> get_PlainEntityDeser()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.entities.EntityNameStorage
+  BASE Il2CppSystem.Object
+  PROP Il2CppSystem.Lazy<Lookup> _lookup
+  METHOD Void .cctor()
+  METHOD Canis.entities.IEntityName Get(String name)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Lazy<Lookup> get__lookup()
+  METHOD Void set__lookup(Il2CppSystem.Lazy<Lookup>)
+
+================================================================
+TYPE Canis.entities.EntityQueryExtensions
+  BASE Il2CppSystem.Object
+  METHOD Void .cctor()
+  METHOD Canis.attributes.IEntity FindDescendantWith(Canis.attributes.IEntity entity, Il2CppSystem.Func<Canis.attributes.IEntity, Boolean> predicate)
+  METHOD Canis.entities.Entity FindDescendantWith(Canis.entities.Entity entity, Il2CppSystem.Func<Canis.entities.Entity, Boolean> predicate)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IEntity> FindDescendantsWith(Canis.attributes.IEntity entity, Il2CppSystem.Func<Canis.attributes.IEntity, Boolean> predicate)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> FindDescendantsWith(Canis.entities.Entity entity, Il2CppSystem.Func<Canis.entities.Entity, Boolean> predicate)
+  METHOD Canis.attributes.IEntity FindChildWith(Canis.attributes.IEntity entity, Il2CppSystem.Func<Canis.attributes.IEntity, Boolean> predicate)
+  METHOD Canis.entities.Entity FindChildEntityWith(Canis.entities.Entity entity, Il2CppSystem.Func<Canis.entities.Entity, Boolean> predicate)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IEntity> FindChildrenWith(Canis.attributes.IEntity entity, Il2CppSystem.Func<Canis.attributes.IEntity, Boolean> predicate)
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.entities.Entity> FindChildEntitiesWith(Canis.entities.Entity entity, Il2CppSystem.Func<Canis.entities.Entity, Boolean> predicate)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<M0> CollectChildrenWith(Canis.attributes.IEntity entity, Il2CppSystem.Func<Canis.attributes.IEntity, M0> collector)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.entities.EntitySnapshot
+  BASE Il2CppSystem.Object
+  PROP Canis.Match match
+  PROP Canis.utils.ids.EntityID EntityID
+  PROP String Name
+  PROP Canis.entities.Entity Parent
+  PROP Canis.entities.PlayerEntity OwningPlayer
+  PROP Canis.attributes.ReadOnlyAttributes Attributes
+  METHOD Void .cctor()
+  METHOD Canis.utils.ids.EntityID get_EntityID()
+  METHOD String get_Name()
+  METHOD Canis.entities.Entity get_Parent()
+  METHOD Canis.entities.PlayerEntity get_OwningPlayer()
+  METHOD Canis.attributes.ReadOnlyAttributes get_Attributes()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.Match get_match()
+  METHOD Void set_match(Canis.Match)
+

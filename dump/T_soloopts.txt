@@ -1,0 +1,57 @@
+================================================================
+TYPE worm.canis.match.WormMatchInitData
+  BASE TypeSpecification
+  PROP String ScenarioName
+  PROP Il2CppSystem.Collections.Generic.List<worm.canis.match.WormPlayerMatchInitData> wormPlayers
+  PROP Int32 GamesToWin
+  PROP Int32 EndgameTriggerScore
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> ReserveDeck
+  PROP worm.canis.data.enums.LeaderAssignmentMode LeaderAssignmentMode
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.AbilityID> RuleModAbilities
+  PROP Il2CppSystem.Collections.Generic.List<worm.canis.data.enums.Set> Sets
+  PROP Boolean GoTo11Gamemode
+  PROP Canis.utils.ids.EventID EventID
+  PROP Canis.utils.ids.RoundID RoundID
+  PROP worm.canis.match.WormMatchSoloOptions MatchSoloOptions
+  PROP Boolean DraftDecks
+  PROP Il2CppSystem.Collections.Generic.List<worm.canis.match.WormPlayerMatchInitData> InternalPlayersList
+  METHOD Void .cctor()
+  METHOD Il2CppSystem.Collections.Generic.List<worm.canis.match.WormPlayerMatchInitData> get_InternalPlayersList()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Canis.utils.ids.GameID gID)
+  METHOD Void .ctor(Canis.MatchInitData other)
+  METHOD Void .ctor(worm.canis.match.WormMatchInitData other)
+  METHOD Canis.MatchInitData Clone()
+  METHOD Void AddPlayer(Canis.PlayerMatchInitData p)
+  METHOD Canis.PlayerMatchInitData AddEmptyPlayer()
+  METHOD Void RemovePlayers(Il2CppSystem.Predicate<Canis.PlayerMatchInitData> predicate)
+  METHOD Void ClearPlayers()
+  METHOD worm.canis.match.WormMatchInitData From(Canis.MatchInitData mid)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD String get_ScenarioName()
+  METHOD Void set_ScenarioName(String)
+  METHOD Il2CppSystem.Collections.Generic.List<worm.canis.match.WormPlayerMatchInitData> get_wormPlayers()
+  METHOD Void set_wormPlayers(Il2CppSystem.Collections.Generic.List<worm.canis.match.WormPlayerMatchInitData>)
+  METHOD Int32 get_GamesToWin()
+  METHOD Void set_GamesToWin(Int32)
+  METHOD Int32 get_EndgameTriggerScore()
+  METHOD Void set_EndgameTriggerScore(Int32)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_ReserveDeck()
+  METHOD Void set_ReserveDeck(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD worm.canis.data.enums.LeaderAssignmentMode get_LeaderAssignmentMode()
+  METHOD Void set_LeaderAssignmentMode(worm.canis.data.enums.LeaderAssignmentMode)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.AbilityID> get_RuleModAbilities()
+  METHOD Void set_RuleModAbilities(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.AbilityID>)
+  METHOD Il2CppSystem.Collections.Generic.List<worm.canis.data.enums.Set> get_Sets()
+  METHOD Void set_Sets(Il2CppSystem.Collections.Generic.List<worm.canis.data.enums.Set>)
+  METHOD Boolean get_GoTo11Gamemode()
+  METHOD Void set_GoTo11Gamemode(Boolean)
+  METHOD Canis.utils.ids.EventID get_EventID()
+  METHOD Void set_EventID(Canis.utils.ids.EventID)
+  METHOD Canis.utils.ids.RoundID get_RoundID()
+  METHOD Void set_RoundID(Canis.utils.ids.RoundID)
+  METHOD worm.canis.match.WormMatchSoloOptions get_MatchSoloOptions()
+  METHOD Void set_MatchSoloOptions(worm.canis.match.WormMatchSoloOptions)
+  METHOD Boolean get_DraftDecks()
+  METHOD Void set_DraftDecks(Boolean)
+

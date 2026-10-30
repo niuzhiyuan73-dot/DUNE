@@ -1,0 +1,48 @@
+================================================================
+TYPE WormCardMoz
+  BASE boardgames.moz.CardMoz
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE worm.match.data.WormCardPrefabLookupData
+  BASE boardgames.match.data.PrefabLookupData
+  PROP Canis.attributes.IAttribute<Canis.utils.ids.ArchetypeID> archetypeIDAttribute
+  PROP Canis.attributes.IAttribute<Il2CppSystem.Nullable<worm.canis.data.enums.EntityTypes>> entityTypeAttribute
+  PROP Canis.attributes.IAttribute<Canis.utils.localization.LocalizableText> staticTextAttribute
+  PROP Il2CppSystem.Collections.Generic.HashSet<String> flavors
+  PROP UInt64 cachedVersion
+  PROP Il2CppSystem.Collections.Generic.HashSet<String> Flavors
+  PROP UInt64 Version
+  METHOD Void .cctor()
+  METHOD Il2CppSystem.Collections.Generic.HashSet<String> get_Flavors()
+  METHOD UInt64 get_Version()
+  METHOD Void .ctor(Canis.attributes.IHasAttributes entityComponent)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<String> GetFlavors()
+  METHOD String ToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.attributes.IAttribute<Canis.utils.ids.ArchetypeID> get_archetypeIDAttribute()
+  METHOD Void set_archetypeIDAttribute(Canis.attributes.IAttribute<Canis.utils.ids.ArchetypeID>)
+  METHOD Canis.attributes.IAttribute<Il2CppSystem.Nullable<worm.canis.data.enums.EntityTypes>> get_entityTypeAttribute()
+  METHOD Void set_entityTypeAttribute(Canis.attributes.IAttribute<Il2CppSystem.Nullable<worm.canis.data.enums.EntityTypes>>)
+  METHOD Canis.attributes.IAttribute<Canis.utils.localization.LocalizableText> get_staticTextAttribute()
+  METHOD Void set_staticTextAttribute(Canis.attributes.IAttribute<Canis.utils.localization.LocalizableText>)
+  METHOD Il2CppSystem.Collections.Generic.HashSet<String> get_flavors()
+  METHOD Void set_flavors(Il2CppSystem.Collections.Generic.HashSet<String>)
+  METHOD UInt64 get_cachedVersion()
+  METHOD Void set_cachedVersion(UInt64)
+
+================================================================
+TYPE worm.match.components.WormDeckCardMoz
+  BASE boardgames.moz.CardMoz
+  PROP lotus.EntityView deckRoot
+  METHOD Void .cctor()
+  METHOD Void Start()
+  METHOD Void initMoz(UnityEngine.EventSystems.PointerEventData eventData)
+  METHOD dwd.core.match.EntityComponent getUnitViewData()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD lotus.EntityView get_deckRoot()
+  METHOD Void set_deckRoot(lotus.EntityView)
+

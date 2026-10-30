@@ -1,0 +1,24 @@
+================================================================
+TYPE dwd.core.prefabs.implementations.byflavor.PrefabByFlavorLoader
+  BASE TypeSpecification
+  PROP dwd.core.prefabs.implementations.byflavor.PrefabByFlavorLookup byFlavorLookup
+  PROP dwd.core.prefabs.implementations.byflavor.PrefabByFlavorLookup lookup
+  METHOD Void .cctor()
+  METHOD dwd.core.prefabs.implementations.byflavor.PrefabByFlavorLookup get_lookup()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD dwd.core.prefabs.implementations.byflavor.PrefabByFlavorLookup get_byFlavorLookup()
+  METHOD Void set_byFlavorLookup(dwd.core.prefabs.implementations.byflavor.PrefabByFlavorLookup)
+
+================================================================
+TYPE dwd.core.prefabs.implementations.byflavor.BasePrefabByFlavorMetadata
+  BASE UnityEngine.MonoBehaviour
+  PROP UnityEngine.GameObject IGameObject.gameObject
+  PROP UnityEngine.Transform IGameObject.transform
+  METHOD Void .cctor()
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<dwd.core.prefabs.implementations.byflavor.PrefabFlavorsMetaData> GetMetadata()
+  METHOD Void .ctor()
+  METHOD UnityEngine.GameObject IGameObject_get_gameObject()
+  METHOD UnityEngine.Transform IGameObject_get_transform()
+  METHOD Void .ctor(IntPtr pointer)
+

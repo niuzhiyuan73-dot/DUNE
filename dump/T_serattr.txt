@@ -1,0 +1,43 @@
+================================================================
+TYPE Canis.attributes.SerializableAttributes
+  BASE Il2CppSystem.Object
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Int32, Canis.attributes.IMutableAttribute> data
+  PROP Canis.attributes.ReadOnlyAttributes _ReadOnly
+  PROP Canis.attributes.ReadOnlyAttributes AsReadOnly
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute> attributes, Int32 capacity)
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.attributes.IAttribute> attributes)
+  METHOD Void .ctor(Canis.attributes.SerializableAttributes other)
+  METHOD Void set(Canis.attributes.IAttribute attribute)
+  METHOD Boolean TryGetAttribute(Canis.attributes.AttributeDefinition<M0> definition, ref Canis.attributes.ReadOnlyAttribute<M0> attribute)
+  METHOD Boolean TryGetValue(Canis.attributes.AttributeDefinition<M0> definition, ref M0 value)
+  METHOD M0 TryGetValue(Canis.attributes.AttributeDefinition<M0> definition)
+  METHOD Canis.attributes.SerializableAttributes Clone()
+  METHOD Il2CppSystem.Object System_ICloneable_Clone()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerator<Canis.attributes.ReadOnlyAttribute> GetEnumerator()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerator<Canis.attributes.IAttribute> System_Collections_Generic_IEnumerable_Canis_attributes_IAttribute__GetEnumerator()
+  METHOD Il2CppSystem.Collections.IEnumerator System_Collections_IEnumerable_GetEnumerator()
+  METHOD Canis.attributes.ReadOnlyAttributes get_AsReadOnly()
+  METHOD Canis.attributes.ReadOnlyAttributes op_Implicit(Canis.attributes.SerializableAttributes attributes)
+  METHOD Canis.attributes.MutableAttributes op_Implicit(Canis.attributes.SerializableAttributes attributes)
+  METHOD Canis.attributes.SerializableAttributes op_Implicit(Canis.attributes.MutableAttributes attributes)
+  METHOD Canis.attributes.SerializableAttributes op_Implicit(Canis.attributes.ReadOnlyAttributes attributes)
+  METHOD String ToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Int32, Canis.attributes.IMutableAttribute> get_data()
+  METHOD Void set_data(Il2CppSystem.Collections.Generic.Dictionary<Int32, Canis.attributes.IMutableAttribute>)
+  METHOD Canis.attributes.ReadOnlyAttributes get__ReadOnly()
+  METHOD Void set__ReadOnly(Canis.attributes.ReadOnlyAttributes)
+
+================================================================
+TYPE Canis.attributes.SerializableAttributesAnalyzer
+  BASE Canis.json.DwdTypeAnalyzer
+  PROP Il2CppSystem.Type IAttributeType
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Boolean Analyze(Canis.json.DwdModelAnalyzer analyzer, Canis.json.MorePeekableStream tokens, Il2CppSystem.Type targetType, ref Il2CppSystem.Object result)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Type get_IAttributeType()
+  METHOD Void set_IAttributeType(Il2CppSystem.Type)
+

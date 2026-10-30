@@ -1,0 +1,51 @@
+================================================================
+TYPE worm.canis.abilities.ActivatedAbilities.DrawAbility
+  BASE worm.canis.abilities.ActivatedAbilities.DeferredAbility
+  PROP String AbilityName
+  PROP Canis.utils.ids.AbilityID AbilityID
+  PROP Boolean ContextuallyDeferred
+  METHOD Void .cctor()
+  METHOD Canis.utils.ids.AbilityID GetAbilityID()
+  METHOD Void .ctor(worm.canis.WormMatch m, String name)
+  METHOD Void .ctor(Canis.messages.SerializedEntity se, worm.canis.WormMatch m, Canis.entities.Entity parent)
+  METHOD Canis.actions.CostAction Cost(Canis.Match match, Canis.context.Context context)
+  METHOD lib.canis.data.enums.DeferredSelectionMode SelectionMode(Canis.context.Context context)
+  METHOD Boolean CanRunImmediately(Canis.context.Context context)
+  METHOD Boolean get_ContextuallyDeferred()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> BeginExecution(worm.canis.entities.WormActiveAbility activeAbility, worm.canis.WormMatch match, Canis.context.Context context)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> CustomExecution(worm.canis.entities.WormActiveAbility activeAbility, worm.canis.WormMatch match, Canis.context.Context context)
+  METHOD Int32 ResumeExecution(worm.canis.entities.WormActiveAbility activeAbility, Canis.actions.Action returningAction, Canis.context.Context context)
+  METHOD Canis.ai.value.AIValueSummer<Double> ValueForPlayer(worm.canis.entities.WormPlayer player, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<worm.canis.entities.WormEntity> withEntities)
+  METHOD Canis.ai.value.AIValueSummer<Double> ValueForPlayer(worm.canis.entities.WormPlayer player, worm.canis.entities.WormEntity[] withEntities)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD String get_AbilityName()
+  METHOD Void set_AbilityName(String)
+  METHOD Canis.utils.ids.AbilityID get_AbilityID()
+  METHOD Void set_AbilityID(Canis.utils.ids.AbilityID)
+
+================================================================
+TYPE worm.canis.abilities.ActivatedAbilities.BaseSet.CrysknifeAbility
+  BASE worm.canis.abilities.ActivatedAbilities.DeferredAbility
+  PROP String AbilityName
+  PROP Canis.utils.ids.AbilityID AbilityID
+  PROP Boolean AlwaysRunImmediately
+  METHOD Void .cctor()
+  METHOD Canis.utils.ids.AbilityID GetAbilityID()
+  METHOD Void .ctor(worm.canis.WormMatch m)
+  METHOD Void .ctor(Canis.messages.SerializedEntity se, worm.canis.WormMatch m, Canis.entities.Entity parent)
+  METHOD Canis.actions.CostAction Cost(Canis.Match match, Canis.context.Context context)
+  METHOD lib.canis.data.enums.DeferredSelectionMode SelectionMode(Canis.context.Context context)
+  METHOD Boolean get_AlwaysRunImmediately()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> BeginExecution(worm.canis.entities.WormActiveAbility activeAbility, worm.canis.WormMatch match, Canis.context.Context context)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> Undo(Canis.entities.UndoNode node, Canis.entities.PlayerEntity player, Canis.Match match, Canis.context.Context context)
+  METHOD Canis.ai.value.AIValueSummer<Double> ValueForPlayer(worm.canis.entities.WormPlayer player, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<worm.canis.entities.WormEntity> withEntities)
+  METHOD Canis.ai.value.AIValueSummer<Double> ValueInPileForOtherPlay(worm.canis.entities.WormPlayArea pile, worm.canis.entities.WormPlayable card, worm.canis.entities.WormPlayer player)
+  METHOD Int32 ResumeExecution(worm.canis.entities.WormActiveAbility activeAbility, Canis.actions.Action returningAction, Canis.context.Context context)
+  METHOD Boolean _ValueForPlayer_b__11_0(Canis.entities.Entity _)
+  METHOD Canis.ai.value.AIValueSummer<Double> ValueForPlayer(worm.canis.entities.WormPlayer player, worm.canis.entities.WormEntity[] withEntities)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD String get_AbilityName()
+  METHOD Void set_AbilityName(String)
+  METHOD Canis.utils.ids.AbilityID get_AbilityID()
+  METHOD Void set_AbilityID(Canis.utils.ids.AbilityID)
+

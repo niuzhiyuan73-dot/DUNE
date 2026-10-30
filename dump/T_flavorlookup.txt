@@ -1,0 +1,44 @@
+================================================================
+TYPE dwd.core.prefabs.implementations.byflavor.PrefabByFlavorLookup
+  BASE TypeSpecification
+  PROP Il2CppSystem.Collections.Generic.List<Entry> entries
+  PROP Il2CppSystem.Collections.Generic.IEnumerable<dwd.core.prefabs.PrefabLookupEntry<dwd.core.prefabs.implementations.byflavor.PrefabFlavorsMetaData>> baseEntries
+  PROP Int32 EntryCount
+  METHOD Void .cctor()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<dwd.core.prefabs.PrefabLookupEntry<dwd.core.prefabs.implementations.byflavor.PrefabFlavorsMetaData>> get_baseEntries()
+  METHOD Void SetEntries(Il2CppSystem.Collections.Generic.IEnumerable<Il2CppSystem.Collections.Generic.KeyValuePair<dwd.core.prefabs.implementations.byflavor.BasePrefabByFlavorMetadata, String>> newEntries)
+  METHOD Int32 get_EntryCount()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.List<Entry> get_entries()
+  METHOD Void set_entries(Il2CppSystem.Collections.Generic.List<Entry>)
+
+================================================================
+TYPE dwd.core.prefabs.implementations.byflavor.PrefabFlavorsMetaData
+  BASE Il2CppSystem.ValueType
+  PROP Il2CppSystem.Collections.Generic.List<String> flavors
+  PROP Il2CppSystem.Collections.Generic.List<dwd.core.prefabs.FlavorProvider> flavorProviders
+  PROP Il2CppSystem.Object _Source_k__BackingField
+  PROP Il2CppSystem.Object Source
+  PROP Int32 StaticFlavors
+  METHOD Void .cctor()
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.List<String> flavors)
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.List<String> flavors, Il2CppSystem.Collections.Generic.List<dwd.core.prefabs.FlavorProvider> flavorProviders)
+  METHOD Il2CppSystem.Object get_Source()
+  METHOD Void set_Source(Il2CppSystem.Object value)
+  METHOD Int32 get_StaticFlavors()
+  METHOD Boolean IsMatch(Il2CppSystem.Collections.Generic.IReadOnlyCollection<String> otherFlavors)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<String> getFlavors()
+  METHOD String ToString()
+  METHOD Void AppendFlavor(String flavor)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerator<String> GetEnumerator()
+  METHOD Il2CppSystem.Collections.IEnumerator System_Collections_IEnumerable_GetEnumerator()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Void .ctor()
+  METHOD Il2CppSystem.Collections.Generic.List<String> get_flavors()
+  METHOD Void set_flavors(Il2CppSystem.Collections.Generic.List<String>)
+  METHOD Il2CppSystem.Collections.Generic.List<dwd.core.prefabs.FlavorProvider> get_flavorProviders()
+  METHOD Void set_flavorProviders(Il2CppSystem.Collections.Generic.List<dwd.core.prefabs.FlavorProvider>)
+  METHOD Il2CppSystem.Object get__Source_k__BackingField()
+  METHOD Void set__Source_k__BackingField(Il2CppSystem.Object)
+

@@ -1,0 +1,13 @@
+================================================================
+TYPE worm.canis.match.CardReplacement
+  BASE Il2CppSystem.Object
+  PROP Canis.utils.ids.ArchetypeID Replace
+  PROP Canis.utils.ids.ArchetypeID With
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.utils.ids.ArchetypeID get_Replace()
+  METHOD Void set_Replace(Canis.utils.ids.ArchetypeID)
+  METHOD Canis.utils.ids.ArchetypeID get_With()
+  METHOD Void set_With(Canis.utils.ids.ArchetypeID)
+

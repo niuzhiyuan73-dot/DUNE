@@ -1,0 +1,11 @@
+================================================================
+TYPE worm.canis.data.enums.Set
+  BASE System.Enum
+  FIELD Int32 value__   [Public, SpecialName, RTSpecialName, HasDefault]
+  FIELD worm.canis.data.enums.Set None   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.Set BaseSet   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.Set RiseOfIx   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.Set Immortality   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.Set Uprising   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.Set CHOAMModule   [Public, Static, Literal, HasDefault]
+

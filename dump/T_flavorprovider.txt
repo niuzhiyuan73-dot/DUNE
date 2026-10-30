@@ -1,0 +1,34 @@
+================================================================
+TYPE boardgames.attributes.AttributeView
+  BASE TypeSpecification
+  PROP Int32 attribute
+  PROP UnityEngine.Object _provider
+  PROP boardgames.attributes.IAttributesProvider provider
+  PROP Canis.attributes.IHasAttributes lastData
+  PROP Boolean DirtyOnEnable
+  METHOD Void .cctor()
+  METHOD Boolean get_DirtyOnEnable()
+  METHOD Void Start()
+  METHOD Void Awake()
+  METHOD boardgames.attributes.IAttributesProvider GetView()
+  METHOD Void Update()
+  METHOD Void UpdateData()
+  METHOD Boolean TryGetDefinition(ref Canis.attributes.IAttributeDefinition definition)
+  METHOD String GetAttributeName()
+  METHOD Void OnAttributesChanged()
+  METHOD Void OnViewChanged(Canis.attributes.IHasAttributes newView)
+  METHOD Void OnDestroy()
+  METHOD Void onDestroy()
+  METHOD Void .ctor()
+  METHOD Boolean _GetView_b__8_0(boardgames.attributes.IAttributesProvider p)
+  METHOD Boolean _UpdateData_b__10_0(Canis.attributes.IAttributeDefinition a)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Int32 get_attribute()
+  METHOD Void set_attribute(Int32)
+  METHOD UnityEngine.Object get__provider()
+  METHOD Void set__provider(UnityEngine.Object)
+  METHOD boardgames.attributes.IAttributesProvider get_provider()
+  METHOD Void set_provider(boardgames.attributes.IAttributesProvider)
+  METHOD Canis.attributes.IHasAttributes get_lastData()
+  METHOD Void set_lastData(Canis.attributes.IHasAttributes)
+

@@ -1,0 +1,10 @@
+================================================================
+TYPE canis.archetypes.IAbilityEntityFactory
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  METHOD Void .cctor()
+  METHOD Void Configure()
+  METHOD Canis.entities.Entity CreateEntity(Canis.utils.ids.AbilityID abilityID, Canis.Match m, Canis.entities.PlayerEntity player, Canis.entities.Entity parent)
+  METHOD Canis.entities.Entity CreateDeserializedEntity(Canis.utils.ids.AbilityID abilityID, Canis.messages.SerializedEntity se, Canis.Match m, Canis.entities.Entity parent)
+  METHOD Boolean HasEntry(Canis.utils.ids.AbilityID abilityID)
+  METHOD Void .ctor(IntPtr pointer)
+

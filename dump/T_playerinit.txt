@@ -1,0 +1,52 @@
+================================================================
+TYPE worm.canis.match.WormPlayerMatchInitData
+  BASE Canis.PlayerMatchInitData
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> StartingDeck
+  PROP Il2CppSystem.Collections.Generic.List<worm.canis.match.CardReplacement> DeckReplacements
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> StartingIntrigue
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> LeaderOptions
+  PROP Int32 AllianceTokenVP
+  PROP Int32 StartingAgents
+  PROP Int32 StartingOrder
+  PROP worm.canis.data.enums.PieceColor PlayerColor
+  PROP Boolean HagalPlayer
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> StartingTechTiles
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> PreferredLeaders
+  PROP worm.canis.match.WormPlayerMatchSoloOptions PlayerMatchSoloOptions
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Int32 ail)
+  METHOD Void .ctor(String n)
+  METHOD Void .ctor(String n, Canis.utils.ids.AccountID aid)
+  METHOD Void .ctor(Int32 ail, Canis.utils.ids.AccountID aid, String name)
+  METHOD Void .ctor(Canis.PlayerInfoSaveData saveData)
+  METHOD Void CopyFrom(worm.canis.match.WormPlayerMatchInitData other)
+  METHOD Void .ctor(worm.canis.match.WormPlayerMatchInitData other)
+  METHOD Void .ctor(Canis.PlayerMatchInitData other)
+  METHOD Canis.PlayerMatchInitData Clone()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_StartingDeck()
+  METHOD Void set_StartingDeck(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Il2CppSystem.Collections.Generic.List<worm.canis.match.CardReplacement> get_DeckReplacements()
+  METHOD Void set_DeckReplacements(Il2CppSystem.Collections.Generic.List<worm.canis.match.CardReplacement>)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_StartingIntrigue()
+  METHOD Void set_StartingIntrigue(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_LeaderOptions()
+  METHOD Void set_LeaderOptions(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Int32 get_AllianceTokenVP()
+  METHOD Void set_AllianceTokenVP(Int32)
+  METHOD Int32 get_StartingAgents()
+  METHOD Void set_StartingAgents(Int32)
+  METHOD Int32 get_StartingOrder()
+  METHOD Void set_StartingOrder(Int32)
+  METHOD worm.canis.data.enums.PieceColor get_PlayerColor()
+  METHOD Void set_PlayerColor(worm.canis.data.enums.PieceColor)
+  METHOD Boolean get_HagalPlayer()
+  METHOD Void set_HagalPlayer(Boolean)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_StartingTechTiles()
+  METHOD Void set_StartingTechTiles(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_PreferredLeaders()
+  METHOD Void set_PreferredLeaders(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD worm.canis.match.WormPlayerMatchSoloOptions get_PlayerMatchSoloOptions()
+  METHOD Void set_PlayerMatchSoloOptions(worm.canis.match.WormPlayerMatchSoloOptions)
+

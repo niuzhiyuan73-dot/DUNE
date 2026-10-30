@@ -1,0 +1,64 @@
+================================================================
+TYPE worm.canis.abilities.ActivatedAbilities.DeferredAbility
+  BASE worm.canis.abilities.ActivatedAbilities.ActivatedAbility
+  PROP Boolean AlwaysRunImmediately
+  PROP Boolean ContextuallyDeferred
+  METHOD Void .cctor()
+  METHOD Void .ctor(worm.canis.WormMatch m, String name, Canis.entities.PlayerEntity owningPlayer)
+  METHOD Void .ctor(Canis.messages.SerializedEntity se, worm.canis.WormMatch m, Canis.entities.Entity parent)
+  METHOD lib.canis.data.enums.DeferredSelectionMode SelectionMode(Canis.context.Context context)
+  METHOD Boolean CanRunImmediately(Canis.context.Context context)
+  METHOD Boolean get_AlwaysRunImmediately()
+  METHOD Boolean get_ContextuallyDeferred()
+  METHOD Canis.actions.SequenceHelper BuildStingerSequence(worm.canis.entities.WormPlayer player, String sequenceName, Boolean ownerEntity)
+  METHOD Canis.actions.SequenceHelper BuildStingerSequence(worm.canis.entities.WormPlayer player)
+  METHOD Canis.actions.SequenceHelper BuildLocalizedStingerSequence(worm.canis.entities.WormPlayer player)
+  METHOD Canis.actions.SequenceHelper BuildLocalizedStingerSequence(worm.canis.entities.WormPlayer player, Canis.utils.localization.LocalizableText gameText)
+  METHOD Canis.actions.SequenceHelper BuildLocalizedStingerSequence(worm.canis.entities.WormPlayer player, String sequenceName)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> Undo(Canis.entities.UndoNode node, Canis.entities.PlayerEntity player, Canis.Match match, Canis.context.Context context)
+  METHOD Void HasButtonText()
+  METHOD Void HasButtonText(String key)
+  METHOD Void HasButtonFlavors(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray flavors)
+  METHOD Void HasButtonTexts(String flavor, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.localization.LocalizableText> texts)
+  METHOD Void HasDynamicButtonText(Canis.utils.localization.LocalizableText fallbackText)
+  METHOD Canis.utils.localization.LocalizableText GetDynamicButtonText(worm.canis.entities.WormPlayer player)
+  METHOD Canis.entities.Entity MoveTo(Canis.entities.Entity newParent, Il2CppSystem.Nullable<Int32> positionInParent)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.localization.LocalizableText> MakeButtonTexts(String name, Int32 count)
+  METHOD Int32 GetPossibleConflictVP(worm.canis.entities.WormPlayer player, Boolean doubleCost)
+  METHOD worm.canis.ai.choices.WormAIChoice Evaluate(worm.canis.ai.WormAIChoiceContext context)
+  METHOD Void HasButtonFlavors(String[] flavors)
+  METHOD Void HasButtonTexts(String flavor, Canis.utils.localization.LocalizableText[] texts)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE worm.canis.abilities.ActivatedAbilities.GainAnyInfluenceCustomAbility
+  BASE worm.canis.abilities.ActivatedAbilities.GainAnyInfluenceAbility
+  METHOD Void .cctor()
+  METHOD Void .ctor(worm.canis.WormMatch m, String name)
+  METHOD Void .ctor(Canis.messages.SerializedEntity se, worm.canis.WormMatch m, Canis.entities.Entity parent)
+  METHOD Canis.actions.CostAction Cost(Canis.Match match, Canis.context.Context context)
+  METHOD Boolean IsUnexhausted(Canis.entities.PlayerEntity player)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> CustomExecution(worm.canis.entities.WormActiveAbility activeAbility, worm.canis.WormMatch match, Canis.context.Context context)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE worm.canis.abilities.ActivatedAbilities.TrashCustomAbility
+  BASE worm.canis.abilities.ActivatedAbilities.TrashAbility
+  PROP String AbilityName
+  PROP Canis.utils.ids.AbilityID AbilityID
+  PROP Canis.utils.ids.ArchetypeID PromptArchetypeID
+  METHOD Void .cctor()
+  METHOD Canis.utils.ids.AbilityID GetAbilityID()
+  METHOD Void .ctor(worm.canis.WormMatch m, String abilityName)
+  METHOD Void .ctor(worm.canis.WormMatch m)
+  METHOD Void .ctor(Canis.messages.SerializedEntity se, worm.canis.WormMatch m, Canis.entities.Entity parent)
+  METHOD Canis.utils.ids.ArchetypeID get_PromptArchetypeID()
+  METHOD Canis.actions.CostAction Cost(Canis.Match match, Canis.context.Context context)
+  METHOD Boolean IsUnexhausted(Canis.entities.PlayerEntity player)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> CustomExecution(worm.canis.entities.WormActiveAbility activeAbility, worm.canis.WormMatch match, Canis.context.Context context)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD String get_AbilityName()
+  METHOD Void set_AbilityName(String)
+  METHOD Canis.utils.ids.AbilityID get_AbilityID()
+  METHOD Void set_AbilityID(Canis.utils.ids.AbilityID)
+

@@ -1,0 +1,24 @@
+================================================================
+TYPE worm.canis.data.enums.LeaderAssignmentMode
+  BASE System.Enum
+  FIELD Int32 value__   [Public, SpecialName, RTSpecialName, HasDefault]
+  FIELD worm.canis.data.enums.LeaderAssignmentMode Standard   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.LeaderAssignmentMode Draft   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.LeaderAssignmentMode Random   [Public, Static, Literal, HasDefault]
+  FIELD worm.canis.data.enums.LeaderAssignmentMode CustomSolo   [Public, Static, Literal, HasDefault]
+
+================================================================
+TYPE worm.canis.data.enums.LeaderAssignmentModeExtension
+  BASE Il2CppSystem.Object
+  METHOD Void .cctor()
+  METHOD Boolean NeedsAssignment(worm.canis.entities.WormPlayer player)
+  METHOD Boolean NonHagalNeedsAssignment(worm.canis.entities.WormPlayer player)
+  METHOD Boolean HagalNeedsAssignment(worm.canis.entities.WormPlayer player)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.actions.AssignLeader> StandardLeaderAssignment(worm.canis.WormMatch match)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.actions.AssignLeader> DraftLeaderAssignment(worm.canis.WormMatch match)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.actions.AssignLeader> RandomLeaderAssignment(worm.canis.WormMatch match)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.actions.AssignLeader> CustomSoloLeaderAssignment(worm.canis.WormMatch match)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.actions.AssignLeader> HagalLeaderAssignment(worm.canis.WormMatch match)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.actions.AssignLeader> LeaderAssignment(worm.canis.data.enums.LeaderAssignmentMode mode, worm.canis.WormMatch match)
+  METHOD Void .ctor(IntPtr pointer)
+
