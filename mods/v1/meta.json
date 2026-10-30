@@ -1,0 +1,7 @@
+{
+  "label": "v1 覆盖式改写（已实测生效）",
+  "target_bundle": "b56aa8ad35f9c2e1694994f384e51bbe.bundle",
+  "textasset": "Campaign01",
+  "known_issue": "仅对 wormPlayers[0] 加成，AI 无对应调整",
+  "verified": "2026-10-30 游戏内实测，存档 8de3a8a2 turn=4"
+}
