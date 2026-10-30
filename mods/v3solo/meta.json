@@ -1,0 +1,7 @@
+{
+ "label": "v3solo 路线A：StandardSolo 补 wormPlayers",
+ "note": "四个玩家统一 10 张牌组（含晶刃），验证 wormPlayers 在单人局是否被读取",
+ "target_bundle": "b56aa8ad35f9c2e1694994f384e51bbe.bundle",
+ "textasset": "StandardSolo",
+ "players": 4
+}
