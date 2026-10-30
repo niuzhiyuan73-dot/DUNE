@@ -1,0 +1,577 @@
+================================================================
+TYPE Canis.attributes.AttributeDefinition`1
+  BASE Il2CppSystem.Object
+  PROP Il2CppSystem.Type _ValueType
+  PROP T0 _Default
+  PROP Int32 _Key_k__BackingField
+  PROP String _Name_k__BackingField
+  PROP Int32 Key
+  PROP String Name
+  PROP Il2CppSystem.Type ValueType
+  METHOD Void .cctor()
+  METHOD Void .ctor(String fieldName, Int32 key)
+  METHOD Canis.attributes.AttributeDefinition<T0> Create(String name)
+  METHOD Canis.attributes.AttributeDefinition<T0> Create(String name, Int32 key)
+  METHOD Int32 get_Key()
+  METHOD String get_Name()
+  METHOD Il2CppSystem.Type get_ValueType()
+  METHOD Canis.attributes.IMutableAttribute Canis_attributes_IAttributeDefinition_Factory()
+  METHOD Canis.attributes.MutableAttribute<T0> Factory()
+  METHOD Canis.attributes.MutableAttribute<T0> Factory(T0 value)
+  METHOD Canis.attributes.MutableAttribute<T0> Factory(T0 value, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.attributes.Mod<T0>> mods)
+  METHOD Canis.attributes.MutableAttribute<T0> Factory(T0 value, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.attributes.IMod> mods)
+  METHOD Canis.attributes.IMutableAttribute Canis_attributes_IAttributeDefinition_Factory(Il2CppSystem.Object value)
+  METHOD Canis.attributes.IMutableAttribute Canis_attributes_IAttributeDefinition_Factory(Il2CppSystem.Object value, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.attributes.IMod> mods)
+  METHOD Canis.attributes.MutableAttribute<T0> Copy(Canis.attributes.MutableAttribute<T0> original)
+  METHOD Canis.attributes.IMutableAttribute Copy(Canis.attributes.IAttribute original)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.attributes.IMod> CopyMods(Canis.attributes.IHasMods original)
+  METHOD Boolean Equals(Canis.attributes.IAttributeDefinition other)
+  METHOD Boolean Equals(Il2CppSystem.Object obj)
+  METHOD Int32 GetHashCode()
+  METHOD String ToString()
+  METHOD Canis.attributes.MutableAttribute<T0> Factory(T0 value, Canis.attributes.Mod<T0>[] mods)
+  METHOD Canis.attributes.MutableAttribute<T0> Factory(T0 value, Canis.attributes.IMod[] mods)
+  METHOD Canis.attributes.IMutableAttribute Canis_attributes_IAttributeDefinition_Factory(Il2CppSystem.Object value, Canis.attributes.IMod[] mods)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Type get__ValueType()
+  METHOD Void set__ValueType(Il2CppSystem.Type)
+  METHOD T0 get__Default()
+  METHOD Void set__Default(T0)
+  METHOD Int32 get__Key_k__BackingField()
+  METHOD Void set__Key_k__BackingField(Int32)
+  METHOD String get__Name_k__BackingField()
+  METHOD Void set__Name_k__BackingField(String)
+
+================================================================
+TYPE Canis.attributes.AttributeDefinitionAnalyzer
+  BASE Canis.json.DwdTypeAnalyzer
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Boolean Analyze(Canis.json.DwdModelAnalyzer analyzer, Canis.json.MorePeekableStream tokens, Il2CppSystem.Type targetType, ref Il2CppSystem.Object result)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.attributes.AttributeDefinitionExtensions
+  BASE Il2CppSystem.Object
+  METHOD Void .cctor()
+  METHOD M0 GetFrom(Canis.attributes.AttributeDefinition<M0> attributeDefinition, Canis.attributes.IHasAttributes hasAttr)
+  METHOD M0 GetFrom(Canis.attributes.AttributeDefinition<M0> attributeDefinition, Canis.attributes.IHasAttributes hasAttr, Il2CppSystem.Func<M0> fallbackValue)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppArrayBase<M0> GetFromOrEmpty(Canis.attributes.AttributeDefinition<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppArrayBase<M0>> attributeDefinition, Canis.attributes.IHasAttributes hasAttr)
+  METHOD Il2CppSystem.Collections.Generic.List<M0> GetFromOrEmpty(Canis.attributes.AttributeDefinition<Il2CppSystem.Collections.Generic.List<M0>> attributeDefinition, Canis.attributes.IHasAttributes hasAttr, Boolean asCopy)
+  METHOD M0 GetFrom(Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<M0>> attributeDefinition, Canis.attributes.IHasAttributes hasAttr, M0 fallbackValue)
+  METHOD String GetFrom(Canis.attributes.AttributeDefinition<String> attributeDefinition, Canis.attributes.IHasAttributes hasAttr, String fallbackValue)
+  METHOD Void SetTo(Canis.attributes.AttributeDefinition<M0> attributeDefinition, Canis.attributes.MutableAttributes hasAttr, M0 value)
+  METHOD Void SetFrom(Canis.attributes.AttributeDefinition<M0> attributeDefinition, Canis.attributes.MutableAttributes hasAttr, Canis.attributes.IHasAttributes source)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.attributes.AttributeDefinitions
+  BASE Il2CppSystem.Object
+  PROP Il2CppSystem.Collections.Generic.Dictionary<String, Canis.attributes.IAttributeDefinition> _definitionsByName
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Int32, Canis.attributes.IAttributeDefinition> _definitionsByKey
+  METHOD Void .cctor()
+  METHOD Canis.attributes.AttributeDefinition<M0> Register(Canis.attributes.AttributeDefinition<M0> definition)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttributeDefinition> GetAllDefinitions()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.AttributeDefinition<M0>> GetAllDefinitions()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttributeDefinition> GetAssignableToType(Il2CppSystem.Type type)
+  METHOD Canis.attributes.IAttributeDefinition GetDefinition(Int32 key)
+  METHOD Canis.attributes.IAttributeDefinition GetDefinition(String name)
+  METHOD Boolean TryGetDefinition(Int32 key, ref Canis.attributes.IAttributeDefinition definition)
+  METHOD Boolean TryGetDefinition(String name, ref Canis.attributes.IAttributeDefinition definition)
+  METHOD Canis.attributes.AttributeDefinition<M0> GetDefinition(Int32 key)
+  METHOD Canis.attributes.AttributeDefinition<M0> GetDefinition(String name)
+  METHOD Boolean TryGetDefinition(Int32 key, ref Canis.attributes.AttributeDefinition<M0> typedDefinition)
+  METHOD Boolean TryGetDefinition(String name, ref Canis.attributes.AttributeDefinition<M0> typedDefinition)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<String, Canis.attributes.IAttributeDefinition> get__definitionsByName()
+  METHOD Void set__definitionsByName(Il2CppSystem.Collections.Generic.Dictionary<String, Canis.attributes.IAttributeDefinition>)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Int32, Canis.attributes.IAttributeDefinition> get__definitionsByKey()
+  METHOD Void set__definitionsByKey(Il2CppSystem.Collections.Generic.Dictionary<Int32, Canis.attributes.IAttributeDefinition>)
+
+================================================================
+TYPE Canis.attributes.MutableAttributes
+  BASE Il2CppSystem.Object
+  PROP Il2CppSystem.Collections.Concurrent.ConcurrentDictionary<Int32, Canis.attributes.IMutableAttribute> data
+  PROP Canis.attributes.ReadOnlyAttributes _ReadOnly
+  PROP Canis.attributes.ReadOnlyAttributes AsReadOnly
+  METHOD Void .cctor()
+  METHOD Void StoreAttribute(Canis.attributes.IAttribute newAttribute)
+  METHOD Void .ctor()
+  METHOD Void .ctor(Il2CppSystem.Collections.Concurrent.ConcurrentDictionary<Int32, Canis.attributes.IMutableAttribute> data)
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute> attributes, Int32 capacity)
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.List<Canis.attributes.IMutableAttribute> attributes)
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.attributes.IAttribute> attributes)
+  METHOD Void .ctor(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.attributes.IAttribute> attributes)
+  METHOD Void .ctor(Canis.attributes.MutableAttributes other)
+  METHOD Canis.attributes.IMutableAttribute GetAttribute(Canis.attributes.IAttributeDefinition definition)
+  METHOD Boolean AttributeEquals(Canis.attributes.AttributeDefinition<M0> definition, M0 comparison)
+  METHOD Canis.attributes.IAttribute Canis_attributes_IHasAttributes_GetAttribute(Canis.attributes.IAttributeDefinition definition)
+  METHOD Boolean HasAttribute(Int32 key)
+  METHOD Canis.attributes.MutableAttribute<Il2CppSystem.Nullable<Int32>> GetAttribute(Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Int32>> definition)
+  METHOD Canis.attributes.MutableAttribute<Il2CppSystem.Nullable<Single>> GetAttribute(Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Single>> definition)
+  METHOD Canis.attributes.MutableAttribute<String> GetAttribute(Canis.attributes.AttributeDefinition<String> definition)
+  METHOD Canis.attributes.MutableAttribute<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray> GetAttribute(Canis.attributes.AttributeDefinition<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray> definition)
+  METHOD Canis.attributes.MutableAttribute<Canis.utils.localization.LocalizableText> GetAttribute(Canis.attributes.AttributeDefinition<Canis.utils.localization.LocalizableText> definition)
+  METHOD Canis.attributes.MutableAttribute<Il2CppSystem.Nullable<Boolean>> GetAttribute(Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Boolean>> definition)
+  METHOD Canis.attributes.MutableAttribute<M0> GetAttribute(Canis.attributes.AttributeDefinition<M0> definition)
+  METHOD Canis.attributes.IAttribute<M0> Canis_attributes_IHasAttributes_GetAttribute(Canis.attributes.AttributeDefinition<M0> definition)
+  METHOD Void SetAttribute(Canis.attributes.IAttribute<M0> attr)
+  METHOD Void SetAttribute(Canis.attributes.AttributeDefinition<M0> attrDef, M0 value)
+  METHOD Void SetAttribute(Canis.attributes.IAttribute attr)
+  METHOD Void ClearAttribute(Int32 key)
+  METHOD Void RemoveAttribute(Int32 key)
+  METHOD Void ReplaceWith(Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute> other)
+  METHOD Void UpdateWith(Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute> other)
+  METHOD Void Clear()
+  METHOD Canis.attributes.ReadOnlyAttributes get_AsReadOnly()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerator<Canis.attributes.IAttribute> GetEnumerator()
+  METHOD Il2CppSystem.Collections.IEnumerator System_Collections_IEnumerable_GetEnumerator()
+  METHOD Canis.attributes.ReadOnlyAttributes op_Implicit(Canis.attributes.MutableAttributes attributes)
+  METHOD Canis.attributes.MutableAttributes Clone()
+  METHOD Il2CppSystem.Object System_ICloneable_Clone()
+  METHOD Void .ctor(Canis.attributes.IAttribute[] attributes)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Concurrent.ConcurrentDictionary<Int32, Canis.attributes.IMutableAttribute> get_data()
+  METHOD Void set_data(Il2CppSystem.Collections.Concurrent.ConcurrentDictionary<Int32, Canis.attributes.IMutableAttribute>)
+  METHOD Canis.attributes.ReadOnlyAttributes get__ReadOnly()
+  METHOD Void set__ReadOnly(Canis.attributes.ReadOnlyAttributes)
+
+================================================================
+TYPE Canis.attributes.MutableAttributesAnalyzer
+  BASE Canis.json.DwdTypeAnalyzer
+  PROP Il2CppSystem.Collections.Generic.List<Canis.attributes.IAttribute> attributeBuffer
+  PROP Il2CppSystem.Type IAttributeType
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Boolean Analyze(Canis.json.DwdModelAnalyzer analyzer, Canis.json.MorePeekableStream tokens, Il2CppSystem.Type targetType, ref Il2CppSystem.Object result)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.attributes.IAttribute> get_attributeBuffer()
+  METHOD Void set_attributeBuffer(Il2CppSystem.Collections.Generic.List<Canis.attributes.IAttribute>)
+  METHOD Il2CppSystem.Type get_IAttributeType()
+  METHOD Void set_IAttributeType(Il2CppSystem.Type)
+
+================================================================
+TYPE Canis.attributes.ReadOnlyAttribute
+  BASE Il2CppSystem.Object
+  PROP Int32 Name
+  PROP UInt64 Version
+  PROP Il2CppSystem.Type ValueType
+  PROP Il2CppSystem.Object Value
+  PROP Il2CppSystem.Object ModValue
+  PROP Il2CppSystem.Object BaseValue
+  PROP Il2CppSystem.Object objectValue
+  PROP Il2CppSystem.Object objectModValue
+  PROP Il2CppSystem.Object objectBaseValue
+  PROP Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.attributes.IMod> mods
+  PROP Canis.attributes.ReadOnlyAttribute Canis.attributes.IAttribute.AsReadOnly
+  METHOD Void .cctor()
+  METHOD Int32 get_Name()
+  METHOD UInt64 get_Version()
+  METHOD Il2CppSystem.Type get_ValueType()
+  METHOD Il2CppSystem.Object get_Value()
+  METHOD Il2CppSystem.Object get_ModValue()
+  METHOD Il2CppSystem.Object get_BaseValue()
+  METHOD Il2CppSystem.Object get_objectValue()
+  METHOD Il2CppSystem.Object get_objectModValue()
+  METHOD Il2CppSystem.Object get_objectBaseValue()
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.attributes.IMod> get_mods()
+  METHOD Canis.attributes.ReadOnlyAttribute Canis_attributes_IAttribute_get_AsReadOnly()
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.attributes.IMod> GetMods()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.attributes.ReadOnlyAttribute`1
+  BASE Canis.attributes.ReadOnlyAttribute
+  PROP Canis.attributes.IAttribute<T0> source
+  PROP Int32 Name
+  PROP UInt64 Version
+  PROP Il2CppSystem.Type ValueType
+  PROP T0 Value
+  PROP T0 ModValue
+  PROP T0 BaseValue
+  PROP Il2CppSystem.Object objectValue
+  PROP Il2CppSystem.Object objectModValue
+  PROP Il2CppSystem.Object objectBaseValue
+  PROP Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.attributes.IMod> mods
+  METHOD Void .cctor()
+  METHOD Void .ctor(Int32 key, T0 value)
+  METHOD Void .ctor(Canis.attributes.IAttribute<T0> source)
+  METHOD Int32 get_Name()
+  METHOD UInt64 get_Version()
+  METHOD Il2CppSystem.Type get_ValueType()
+  METHOD T0 get_Value()
+  METHOD T0 get_ModValue()
+  METHOD T0 get_BaseValue()
+  METHOD Il2CppSystem.Object get_objectValue()
+  METHOD Il2CppSystem.Object get_objectModValue()
+  METHOD Il2CppSystem.Object get_objectBaseValue()
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.attributes.IMod> get_mods()
+  METHOD String ToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.attributes.IAttribute<T0> get_source()
+  METHOD Void set_source(Canis.attributes.IAttribute<T0>)
+
+================================================================
+TYPE Canis.attributes.ReadOnlyAttributes
+  BASE Il2CppSystem.Object
+  PROP Canis.attributes.MutableAttributes source
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute> attrs, Int32 capacity)
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.attributes.IAttribute> attrs)
+  METHOD Void .ctor(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.attributes.IAttribute> attrs)
+  METHOD Void .ctor(Canis.attributes.MutableAttributes source)
+  METHOD Canis.attributes.ReadOnlyAttribute<Il2CppSystem.Nullable<Int32>> GetAttribute(Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Int32>> definition)
+  METHOD Canis.attributes.ReadOnlyAttribute<Il2CppSystem.Nullable<Single>> GetAttribute(Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Single>> definition)
+  METHOD Canis.attributes.ReadOnlyAttribute<String> GetAttribute(Canis.attributes.AttributeDefinition<String> definition)
+  METHOD Canis.attributes.ReadOnlyAttribute<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray> GetAttribute(Canis.attributes.AttributeDefinition<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray> definition)
+  METHOD Canis.attributes.ReadOnlyAttribute<Canis.utils.localization.LocalizableText> GetAttribute(Canis.attributes.AttributeDefinition<Canis.utils.localization.LocalizableText> definition)
+  METHOD Canis.attributes.ReadOnlyAttribute<Il2CppSystem.Nullable<Boolean>> GetAttribute(Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Boolean>> definition)
+  METHOD Canis.attributes.ReadOnlyAttribute<M0> GetAttribute(Canis.attributes.AttributeDefinition<M0> definition)
+  METHOD Canis.attributes.IAttribute GetAttribute(Canis.attributes.IAttributeDefinition definition)
+  METHOD Canis.attributes.IAttribute<M0> Canis_attributes_IHasAttributes_GetAttribute(Canis.attributes.AttributeDefinition<M0> definition)
+  METHOD Boolean HasAttribute(Int32 key)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerator<Canis.attributes.ReadOnlyAttribute> GetEnumerator()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerator<Canis.attributes.IAttribute> System_Collections_Generic_IEnumerable_Canis_attributes_IAttribute__GetEnumerator()
+  METHOD Il2CppSystem.Collections.IEnumerator System_Collections_IEnumerable_GetEnumerator()
+  METHOD Void .ctor(Canis.attributes.IAttribute[] attrs)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.attributes.MutableAttributes get_source()
+  METHOD Void set_source(Canis.attributes.MutableAttributes)
+
+================================================================
+TYPE Canis.attributes.ReadOnlyAttributesAnalyzer
+  BASE Canis.json.DwdTypeAnalyzer
+  PROP Il2CppSystem.Collections.Generic.List<Canis.attributes.IAttribute> attributeBuffer
+  PROP Il2CppSystem.Type IAttributeType
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Boolean Analyze(Canis.json.DwdModelAnalyzer analyzer, Canis.json.MorePeekableStream tokens, Il2CppSystem.Type targetType, ref Il2CppSystem.Object result)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.attributes.IAttribute> get_attributeBuffer()
+  METHOD Void set_attributeBuffer(Il2CppSystem.Collections.Generic.List<Canis.attributes.IAttribute>)
+  METHOD Il2CppSystem.Type get_IAttributeType()
+  METHOD Void set_IAttributeType(Il2CppSystem.Type)
+
+================================================================
+TYPE Canis.attributes.IAttributeDefinition
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  PROP String Name
+  PROP Int32 Key
+  PROP Il2CppSystem.Type ValueType
+  METHOD Void .cctor()
+  METHOD String get_Name()
+  METHOD Int32 get_Key()
+  METHOD Il2CppSystem.Type get_ValueType()
+  METHOD Canis.attributes.IMutableAttribute Factory()
+  METHOD Canis.attributes.IMutableAttribute Factory(Il2CppSystem.Object value)
+  METHOD Canis.attributes.IMutableAttribute Factory(Il2CppSystem.Object value, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.attributes.IMod> mods)
+  METHOD Canis.attributes.IMutableAttribute Copy(Canis.attributes.IAttribute original)
+  METHOD Canis.attributes.IMutableAttribute Factory(Il2CppSystem.Object value, Canis.attributes.IMod[] mods)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.attributes.IHasMutableAttributes
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  METHOD Void .cctor()
+  METHOD Canis.attributes.MutableAttribute<M0> GetAttribute(Canis.attributes.AttributeDefinition<M0> definition)
+  METHOD Canis.attributes.IMutableAttribute GetAttribute(Canis.attributes.IAttributeDefinition definition)
+  METHOD Boolean AttributeEquals(Canis.attributes.AttributeDefinition<M0> definition, M0 comparison)
+  METHOD Void AddMod(Canis.attributes.IAttributeDefinition definition, Canis.attributes.IMod mod)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetFrom_Public_Static_T_AttributeDefinition_1_T_IHasAttributes_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetFrom_Public_Static_T_AttributeDefinition_1_T_IHasAttributes_Func_1_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetFromOrEmpty_Public_Static_Il2CppArrayBase_1_T_AttributeDefinition_1_Il2CppArrayBase_1_T_IHasAttributes_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetFromOrEmpty_Public_Static_List_1_T_AttributeDefinition_1_List_1_T_IHasAttributes_Boolean_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetFrom_Public_Static_T_AttributeDefinition_1_Nullable_1_T_IHasAttributes_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_SetTo_Public_Static_Void_AttributeDefinition_1_T_MutableAttributes_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_SetFrom_Public_Static_Void_AttributeDefinition_1_T_MutableAttributes_IHasAttributes_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_Register_Public_Static_AttributeDefinition_1_T_AttributeDefinition_1_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetAllDefinitions_Public_Static_IEnumerable_1_AttributeDefinition_1_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetDefinition_Public_Static_AttributeDefinition_1_T_Int32_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetDefinition_Public_Static_AttributeDefinition_1_T_String_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_TryGetDefinition_Public_Static_Boolean_Int32_byref_AttributeDefinition_1_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_TryGetDefinition_Public_Static_Boolean_String_byref_AttributeDefinition_1_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_TryGetAttribute_Public_Static_Boolean_IHasAttributes_AttributeDefinition_1_T_byref_IAttribute_1_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_TryGetAttribute_Public_Static_IAttribute_1_T_IHasAttributes_AttributeDefinition_1_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_TryGetAttributeValue_Public_Static_Boolean_IHasAttributes_AttributeDefinition_1_T_byref_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_TryGetAttributeValue_Public_Static_Boolean_IHasAttributes_AttributeDefinition_1_Nullable_1_T_byref_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetAttributeValue_Public_Static_T_IHasAttributes_AttributeDefinition_1_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetAttributeValue_Public_Static_T_IHasAttributes_AttributeDefinition_1_T_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetAttributeValue_Public_Static_T_IHasAttributes_AttributeDefinition_1_Nullable_1_T_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_AttributeEquals_Public_Virtual_Final_New_Boolean_AttributeDefinition_1_V_V_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetAttribute_Public_Virtual_Final_New_MutableAttribute_1_V_AttributeDefinition_1_V_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_Canis_attributes_IHasAttributes_GetAttribute_Private_Virtual_Final_New_IAttribute_1_V_AttributeDefinition_1_V_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_SetAttribute_Public_Virtual_Final_New_Void_AttributeDefinition_1_V_V_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetAttribute_Public_ReadOnlyAttribute_1_V_AttributeDefinition_1_V_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_Canis_attributes_IHasAttributes_GetAttribute_Private_Virtual_Final_New_IAttribute_1_V_AttributeDefinition_1_V_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_TryGetAttribute_Public_Boolean_AttributeDefinition_1_T_byref_ReadOnlyAttribute_1_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_TryGetValue_Public_Boolean_AttributeDefinition_1_T_byref_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_TryGetValue_Public_T_AttributeDefinition_1_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetAttribute_Public_Abstract_Virtual_New_IAttribute_1_V_AttributeDefinition_1_V_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetAttribute_Public_Abstract_Virtual_New_MutableAttribute_1_V_AttributeDefinition_1_V_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_AttributeEquals_Public_Abstract_Virtual_New_Boolean_AttributeDefinition_1_V_V_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_SetAttribute_Public_Abstract_Virtual_New_Void_AttributeDefinition_1_T_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_ComputeAttribute_Public_Static_ComputedAttribute_2_TSourceValue_TTargetValue_TSourceValue_AttributeDefinition_1_TTargetValue_Func_2_TSourceValue_TTargetValue_0`2
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_ComputeAttribute_Public_Static_ComputedAttribute_2_TSourceValue_TTargetValue_TSourceValue_Func_2_TSourceValue_UInt64_AttributeDefinition_1_TTargetValue_Func_2_TSourceValue_TTargetValue_0`2
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_AsAttribute_Public_Static_ComputedAttribute_2_TSourceValue_TTargetValue_TSourceValue_AttributeDefinition_1_TTargetValue_0`2
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_AsAttribute_Public_Static_ComputedAttribute_2_IAttribute_1_T_T_IAttribute_1_T_AttributeDefinition_1_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_AsAttribute_Public_Static_ComputedAttribute_2_IAttribute_T_IAttribute_AttributeDefinition_1_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_ExtractAttribute_Public_Static_ComputedAttribute_2_ExtractVersionedData_2_TSourceValue_IAttribute_1_TTargetValue_TTargetValue_TSourceValue_AttributeDefinition_1_TTargetValue_Func_2_TSourceValue_IHasAttributes_0`2
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_ExtractAttribute_Public_Static_ComputedAttribute_2_ExtractVersionedData_2_TSourceValue_IAttribute_1_TTargetValue_TTargetValue_TSourceValue_AttributeDefinition_1_TTargetValue_Func_2_TSourceValue_IAttribute_1_TTargetValue_0`2
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_Transform_Public_Static_TransformAttribute_2_TSourceValue_TSourceValue_IHasAttributes_AttributeDefinition_1_TSourceValue_Func_2_TSourceValue_TSourceValue_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_Transform_Public_Static_TransformAttribute_2_TSourceValue_TTargetValue_IHasAttributes_AttributeDefinition_1_TSourceValue_AttributeDefinition_1_TTargetValue_Func_2_TSourceValue_TTargetValue_0`2
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_Transform_Public_Static_TransformAttribute_2_TSourceValue_TTargetValue_IAttribute_1_TSourceValue_AttributeDefinition_1_TTargetValue_Func_2_TSourceValue_TTargetValue_0`2
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_Transform_Public_Static_TransformAttribute_3_TSourceValue1_TSourceValue2_TTargetValue_IHasAttributes_AttributeDefinition_1_TSourceValue1_AttributeDefinition_1_TSourceValue2_AttributeDefinition_1_TTargetValue_Func_3_TSourceValue1_TSourceValue2_TTargetValue_0`3
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_ComputeFrom_Public_Static_TransformAttribute_3_TSourceValue1_TSourceValue2_TTargetValue_AttributeDefinition_1_TTargetValue_IAttribute_1_TSourceValue1_IAttribute_1_TSourceValue2_Func_3_TSourceValue1_TSourceValue2_TTargetValue_0`3
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetAttribute_Public_Virtual_Final_New_IAttribute_1_V_AttributeDefinition_1_V_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_AddLazyAttribute_Public_Void_AttributeDefinition_1_T_Func_2_AttributeDefinition_1_T_IAttribute_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_SetLazyAttribute_Public_Void_AttributeDefinition_1_T_Func_2_AttributeDefinition_1_T_IAttribute_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_SetAttribute_Public_Virtual_Final_New_Void_AttributeDefinition_1_T_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+

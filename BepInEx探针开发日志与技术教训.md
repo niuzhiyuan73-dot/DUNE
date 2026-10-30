@@ -504,3 +504,136 @@ interop 里 `WormImperiumPlayable`、`WormPlayable` 都有完整方法表，
 
 - 不再尝试拦截 `CreateEntity` 一族（已证死路）
 - 不再用反射枚举 Il2Cpp 泛型集合（改用 `Serialize` 等非枚举路径）
+
+---
+
+## 十六、静态分析路线：不依赖开游戏读代码（2026-10-30）
+
+### 16.1 为什么要转静态
+
+v24–v30 每验证一个假设都要启动一次游戏，一个来回十分钟，而且多次因为
+「异常被 catch 吞掉」而拿到误导性结果。第七轮起改为**先静态读程序集**，
+只把真正需要运行时数据的问题留给插件。
+
+### 16.2 自建工具 TypeDump
+
+`tools/TypeDump`（.NET 8 + System.Reflection.Metadata）可离线导出任意类型的
+完整结构：基类、字段（含真实类型）、属性、方法完整签名（含参数名与返回类型）。
+
+用法：
+
+```
+dotnet TypeDump.dll <interop程序集> <输出文件> <类型名子串...>
+```
+
+它会跳过 `NativeMethodInfoPtr_*` / `NativeFieldInfoPtr_*` 这类 interop 噪音字段。
+
+### 16.3 由静态分析确认的关键契约
+
+**卡牌原型（canis.archetypes.Archetype）**
+
+```
+.ctor(ArchetypeID archID)
+.ctor(SerializableAttributes attributes)
+.ctor(ArchetypeID archID, SerializableAttributes attributes)   ← 数据定义入口
+Build(Match m, PlayerEntity owner, Entity parent) -> Entity    ← 原型 → 实体
+Deserialize(SerializedEntity se, Match m, Entity parent) -> Entity
+ConstructAbilities(Match, PlayerEntity, IHasAbilities)
+Get(ArchetypeID) -> Archetype（静态）
+ArchetypeID { get; set; } / EntityName { get; }
+AbilityIDsAttribute : AttributeDefinition<List<AbilityID>>
+```
+
+**实体（Canis.entities.Entity）**
+
+```
+.ctor(Match, PlayerEntity, Archetype, string)   ← 构造时接收原型
+GetArchetype() 是 virtual，无参数
+MoveTo(Entity, int?) / ForceParent(Entity) / AddChild / RemoveChild
+Serialize() -> SerializedEntity
+```
+
+**结论**：卡牌身份是构造实体时写入的 **native 字段**，不在 attributes 里。
+所以「改 ArchID 让一张卡变成另一张卡」在属性层不可能实现（v30 已实证失败）。
+
+**属性容器（Canis.attributes.MutableAttributes）**
+
+```
+.ctor(MutableAttributes other)      ← 拷贝构造
+Clone() -> MutableAttributes        ← 克隆
+data : ConcurrentDictionary<int, IMutableAttribute>
+SetAttribute<T>(AttributeDefinition<T>, T)
+GetAttribute<T>(AttributeDefinition<T>) -> MutableAttribute<T>
+HasAttribute(int)
+```
+
+**属性定义（AttributeDefinitions）**
+
+```
+GetDefinition(int key) -> IAttributeDefinition
+GetDefinition<T>(int key) -> AttributeDefinition<T>
+```
+
+**属性读写封装（AttributeDefinitionExtensions）**
+
+```
+GetFrom<T>(AttributeDefinition<T>, IHasAttributes) -> T
+SetTo<T>(AttributeDefinition<T>, MutableAttributes, T)
+SetFrom<T>(AttributeDefinition<T>, MutableAttributes, IHasAttributes source)
+```
+
+**ID 类型**
+
+```
+ArchetypeID(string) / ArchetypeID(Guid) / Empty
+ArchetypeID._ID : Guid      ← 真实 GUID 存在这个字段
+```
+
+**SerializableAttributes**
+
+```
+.ctor(SerializableAttributes other) / Clone()
+implicit operator SerializableAttributes(MutableAttributes)   ← 可直接转换
+```
+
+### 16.4 属性键的权威名称（由定义表读出，非猜测）
+
+| key | Name | ValueType |
+|---|---|---|
+| 10000 | ArchID | `Canis.utils.ids.ArchetypeID` |
+| 920003 | Image | `System.String` |
+| 920004 | IconList | `List<worm.canis.data.enums.AgentIcons>` |
+| 920005 | — | 阵营列表 |
+| 920006 | **PersuasionCost** | `System.Nullable<System.Int32>` |
+| 920009 | — | 分类（Starter / Main） |
+| 900013 | WormAbilityIDs | `List<Canis.utils.ids.AbilityID>` |
+| 900014 | — | 内容集（BaseSet / RiseOfIx …） |
+| 900018 | — | 卡牌类别（Imperium / Intrigue / Conflict） |
+
+### 16.5 由此得到的造新卡流水线
+
+```
+模板 = 某张已有卡的 Entity.GetArchetype()
+克隆 = 模板.attributes.Clone()
+改 ID = SetTo<ArchetypeID>(def10000, 克隆, 新ID)
+转换 = SerializableAttributes.op_Implicit(克隆)
+原型 = new Archetype(新ID, 转换后属性)
+实体 = 原型.Build(match, player, deck)      ← parent 直接指定牌组
+```
+
+这条链路完全在托管层，不需要新增 C# 类，也不需要重新打包 AssetBundle。
+
+### 16.6 静态分析纠正的三个错误认知
+
+| 原认知 | 实际 |
+|---|---|
+| 改 attributes 的 10000 就能换卡 | ❌ 身份在 native 字段，属性层改不动 |
+| IconList 是 `List<string>` | ❌ 是 `List<AgentIcons>` 枚举 |
+| PersuasionCost 是 `int` | ❌ 是 `Nullable<int>` |
+
+### 16.7 编译期错误也是免费的静态分析
+
+把 interop 程序集加进引用后，**写错签名会直接编译失败**，报错里带着
+正确的参数类型。这比开机跑一次快得多，也是确认「某方法是否存在」最可靠的手段。
+本轮据此修正了：`ArchetypeID` 构造收 string、`SetAttribute` 只有 1 个泛型参数、
+`MutableAttributes` 未桥接 `IHasAttributes` 接口。

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,16 +7,21 @@ using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using canis.archetypes;
+using Canis.attributes;
+using Canis.utils.ids;
 using worm.canis;
-using worm.canis.entities;
 using worm.canis.actions.phases;
+using Entity = Canis.entities.Entity;
 
 namespace DuneProbe
 {
-    [BepInPlugin(GUID, "Dune Probe", "2.3.0")]
+    [BepInPlugin(GUID, "Dune Probe", "3.1.0")]
     public class Plugin : BasePlugin
     {
         public const string GUID = "local.duneprobe";
+
+        private const int A_ARCHID = 10000;
+        private const int A_COST = 920006;
 
         internal static ManualLogSource Logger;
         private static WormMatch _match;
@@ -26,25 +30,21 @@ namespace DuneProbe
         public override void Load()
         {
             Logger = Log;
-            Logger.LogInfo("========== [PROBE v23] 枚举属性 + 领袖能力树 ==========");
+            Logger.LogInfo("========== [PROBE v31] 造新卡流水线 ==========");
             var h = new Harmony("local.duneprobe.harmony");
             Patch(h, nameof(OnSetupPlayer), typeof(SetupPhase), "SetupPlayer");
             Patch(h, nameof(OnDraw), typeof(RoundPhase), "DrawCards");
-            Logger.LogInfo("========== [PROBE v23] 就绪 ==========");
+            Logger.LogInfo("========== [PROBE v31] 就绪 ==========");
         }
 
         private static void Patch(Harmony h, string handler, Type t, string method)
         {
-            try
-            {
-                var mi = t.GetMethod(method, BindingFlags.Public | BindingFlags.NonPublic |
-                                             BindingFlags.Instance | BindingFlags.DeclaredOnly);
-                if (mi == null) { Logger.LogWarning($"[PROBE] {method} 未找到"); return; }
-                h.Patch(mi, postfix: new HarmonyMethod(typeof(Plugin).GetMethod(handler,
-                    BindingFlags.Static | BindingFlags.NonPublic)));
-                Logger.LogInfo($"[PROBE] 挂载 {method}");
-            }
-            catch (Exception e) { Logger.LogWarning($"[PROBE] {method} 失败: {e.GetType().Name}"); }
+            var mi = t.GetMethod(method, BindingFlags.Public | BindingFlags.NonPublic |
+                                        BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            if (mi == null) { Logger.LogWarning($"[PROBE] {method} 未找到"); return; }
+            h.Patch(mi, postfix: new HarmonyMethod(typeof(Plugin).GetMethod(handler,
+                BindingFlags.Static | BindingFlags.NonPublic)));
+            Logger.LogInfo($"[PROBE] 挂载 {method}");
         }
 
         private static void OnSetupPlayer(SetupPhase __instance, object[] __args)
@@ -61,280 +61,252 @@ namespace DuneProbe
                 var playmat = _match?.WormPlaymat;
                 var player = Children(playmat).FirstOrDefault(x => x?.GetType().Name == "WormPlayer");
                 if (player == null) { Logger.LogWarning("[PROBE] 无 Player"); return; }
-
                 var deck = Children(player).FirstOrDefault(x => Name(x) == "Deck");
-                var card = Children(deck).FirstOrDefault();
-                if (card == null) { Logger.LogWarning("[PROBE] Deck 为空"); return; }
+                var cards = Children(deck);
+                Logger.LogWarning($"[PROBE] 牌组原有 {cards.Count} 张");
+                if (cards.Count == 0) return;
 
-                Logger.LogInfo($"[PROBE] 卡牌实体类型: {card.GetType().FullName} | 名称: {Name(card)}");
+                var template = ((Entity)cards[0]).GetArchetype();
+                var playerEntity = (Canis.entities.PlayerEntity)player;
+                var deckEntity = (Entity)deck;
+                Logger.LogInfo($"[PROBE] 模板原型 = {template?.GetType().FullName}");
 
-                // ---- 0) 卡牌实体自身的关键成员（改卡/加能力的入口）----
-                DumpCardMembers(card);
+                // ---------- 策略一：克隆属性 → 新 Archetype → Build ----------
+                Logger.LogWarning("[PROBE] ==== 策略一：clone + new Archetype + Build ====");
+                TryStrategyA(template, playerEntity, deckEntity, deck);
 
-                object attrs = card.GetType().GetProperty("attributes")?.GetValue(card);
-                Logger.LogInfo($"[PROBE] attributes 类型: {attrs?.GetType().FullName}");
-
-                // ---- 1) 枚举属性（MutableAttributes : IEnumerable<IAttribute>）----
-                var items = Iterate(attrs);
-                Logger.LogInfo($"[PROBE] ==== 属性条目数: {items.Count} ====");
-                int shown = 0;
-                foreach (var it in items)
+                // ---------- 策略二：只给 ID，逐个 SetTo 复制 ----------
+                if (!_success)
                 {
-                    if (shown++ >= 25) { Logger.LogInfo("[PROBE]   ...(截断)"); break; }
-                    Logger.LogInfo($"[PROBE]   #{shown} {Describe(it)}");
+                    Logger.LogWarning("[PROBE] ==== 策略二：new Archetype(id) + 逐个复制属性 ====");
+                    TryStrategyB(template, playerEntity, deckEntity, deck);
                 }
 
-                // ---- 2) 直接读 data 字典 ----
-                object data = null;
-                try { data = attrs?.GetType().GetProperty("data")?.GetValue(attrs); } catch { }
-                if (data != null)
+                // ---------- 策略三：直接 new Entity(模板) + MoveTo ----------
+                if (!_success)
                 {
-                    var kvs = Iterate(data);
-                    Logger.LogInfo($"[PROBE] ==== data 字典条目数: {kvs.Count} (类型 {data.GetType().Name}) ====");
-                    int k = 0;
-                    foreach (var kv in kvs)
-                    {
-                        if (k++ >= 20) break;
-                        Logger.LogInfo($"[PROBE]   KV {k}: {Describe(kv)}");
-                    }
+                    Logger.LogWarning("[PROBE] ==== 策略三：new Entity(模板原型) + MoveTo ====");
+                    TryStrategyC(template, playerEntity, deckEntity, deck);
                 }
 
-                // ---- 3) 领袖能力树（深度 3）----
-                var leader = Children(player).FirstOrDefault(x => Name(x) == "Leader");
-                Logger.LogInfo($"[PROBE] ==== Leader 子树 ==== 子={Children(leader).Count}");
-                DumpTree(leader, 1, 3);
-
-                // ---- 4) 尝试从属性里解析 Archetype ----
-                TryResolveArchetype(items);
+                Logger.LogWarning($"[PROBE] 最终牌组数量 = {Children(deck).Count}（原 {cards.Count}）");
             }
             catch (Exception e) { Logger.LogWarning("[PROBE] 异常: " + e.GetType().Name + ": " + e.Message); }
         }
 
-        // ---------- 卡牌实体的关键成员 ----------
-        private static void DumpCardMembers(object card)
-        {
-            var t = card.GetType();
-            var chain = new List<string>();
-            for (var c = t; c != null && c != typeof(object); c = c.BaseType) chain.Add(c.Name);
-            Logger.LogInfo($"[PROBE] ==== 卡牌成员 ==== 继承链: {string.Join(" <- ", chain)}");
+        private static bool _success;
 
-            foreach (var p in t.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+        // ================= 策略一 =================
+        private static void TryStrategyA(Archetype template, Canis.entities.PlayerEntity player, Entity deck, object deckRaw)
+        {
+            try
             {
-                if (p.GetIndexParameters().Length > 0) continue;
-                var n = p.Name;
-                if (n.IndexOf("Ability", StringComparison.OrdinalIgnoreCase) < 0 &&
-                    n.IndexOf("Acquire", StringComparison.OrdinalIgnoreCase) < 0 &&
-                    n.IndexOf("Cost", StringComparison.OrdinalIgnoreCase) < 0 &&
-                    n.IndexOf("Value", StringComparison.OrdinalIgnoreCase) < 0 &&
-                    n.IndexOf("Archetype", StringComparison.OrdinalIgnoreCase) < 0) continue;
-                object v = null; string err = "";
-                try { v = p.GetValue(card); } catch (Exception e) { err = "<" + e.GetType().Name + ">"; }
-                var cnt = "";
+                if (template == null) { Logger.LogWarning("[PROBE]   模板为空"); return; }
+
+                var srcAttrs = template.GetType().GetProperty("attributes")?.GetValue(template) as MutableAttributes;
+                if (srcAttrs == null) { Logger.LogWarning("[PROBE]   取不到模板 attributes"); return; }
+
+                MutableAttributes cloned;
+                try { cloned = srcAttrs.Clone(); }
+                catch (Exception e) { Logger.LogWarning("[PROBE]   Clone 失败: " + (e.InnerException?.Message ?? e.Message)); return; }
+                Logger.LogInfo($"[PROBE]   克隆属性集成功，data 条目 = {AttrCount(cloned)}");
+
+                // 换新 ID
+                var newId = new ArchetypeID(Guid.NewGuid().ToString());
                 try
                 {
-                    if (v != null && v.GetType().Name.Contains("List") || (v != null && v.GetType().Name.Contains("Array")))
-                        cnt = $" 数量={Iterate(v).Count}";
+                    var defId = DefTyped<ArchetypeID>(A_ARCHID);
+                    if (defId != null) AttributeDefinitionExtensions.SetTo<ArchetypeID>(defId, cloned, newId);
                 }
-                catch { }
-                Logger.LogInfo($"[PROBE]   属性 {n} : {p.PropertyType.Name} = {(err != "" ? err : Short(v))}{cnt}");
-            }
+                catch (Exception e) { Logger.LogInfo("[PROBE]   写新 ArchID 失败: " + (e.InnerException?.Message ?? e.Message)); }
 
-            foreach (var m in t.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
-            {
-                var n = m.Name;
-                if (n.IndexOf("Ability", StringComparison.OrdinalIgnoreCase) < 0 &&
-                    n.IndexOf("Acquire", StringComparison.OrdinalIgnoreCase) < 0) continue;
-                var ps = string.Join(", ", m.GetParameters().Select(x => $"{x.ParameterType.Name} {x.Name}"));
-                Logger.LogInfo($"[PROBE]   方法 {m.ReturnType.Name} {n}({ps})");
-            }
-
-            // 试着读取收购成本
-            try
-            {
-                var am = t.GetMethod("AcquireValue", BindingFlags.Public | BindingFlags.Instance);
-                if (am != null) Logger.LogWarning($"[PROBE]   >>> AcquireValue() = {Short(am.Invoke(card, null))}");
-            }
-            catch (Exception e) { Logger.LogInfo("[PROBE]   AcquireValue 调用失败: " + (e.InnerException?.Message ?? e.Message)); }
-
-            // 试着读取能力列表
-            try
-            {
-                var ab = t.GetProperty("Abilities", BindingFlags.Public | BindingFlags.Instance)?.GetValue(card);
-                if (ab != null)
+                // 成本设成 1，便于识别
+                try
                 {
-                    var list = Iterate(ab);
-                    Logger.LogWarning($"[PROBE]   >>> Abilities 数量 = {list.Count} (类型 {ab.GetType().Name})");
-                    int i = 0;
-                    foreach (var a in list) { if (i++ >= 8) break; Logger.LogInfo($"[PROBE]      能力{i}: {Describe(a)}"); }
+                    var defCost = DefTyped<int?>(A_COST);
+                    if (defCost != null) AttributeDefinitionExtensions.SetTo<int?>(defCost, cloned, (int?)1);
                 }
+                catch (Exception e) { Logger.LogInfo("[PROBE]   写成本失败: " + (e.InnerException?.Message ?? e.Message)); }
+
+                // MutableAttributes -> SerializableAttributes（隐式转换）
+                SerializableAttributes ser = null;
+                try
+                {
+                    var op = typeof(SerializableAttributes).GetMethods(BindingFlags.Public | BindingFlags.Static)
+                        .FirstOrDefault(m => m.Name == "op_Implicit"
+                                          && m.GetParameters().Length == 1
+                                          && m.GetParameters()[0].ParameterType == typeof(MutableAttributes));
+                    if (op == null) { Logger.LogWarning("[PROBE]   无 implicit(MutableAttributes)"); return; }
+                    ser = (SerializableAttributes)op.Invoke(null, new object[] { cloned });
+                    Logger.LogInfo($"[PROBE]   转 SerializableAttributes 成功: {(ser != null)}");
+                }
+                catch (Exception e) { Logger.LogWarning("[PROBE]   转换失败: " + (e.InnerException?.Message ?? e.Message)); return; }
+
+                Archetype newArch;
+                try { newArch = new Archetype(newId, ser); }
+                catch (Exception e) { Logger.LogWarning("[PROBE]   new Archetype 失败: " + (e.InnerException?.Message ?? e.Message)); return; }
+                Logger.LogInfo($"[PROBE]   新原型 = {(newArch == null ? "null" : newArch.GetType().FullName)}");
+
+                var ent = TryBuild(newArch, player, deck);
+                if (ent != null) _success = true;
             }
-            catch (Exception e) { Logger.LogInfo("[PROBE]   Abilities 读取失败: " + (e.InnerException?.Message ?? e.Message)); }
+            catch (Exception e) { Logger.LogWarning("[PROBE]   策略一异常: " + e.GetType().Name + ": " + e.Message); }
         }
 
-        // ---------- 属性条目描述 ----------
-        private static string Describe(object it)
+        // ================= 策略二 =================
+        private static void TryStrategyB(Archetype template, Canis.entities.PlayerEntity player, Entity deck, object deckRaw)
         {
-            if (it == null) return "null";
-            var t = it.GetType();
-            var parts = new List<string> { t.Name };
-
-            foreach (var pn in new[] { "Definition", "definition", "Id", "id", "Key", "key", "Value", "value" })
+            try
             {
-                var p = t.GetProperty(pn, BindingFlags.Public | BindingFlags.Instance);
-                if (p == null || p.GetIndexParameters().Length > 0) continue;
+                var newId = new ArchetypeID(Guid.NewGuid().ToString());
+                Archetype newArch;
+                try { newArch = new Archetype(newId); }
+                catch (Exception e) { Logger.LogWarning("[PROBE]   new Archetype(id) 失败: " + (e.InnerException?.Message ?? e.Message)); return; }
+                if (newArch == null) { Logger.LogWarning("[PROBE]   新原型为 null"); return; }
+                Logger.LogInfo("[PROBE]   new Archetype(id) 成功");
+
+                var dst = newArch.GetType().GetProperty("attributes")?.GetValue(newArch) as MutableAttributes;
+                var src = template?.GetType().GetProperty("attributes")?.GetValue(template) as MutableAttributes;
+                Logger.LogInfo($"[PROBE]   目标属性容器 = {(dst == null ? "null" : "OK")}");
+
+                if (dst != null && src != null)
+                {
+                    // 逐个复制已知类型的属性
+                    CopyGeneric<ArchetypeID>(A_ARCHID, src, dst, newId);
+                    CopyGeneric<string>(920003, src, dst, null);      // Image
+                    CopyGeneric<string>(900018, src, dst, null);      // Kind
+                    CopyGeneric<int?>(A_COST, src, dst, null);
+                    CopyGeneric<string>(920009, src, dst, null);      // Category
+                }
+
+                var ent = TryBuild(newArch, player, deck);
+                if (ent != null) _success = true;
+            }
+            catch (Exception e) { Logger.LogWarning("[PROBE]   策略二异常: " + e.GetType().Name + ": " + e.Message); }
+        }
+
+        // ================= 策略三 =================
+        private static void TryStrategyC(Archetype template, Canis.entities.PlayerEntity player, Entity deck, object deckRaw)
+        {
+            try
+            {
+                Entity ent;
+                try { ent = new Entity(_match, player, template, "ImperiumPlayable"); }
+                catch (Exception e) { Logger.LogWarning("[PROBE]   new Entity 失败: " + (e.InnerException?.Message ?? e.Message)); return; }
+                if (ent == null) { Logger.LogWarning("[PROBE]   实体为 null"); return; }
+                Logger.LogInfo($"[PROBE]   新实体 = {ent.GetType().FullName} | 名称={Name(ent)}");
+
+                Attach(ent, deck, player);
+                _success = true;
+            }
+            catch (Exception e) { Logger.LogWarning("[PROBE]   策略三异常: " + e.GetType().Name + ": " + e.Message); }
+        }
+
+        // ---------- Build 与挂载 ----------
+        private static Entity TryBuild(Archetype arch, Canis.entities.PlayerEntity player, Entity deck)
+        {
+            Entity ent = null;
+            try
+            {
+                ent = arch.Build(_match, player, deck);
+                Logger.LogWarning($"[PROBE]   Build 返回: {(ent == null ? "null" : ent.GetType().Name + " | " + Name(ent))}");
+            }
+            catch (Exception e) { Logger.LogWarning("[PROBE]   Build 失败: " + (e.InnerException?.Message ?? e.Message)); }
+
+            if (ent == null)
+            {
                 try
                 {
-                    var v = p.GetValue(it);
-                    parts.Add($"{pn}={Short(v)}");
-                    // 定义对象再下一层
-                    if (pn == "Definition" && v != null && v.GetType() != typeof(string))
-                        parts.Add($"def.id={Short(Prop(v, "Id") ?? Prop(v, "id") ?? Prop(v, "AttributeID"))}");
+                    ent = new Entity(_match, player, arch, "ImperiumPlayable");
+                    Logger.LogInfo("[PROBE]   改用 new Entity(arch) 构造成功");
                 }
-                catch { }
+                catch (Exception e) { Logger.LogWarning("[PROBE]   new Entity(arch) 失败: " + (e.InnerException?.Message ?? e.Message)); }
             }
-            if (parts.Count <= 1)
+
+            if (ent == null) return null;
+            Attach(ent, deck, player);
+            return ent;
+        }
+
+        private static void Attach(Entity ent, Entity deck, object player)
+        {
+            try
             {
-                // 退化：打印所有简单属性
-                foreach (var p in t.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                var mv = typeof(Entity).GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                                       .FirstOrDefault(m => m.Name == "MoveTo");
+                if (mv != null)
                 {
-                    if (p.GetIndexParameters().Length > 0) continue;
+                    var ps = mv.GetParameters();
+                    object pos = null;
+                    if (ps.Length == 2) pos = Activator.CreateInstance(ps[1].ParameterType);
+                    mv.Invoke(ent, ps.Length == 2 ? new object[] { deck, pos } : new object[] { deck });
+                    Logger.LogInfo("[PROBE]   MoveTo(deck) 已调用");
+                }
+            }
+            catch (Exception e) { Logger.LogWarning("[PROBE]   MoveTo 失败: " + (e.InnerException?.Message ?? e.Message)); }
+
+            try
+            {
+                var fp = typeof(Entity).GetMethod("ForceParent", BindingFlags.Public | BindingFlags.Instance);
+                if (fp != null) { fp.Invoke(ent, new object[] { deck }); Logger.LogInfo("[PROBE]   ForceParent(deck) 已调用"); }
+            }
+            catch (Exception e) { Logger.LogWarning("[PROBE]   ForceParent 失败: " + (e.InnerException?.Message ?? e.Message)); }
+        }
+
+        // ---------- 属性工具 ----------
+        private static int AttrCount(MutableAttributes a)
+        {
+            try
+            {
+                var d = a.GetType().GetProperty("data")?.GetValue(a);
+                var c = d?.GetType().GetProperty("Count")?.GetValue(d);
+                return c == null ? -1 : Convert.ToInt32(c);
+            }
+            catch { return -1; }
+        }
+
+        private static AttributeDefinition<T> DefTyped<T>(int key)
+        {
+            try
+            {
+                var m = typeof(AttributeDefinitions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+                    .First(x => x.Name == "GetDefinition" && x.IsGenericMethod
+                             && x.GetParameters().Length == 1
+                             && x.GetParameters()[0].ParameterType == typeof(int));
+                return m.MakeGenericMethod(typeof(T)).Invoke(null, new object[] { key }) as AttributeDefinition<T>;
+            }
+            catch (Exception e)
+            {
+                Logger.LogInfo($"[PROBE]   GetDefinition<{typeof(T).Name}>({key}) 失败: {(e.InnerException?.Message ?? e.Message)}");
+                return null;
+            }
+        }
+
+        private static void CopyGeneric<T>(int key, MutableAttributes src, MutableAttributes dst, T overrideValue)
+        {
+            try
+            {
+                var def = DefTyped<T>(key);
+                if (def == null) return;
+                T v;
+                if (overrideValue != null) v = overrideValue;
+                else
+                {
                     try
                     {
-                        var v = p.GetValue(it);
-                        if (v == null) continue;
-                        var n = v.GetType().Name;
-                        if (n is "String" or "Int32" or "Single" or "Boolean" or "Double" or "Int64")
-                            parts.Add($"{p.Name}={Short(v)}");
-                        else
-                            parts.Add($"{p.Name}:{n}");
+                        var attr = src.GetAttribute(def);
+                        v = attr != null ? attr.Value : default;
                     }
-                    catch { }
+                    catch { return; }
                 }
+                if (v == null) return;
+                AttributeDefinitionExtensions.SetTo<T>(def, dst, v);
+                Logger.LogInfo($"[PROBE]   复制 {key} = {v}");
             }
-            return string.Join(" | ", parts);
+            catch (Exception e) { Logger.LogInfo($"[PROBE]   复制 {key} 失败: {(e.InnerException?.Message ?? e.Message)}"); }
         }
 
-        private static object Prop(object o, string name)
-        {
-            try { return o?.GetType().GetProperty(name, BindingFlags.Public | BindingFlags.Instance)?.GetValue(o); }
-            catch { return null; }
-        }
-
-        // ---------- 通用枚举：Il2Cpp 集合不实现非泛型 IEnumerable 时退回反射 ----------
-        private static List<object> Iterate(object o)
-        {
-            var r = new List<object>();
-            if (o == null) return r;
-
-            if (o is IEnumerable e)
-            {
-                try
-                {
-                    foreach (var x in e) { r.Add(x); if (r.Count > 500) break; }
-                    if (r.Count > 0) return r;
-                }
-                catch { }
-            }
-
-            // 反射找 GetEnumerator（含 Il2Cpp 的显式实现命名）
-            try
-            {
-                var t = o.GetType();
-                var gm = t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                          .FirstOrDefault(m => m.Name == "GetEnumerator" && m.GetParameters().Length == 0)
-                       ?? t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                          .FirstOrDefault(m => m.Name.EndsWith("GetEnumerator") && m.GetParameters().Length == 0);
-                if (gm != null)
-                {
-                    var en = gm.Invoke(o, null);
-                    if (en is IEnumerator ie)
-                        while (ie.MoveNext() && r.Count <= 500) r.Add(ie.Current);
-                    else if (en != null)
-                    {
-                        var mv = en.GetType().GetMethod("MoveNext", BindingFlags.Public | BindingFlags.Instance)
-                              ?? en.GetType().GetMethod("System_Collections_IEnumerator_MoveNext", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                        var cur = en.GetType().GetProperty("Current", BindingFlags.Public | BindingFlags.Instance)
-                               ?? en.GetType().GetProperty("System_Collections_IEnumerator_get_Current", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                        if (mv != null && cur != null)
-                        {
-                            while (r.Count <= 500)
-                            {
-                                object more;
-                                try { more = mv.Invoke(en, null); } catch { break; }
-                                if (more is not bool b || !b) break;
-                                try { r.Add(cur.GetValue(en)); } catch { break; }
-                            }
-                        }
-                    }
-                    if (r.Count > 0) return r;
-                }
-            }
-            catch { }
-
-            // Count + Item
-            try
-            {
-                var cnt = o.GetType().GetProperty("Count");
-                int n = cnt != null ? Convert.ToInt32(cnt.GetValue(o)) : 0;
-                var item = o.GetType().GetProperty("Item");
-                if (item != null && n > 0)
-                    for (int i = 0; i < n && i < 500; i++)
-                        try { r.Add(item.GetValue(o, new object[] { i })); } catch { }
-            }
-            catch { }
-            return r;
-        }
-
-        private static void DumpTree(object e, int depth, int maxDepth)
-        {
-            if (e == null || depth > maxDepth) return;
-            foreach (var c in Children(e))
-            {
-                Logger.LogInfo($"[PROBE]   {new string(' ', depth * 2)}{c?.GetType().Name} | {Name(c)} | 子={Children(c).Count}");
-                if (depth < maxDepth) DumpTree(c, depth + 1, maxDepth);
-            }
-        }
-
-        private static void TryResolveArchetype(List<object> items)
-        {
-            foreach (var it in items)
-            {
-                var v = Prop(it, "Value") ?? Prop(it, "value");
-                if (v == null) continue;
-                var s = Short(v);
-                if (s.Length < 8 || s.Length > 40) continue;
-                // 看起来像 GUID 的值，试试解析
-                if (!s.Contains("-")) continue;
-                Logger.LogInfo($"[PROBE] 候选 ArchetypeID 值: {s}");
-                try
-                {
-                    var at = typeof(Archetype);
-                    foreach (var m in at.GetMethods(BindingFlags.Public | BindingFlags.Static))
-                    {
-                        if (m.Name != "Get" || m.GetParameters().Length != 1) continue;
-                        var pt = m.GetParameters()[0].ParameterType;
-                        object arg = null;
-                        try { arg = pt == v.GetType() ? v : Convert.ChangeType(v, pt); } catch { continue; }
-                        var a = m.Invoke(null, new[] { arg });
-                        Logger.LogWarning($"[PROBE]   => Archetype.Get({pt.Name}) -> {(a == null ? "null" : a.GetType().FullName)}");
-                        if (a != null)
-                        {
-                            Logger.LogWarning($"[PROBE]   => 原型名: {Short(Prop(a, "EntityName"))}");
-                            return;
-                        }
-                    }
-                }
-                catch (Exception e2) { Logger.LogInfo("[PROBE]   解析失败: " + (e2.InnerException?.Message ?? e2.Message)); }
-            }
-        }
-
-        private static string Short(object v)
-        {
-            if (v == null) return "null";
-            try { var s = v.ToString(); return s != null && s.Length > 70 ? s.Substring(0, 70) + "…" : s; }
-            catch { return "<err>"; }
-        }
-
+        // ---------- 通用工具 ----------
         private static string Name(object e)
         {
             if (e == null) return "null";

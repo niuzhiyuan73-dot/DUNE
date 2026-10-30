@@ -1,0 +1,455 @@
+================================================================
+TYPE boardgames.attributes.IAttributesProvider
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  FIELD IntPtr NativeMethodInfoPtr_GetAttributes_Public_Abstract_Virtual_New_IHasAttributes_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_ProvidesAttributes_Public_Virtual_New_IReadOnlyList_1_IAttributeDefinition_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_RegisterOnAttributesChanged_Public_Virtual_New_Void_Action_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_UnregisterOnAttributesChanged_Public_Virtual_New_Void_Action_0   [Private, Static, InitOnly]
+  METHOD Void .cctor()
+  METHOD Canis.attributes.IHasAttributes GetAttributes()
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.attributes.IAttributeDefinition> ProvidesAttributes()
+  METHOD Void RegisterOnAttributesChanged(Il2CppSystem.Action changedHandler)
+  METHOD Void UnregisterOnAttributesChanged(Il2CppSystem.Action changedHandler)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.attributes.MutableAttributes
+  BASE Il2CppSystem.Object
+  FIELD IntPtr NativeFieldInfoPtr_data   [Private, Static, InitOnly]
+  FIELD IntPtr NativeFieldInfoPtr__ReadOnly   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_StoreAttribute_Private_Void_IAttribute_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr__ctor_Public_Void_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr__ctor_Public_Void_ConcurrentDictionary_2_Int32_IMutableAttribute_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr__ctor_Public_Void_IEnumerable_1_IAttribute_Int32_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr__ctor_Public_Void_List_1_IMutableAttribute_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr__ctor_Public_Void_IReadOnlyList_1_IAttribute_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr__ctor_Public_Void_Il2CppReferenceArray_1_IAttribute_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr__ctor_Public_Void_MutableAttributes_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_Virtual_Final_New_IMutableAttribute_IAttributeDefinition_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_AttributeEquals_Public_Virtual_Final_New_Boolean_AttributeDefinition_1_V_V_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_Canis_attributes_IHasAttributes_GetAttribute_Private_Virtual_Final_New_IAttribute_IAttributeDefinition_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_HasAttribute_Public_Virtual_Final_New_Boolean_Int32_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_MutableAttribute_1_Nullable_1_Int32_AttributeDefinition_1_Nullable_1_Int32_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_MutableAttribute_1_Nullable_1_Single_AttributeDefinition_1_Nullable_1_Single_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_MutableAttribute_1_String_AttributeDefinition_1_String_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_MutableAttribute_1_Il2CppStringArray_AttributeDefinition_1_Il2CppStringArray_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_MutableAttribute_1_LocalizableText_AttributeDefinition_1_LocalizableText_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_MutableAttribute_1_Nullable_1_Boolean_AttributeDefinition_1_Nullable_1_Boolean_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_Virtual_Final_New_MutableAttribute_1_V_AttributeDefinition_1_V_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_Canis_attributes_IHasAttributes_GetAttribute_Private_Virtual_Final_New_IAttribute_1_V_AttributeDefinition_1_V_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_SetAttribute_Public_Void_IAttribute_1_V_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_SetAttribute_Public_Virtual_Final_New_Void_AttributeDefinition_1_V_V_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_SetAttribute_Public_Virtual_New_Void_IAttribute_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_ClearAttribute_Public_Void_Int32_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_RemoveAttribute_Public_Void_Int32_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_ReplaceWith_Public_Void_IEnumerable_1_IAttribute_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_UpdateWith_Public_Void_IEnumerable_1_IAttribute_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_Clear_Public_Virtual_New_Void_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_get_AsReadOnly_Public_get_ReadOnlyAttributes_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetEnumerator_Public_Virtual_Final_New_IEnumerator_1_IAttribute_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_System_Collections_IEnumerable_GetEnumerator_Private_Virtual_Final_New_IEnumerator_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_op_Implicit_Public_Static_ReadOnlyAttributes_MutableAttributes_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_Clone_Public_Virtual_New_MutableAttributes_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_System_ICloneable_Clone_Private_Virtual_Final_New_Object_0   [Private, Static, InitOnly]
+  PROP Il2CppSystem.Collections.Concurrent.ConcurrentDictionary<Int32, Canis.attributes.IMutableAttribute> data
+  PROP Canis.attributes.ReadOnlyAttributes _ReadOnly
+  PROP Canis.attributes.ReadOnlyAttributes AsReadOnly
+  METHOD Void .cctor()
+  METHOD Void StoreAttribute(Canis.attributes.IAttribute newAttribute)
+  METHOD Void .ctor()
+  METHOD Void .ctor(Il2CppSystem.Collections.Concurrent.ConcurrentDictionary<Int32, Canis.attributes.IMutableAttribute> data)
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute> attributes, Int32 capacity)
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.List<Canis.attributes.IMutableAttribute> attributes)
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.attributes.IAttribute> attributes)
+  METHOD Void .ctor(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.attributes.IAttribute> attributes)
+  METHOD Void .ctor(Canis.attributes.MutableAttributes other)
+  METHOD Canis.attributes.IMutableAttribute GetAttribute(Canis.attributes.IAttributeDefinition definition)
+  METHOD Boolean AttributeEquals(Canis.attributes.AttributeDefinition<M0> definition, M0 comparison)
+  METHOD Canis.attributes.IAttribute Canis_attributes_IHasAttributes_GetAttribute(Canis.attributes.IAttributeDefinition definition)
+  METHOD Boolean HasAttribute(Int32 key)
+  METHOD Canis.attributes.MutableAttribute<Il2CppSystem.Nullable<Int32>> GetAttribute(Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Int32>> definition)
+  METHOD Canis.attributes.MutableAttribute<Il2CppSystem.Nullable<Single>> GetAttribute(Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Single>> definition)
+  METHOD Canis.attributes.MutableAttribute<String> GetAttribute(Canis.attributes.AttributeDefinition<String> definition)
+  METHOD Canis.attributes.MutableAttribute<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray> GetAttribute(Canis.attributes.AttributeDefinition<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray> definition)
+  METHOD Canis.attributes.MutableAttribute<Canis.utils.localization.LocalizableText> GetAttribute(Canis.attributes.AttributeDefinition<Canis.utils.localization.LocalizableText> definition)
+  METHOD Canis.attributes.MutableAttribute<Il2CppSystem.Nullable<Boolean>> GetAttribute(Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Boolean>> definition)
+  METHOD Canis.attributes.MutableAttribute<M0> GetAttribute(Canis.attributes.AttributeDefinition<M0> definition)
+  METHOD Canis.attributes.IAttribute<M0> Canis_attributes_IHasAttributes_GetAttribute(Canis.attributes.AttributeDefinition<M0> definition)
+  METHOD Void SetAttribute(Canis.attributes.IAttribute<M0> attr)
+  METHOD Void SetAttribute(Canis.attributes.AttributeDefinition<M0> attrDef, M0 value)
+  METHOD Void SetAttribute(Canis.attributes.IAttribute attr)
+  METHOD Void ClearAttribute(Int32 key)
+  METHOD Void RemoveAttribute(Int32 key)
+  METHOD Void ReplaceWith(Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute> other)
+  METHOD Void UpdateWith(Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute> other)
+  METHOD Void Clear()
+  METHOD Canis.attributes.ReadOnlyAttributes get_AsReadOnly()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerator<Canis.attributes.IAttribute> GetEnumerator()
+  METHOD Il2CppSystem.Collections.IEnumerator System_Collections_IEnumerable_GetEnumerator()
+  METHOD Canis.attributes.ReadOnlyAttributes op_Implicit(Canis.attributes.MutableAttributes attributes)
+  METHOD Canis.attributes.MutableAttributes Clone()
+  METHOD Il2CppSystem.Object System_ICloneable_Clone()
+  METHOD Void .ctor(Canis.attributes.IAttribute[] attributes)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Concurrent.ConcurrentDictionary<Int32, Canis.attributes.IMutableAttribute> get_data()
+  METHOD Void set_data(Il2CppSystem.Collections.Concurrent.ConcurrentDictionary<Int32, Canis.attributes.IMutableAttribute>)
+  METHOD Canis.attributes.ReadOnlyAttributes get__ReadOnly()
+  METHOD Void set__ReadOnly(Canis.attributes.ReadOnlyAttributes)
+
+================================================================
+TYPE Canis.attributes.MutableAttributesAnalyzer
+  BASE Canis.json.DwdTypeAnalyzer
+  FIELD IntPtr NativeFieldInfoPtr_attributeBuffer   [Private, Static, InitOnly]
+  FIELD IntPtr NativeFieldInfoPtr_IAttributeType   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr__ctor_Public_Void_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_Analyze_Public_Virtual_Boolean_DwdModelAnalyzer_MorePeekableStream_Type_byref_Object_0   [Private, Static, InitOnly]
+  PROP Il2CppSystem.Collections.Generic.List<Canis.attributes.IAttribute> attributeBuffer
+  PROP Il2CppSystem.Type IAttributeType
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Boolean Analyze(Canis.json.DwdModelAnalyzer analyzer, Canis.json.MorePeekableStream tokens, Il2CppSystem.Type targetType, ref Il2CppSystem.Object result)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.attributes.IAttribute> get_attributeBuffer()
+  METHOD Void set_attributeBuffer(Il2CppSystem.Collections.Generic.List<Canis.attributes.IAttribute>)
+  METHOD Il2CppSystem.Type get_IAttributeType()
+  METHOD Void set_IAttributeType(Il2CppSystem.Type)
+
+================================================================
+TYPE Canis.attributes.ReadOnlyAttributes
+  BASE Il2CppSystem.Object
+  FIELD IntPtr NativeFieldInfoPtr_source   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr__ctor_Public_Void_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr__ctor_Public_Void_IEnumerable_1_IAttribute_Int32_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr__ctor_Public_Void_IReadOnlyList_1_IAttribute_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr__ctor_Public_Void_Il2CppReferenceArray_1_IAttribute_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr__ctor_Public_Void_MutableAttributes_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_ReadOnlyAttribute_1_Nullable_1_Int32_AttributeDefinition_1_Nullable_1_Int32_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_ReadOnlyAttribute_1_Nullable_1_Single_AttributeDefinition_1_Nullable_1_Single_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_ReadOnlyAttribute_1_String_AttributeDefinition_1_String_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_ReadOnlyAttribute_1_Il2CppStringArray_AttributeDefinition_1_Il2CppStringArray_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_ReadOnlyAttribute_1_LocalizableText_AttributeDefinition_1_LocalizableText_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_ReadOnlyAttribute_1_Nullable_1_Boolean_AttributeDefinition_1_Nullable_1_Boolean_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_ReadOnlyAttribute_1_V_AttributeDefinition_1_V_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_Virtual_Final_New_IAttribute_IAttributeDefinition_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_Canis_attributes_IHasAttributes_GetAttribute_Private_Virtual_Final_New_IAttribute_1_V_AttributeDefinition_1_V_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_HasAttribute_Public_Virtual_Final_New_Boolean_Int32_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetEnumerator_Public_IEnumerator_1_ReadOnlyAttribute_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_System_Collections_Generic_IEnumerable_Canis_attributes_IAttribute__GetEnumerator_Private_Virtual_Final_New_IEnumerator_1_IAttribute_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_System_Collections_IEnumerable_GetEnumerator_Private_Virtual_Final_New_IEnumerator_0   [Private, Static, InitOnly]
+  PROP Canis.attributes.MutableAttributes source
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute> attrs, Int32 capacity)
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.attributes.IAttribute> attrs)
+  METHOD Void .ctor(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.attributes.IAttribute> attrs)
+  METHOD Void .ctor(Canis.attributes.MutableAttributes source)
+  METHOD Canis.attributes.ReadOnlyAttribute<Il2CppSystem.Nullable<Int32>> GetAttribute(Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Int32>> definition)
+  METHOD Canis.attributes.ReadOnlyAttribute<Il2CppSystem.Nullable<Single>> GetAttribute(Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Single>> definition)
+  METHOD Canis.attributes.ReadOnlyAttribute<String> GetAttribute(Canis.attributes.AttributeDefinition<String> definition)
+  METHOD Canis.attributes.ReadOnlyAttribute<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray> GetAttribute(Canis.attributes.AttributeDefinition<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray> definition)
+  METHOD Canis.attributes.ReadOnlyAttribute<Canis.utils.localization.LocalizableText> GetAttribute(Canis.attributes.AttributeDefinition<Canis.utils.localization.LocalizableText> definition)
+  METHOD Canis.attributes.ReadOnlyAttribute<Il2CppSystem.Nullable<Boolean>> GetAttribute(Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Boolean>> definition)
+  METHOD Canis.attributes.ReadOnlyAttribute<M0> GetAttribute(Canis.attributes.AttributeDefinition<M0> definition)
+  METHOD Canis.attributes.IAttribute GetAttribute(Canis.attributes.IAttributeDefinition definition)
+  METHOD Canis.attributes.IAttribute<M0> Canis_attributes_IHasAttributes_GetAttribute(Canis.attributes.AttributeDefinition<M0> definition)
+  METHOD Boolean HasAttribute(Int32 key)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerator<Canis.attributes.ReadOnlyAttribute> GetEnumerator()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerator<Canis.attributes.IAttribute> System_Collections_Generic_IEnumerable_Canis_attributes_IAttribute__GetEnumerator()
+  METHOD Il2CppSystem.Collections.IEnumerator System_Collections_IEnumerable_GetEnumerator()
+  METHOD Void .ctor(Canis.attributes.IAttribute[] attrs)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.attributes.MutableAttributes get_source()
+  METHOD Void set_source(Canis.attributes.MutableAttributes)
+
+================================================================
+TYPE Canis.attributes.ReadOnlyAttributesAnalyzer
+  BASE Canis.json.DwdTypeAnalyzer
+  FIELD IntPtr NativeFieldInfoPtr_attributeBuffer   [Private, Static, InitOnly]
+  FIELD IntPtr NativeFieldInfoPtr_IAttributeType   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr__ctor_Public_Void_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_Analyze_Public_Virtual_Boolean_DwdModelAnalyzer_MorePeekableStream_Type_byref_Object_0   [Private, Static, InitOnly]
+  PROP Il2CppSystem.Collections.Generic.List<Canis.attributes.IAttribute> attributeBuffer
+  PROP Il2CppSystem.Type IAttributeType
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Boolean Analyze(Canis.json.DwdModelAnalyzer analyzer, Canis.json.MorePeekableStream tokens, Il2CppSystem.Type targetType, ref Il2CppSystem.Object result)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.attributes.IAttribute> get_attributeBuffer()
+  METHOD Void set_attributeBuffer(Il2CppSystem.Collections.Generic.List<Canis.attributes.IAttribute>)
+  METHOD Il2CppSystem.Type get_IAttributeType()
+  METHOD Void set_IAttributeType(Il2CppSystem.Type)
+
+================================================================
+TYPE Canis.attributes.IAttribute
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  FIELD IntPtr NativeMethodInfoPtr_get_Name_Public_Abstract_Virtual_New_get_Int32_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_get_ValueType_Public_Abstract_Virtual_New_get_Type_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_get_Value_Public_Abstract_Virtual_New_get_Object_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_get_ModValue_Public_Abstract_Virtual_New_get_Object_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_get_BaseValue_Public_Virtual_New_get_Object_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_get_IsModified_Public_Virtual_New_get_Boolean_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_get_AsReadOnly_Public_Abstract_Virtual_New_get_ReadOnlyAttribute_0   [Private, Static, InitOnly]
+  PROP Int32 Name
+  PROP Il2CppSystem.Type ValueType
+  PROP Il2CppSystem.Object Value
+  PROP Il2CppSystem.Object ModValue
+  PROP Il2CppSystem.Object BaseValue
+  PROP Boolean IsModified
+  PROP Canis.attributes.ReadOnlyAttribute AsReadOnly
+  METHOD Void .cctor()
+  METHOD Int32 get_Name()
+  METHOD Il2CppSystem.Type get_ValueType()
+  METHOD Il2CppSystem.Object get_Value()
+  METHOD Il2CppSystem.Object get_ModValue()
+  METHOD Il2CppSystem.Object get_BaseValue()
+  METHOD Boolean get_IsModified()
+  METHOD Canis.attributes.ReadOnlyAttribute get_AsReadOnly()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.attributes.IAttribute`1
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  FIELD IntPtr NativeMethodInfoPtr_get_Value_Public_Abstract_Virtual_New_get_V_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_get_ModValue_Public_Abstract_Virtual_New_get_V_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_get_BaseValue_Public_Virtual_New_get_V_0   [Private, Static, InitOnly]
+  PROP T0 Value
+  PROP T0 ModValue
+  PROP T0 BaseValue
+  METHOD Void .cctor()
+  METHOD T0 get_Value()
+  METHOD T0 get_ModValue()
+  METHOD T0 get_BaseValue()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.attributes.IAttributeTokenizer
+  BASE Canis.json.tokenizers.DwdTypeTokenizer
+  FIELD IntPtr NativeMethodInfoPtr__ctor_Public_Void_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_Tokenize_Public_Virtual_Boolean_DwdModelWalker_ICycleDetector_List_1_Token_Object_0   [Private, Static, InitOnly]
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Boolean Tokenize(Canis.json.DwdModelWalker walker, JsonFx.Serialization.GraphCycles.ICycleDetector detector, Il2CppSystem.Collections.Generic.List<JsonFx.Serialization.Token> tokens, Il2CppSystem.Object value)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.attributes.IAttributeDefinition
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  FIELD IntPtr NativeMethodInfoPtr_get_Name_Public_Abstract_Virtual_New_get_String_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_get_Key_Public_Abstract_Virtual_New_get_Int32_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_get_ValueType_Public_Abstract_Virtual_New_get_Type_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_Factory_Public_Abstract_Virtual_New_IMutableAttribute_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_Factory_Public_Abstract_Virtual_New_IMutableAttribute_Object_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_Factory_Public_Abstract_Virtual_New_IMutableAttribute_Object_Il2CppReferenceArray_1_IMod_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_Copy_Public_Abstract_Virtual_New_IMutableAttribute_IAttribute_0   [Private, Static, InitOnly]
+  PROP String Name
+  PROP Int32 Key
+  PROP Il2CppSystem.Type ValueType
+  METHOD Void .cctor()
+  METHOD String get_Name()
+  METHOD Int32 get_Key()
+  METHOD Il2CppSystem.Type get_ValueType()
+  METHOD Canis.attributes.IMutableAttribute Factory()
+  METHOD Canis.attributes.IMutableAttribute Factory(Il2CppSystem.Object value)
+  METHOD Canis.attributes.IMutableAttribute Factory(Il2CppSystem.Object value, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.attributes.IMod> mods)
+  METHOD Canis.attributes.IMutableAttribute Copy(Canis.attributes.IAttribute original)
+  METHOD Canis.attributes.IMutableAttribute Factory(Il2CppSystem.Object value, Canis.attributes.IMod[] mods)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.attributes.IHasMutableAttributes
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_Abstract_Virtual_New_MutableAttribute_1_V_AttributeDefinition_1_V_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_GetAttribute_Public_Abstract_Virtual_New_IMutableAttribute_IAttributeDefinition_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_AttributeEquals_Public_Abstract_Virtual_New_Boolean_AttributeDefinition_1_V_V_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_AddMod_Public_Virtual_New_Void_IAttributeDefinition_IMod_0   [Private, Static, InitOnly]
+  METHOD Void .cctor()
+  METHOD Canis.attributes.MutableAttribute<M0> GetAttribute(Canis.attributes.AttributeDefinition<M0> definition)
+  METHOD Canis.attributes.IMutableAttribute GetAttribute(Canis.attributes.IAttributeDefinition definition)
+  METHOD Boolean AttributeEquals(Canis.attributes.AttributeDefinition<M0> definition, M0 comparison)
+  METHOD Void AddMod(Canis.attributes.IAttributeDefinition definition, Canis.attributes.IMod mod)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE MethodInfoStoreGeneric_SetTo_Public_Static_Void_AttributeDefinition_1_T_MutableAttributes_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_SetFrom_Public_Static_Void_AttributeDefinition_1_T_MutableAttributes_IHasAttributes_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_TryGetAttribute_Public_Static_Boolean_IHasAttributes_AttributeDefinition_1_T_byref_IAttribute_1_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_TryGetAttribute_Public_Static_IAttribute_1_T_IHasAttributes_AttributeDefinition_1_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_Canis_attributes_IHasAttributes_GetAttribute_Private_Virtual_Final_New_IAttribute_1_V_AttributeDefinition_1_V_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_SetAttribute_Public_Void_IAttribute_1_V_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE ObjectCompilerGeneratedNPrivateSealedIEnumerator1IAttributeIEnumeratorIDisposableInIAReIE1ObIAIAUnique
+  BASE Il2CppSystem.Object
+  FIELD IntPtr NativeFieldInfoPtr___1__state   [Private, Static, InitOnly]
+  FIELD IntPtr NativeFieldInfoPtr___2__current   [Private, Static, InitOnly]
+  FIELD IntPtr NativeFieldInfoPtr___4__this   [Private, Static, InitOnly]
+  FIELD IntPtr NativeFieldInfoPtr___7__wrap1   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr__ctor_Public_Void_Int32_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_System_IDisposable_Dispose_Private_Virtual_Final_New_Void_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_MoveNext_Private_Virtual_Final_New_Boolean_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr___m__Finally1_Private_Void_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_System_Collections_Generic_IEnumerator_Canis_attributes_IAttribute__get_Current_Private_Virtual_Final_New_get_IAttribute_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_System_Collections_IEnumerator_Reset_Private_Virtual_Final_New_Void_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_System_Collections_IEnumerator_get_Current_Private_Virtual_Final_New_get_Object_0   [Private, Static, InitOnly]
+  PROP Int32 __1__state
+  PROP Canis.attributes.IAttribute __2__current
+  PROP Canis.attributes.ReadOnlyAttributes __4__this
+  PROP Il2CppSystem.Collections.Generic.IEnumerator<Canis.attributes.IAttribute> __7__wrap1
+  PROP Canis.attributes.IAttribute System.Collections.Generic.IEnumerator<Canis.attributes.IAttribute>.Current
+  PROP Il2CppSystem.Object System.Collections.IEnumerator.Current
+  METHOD Void .cctor()
+  METHOD Void .ctor(Int32 <>1__state)
+  METHOD Void System_IDisposable_Dispose()
+  METHOD Boolean MoveNext()
+  METHOD Void __m__Finally1()
+  METHOD Canis.attributes.IAttribute System_Collections_Generic_IEnumerator_Canis_attributes_IAttribute__get_Current()
+  METHOD Void System_Collections_IEnumerator_Reset()
+  METHOD Il2CppSystem.Object System_Collections_IEnumerator_get_Current()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Int32 get___1__state()
+  METHOD Void set___1__state(Int32)
+  METHOD Canis.attributes.IAttribute get___2__current()
+  METHOD Void set___2__current(Canis.attributes.IAttribute)
+  METHOD Canis.attributes.ReadOnlyAttributes get___4__this()
+  METHOD Void set___4__this(Canis.attributes.ReadOnlyAttributes)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerator<Canis.attributes.IAttribute> get___7__wrap1()
+  METHOD Void set___7__wrap1(Il2CppSystem.Collections.Generic.IEnumerator<Canis.attributes.IAttribute>)
+
+================================================================
+TYPE MethodInfoStoreGeneric_Canis_attributes_IHasAttributes_GetAttribute_Private_Virtual_Final_New_IAttribute_1_V_AttributeDefinition_1_V_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE ObjectCompilerGeneratedNPrivateSealedIEnumerator1IAttributeIEnumeratorIDisposableInIASeEn2IMInObIAUnique
+  BASE Il2CppSystem.Object
+  FIELD IntPtr NativeFieldInfoPtr___1__state   [Private, Static, InitOnly]
+  FIELD IntPtr NativeFieldInfoPtr___2__current   [Private, Static, InitOnly]
+  FIELD IntPtr NativeFieldInfoPtr___4__this   [Private, Static, InitOnly]
+  FIELD IntPtr NativeFieldInfoPtr___7__wrap1   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr__ctor_Public_Void_Int32_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_System_IDisposable_Dispose_Private_Virtual_Final_New_Void_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_MoveNext_Private_Virtual_Final_New_Boolean_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr___m__Finally1_Private_Void_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_System_Collections_Generic_IEnumerator_Canis_attributes_IAttribute__get_Current_Private_Virtual_Final_New_get_IAttribute_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_System_Collections_IEnumerator_Reset_Private_Virtual_Final_New_Void_0   [Private, Static, InitOnly]
+  FIELD IntPtr NativeMethodInfoPtr_System_Collections_IEnumerator_get_Current_Private_Virtual_Final_New_get_Object_0   [Private, Static, InitOnly]
+  PROP Int32 __1__state
+  PROP Canis.attributes.IAttribute __2__current
+  PROP Canis.attributes.SerializableAttributes __4__this
+  PROP Enumerator<Int32, Canis.attributes.IMutableAttribute> __7__wrap1
+  PROP Canis.attributes.IAttribute System.Collections.Generic.IEnumerator<Canis.attributes.IAttribute>.Current
+  PROP Il2CppSystem.Object System.Collections.IEnumerator.Current
+  METHOD Void .cctor()
+  METHOD Void .ctor(Int32 <>1__state)
+  METHOD Void System_IDisposable_Dispose()
+  METHOD Boolean MoveNext()
+  METHOD Void __m__Finally1()
+  METHOD Canis.attributes.IAttribute System_Collections_Generic_IEnumerator_Canis_attributes_IAttribute__get_Current()
+  METHOD Void System_Collections_IEnumerator_Reset()
+  METHOD Il2CppSystem.Object System_Collections_IEnumerator_get_Current()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Int32 get___1__state()
+  METHOD Void set___1__state(Int32)
+  METHOD Canis.attributes.IAttribute get___2__current()
+  METHOD Void set___2__current(Canis.attributes.IAttribute)
+  METHOD Canis.attributes.SerializableAttributes get___4__this()
+  METHOD Void set___4__this(Canis.attributes.SerializableAttributes)
+  METHOD Enumerator<Int32, Canis.attributes.IMutableAttribute> get___7__wrap1()
+  METHOD Void set___7__wrap1(Enumerator<Int32, Canis.attributes.IMutableAttribute>)
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetAttribute_Public_Abstract_Virtual_New_IAttribute_1_V_AttributeDefinition_1_V_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_AsAttribute_Public_Static_IAttribute_1_T_IAttribute_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_AsAttribute_Public_Static_ComputedAttribute_2_IAttribute_1_T_T_IAttribute_1_T_AttributeDefinition_1_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_AsAttribute_Public_Static_ComputedAttribute_2_IAttribute_T_IAttribute_AttributeDefinition_1_T_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_ExtractAttribute_Public_Static_ComputedAttribute_2_ExtractVersionedData_2_TSourceValue_IAttribute_1_TTargetValue_TTargetValue_TSourceValue_AttributeDefinition_1_TTargetValue_Func_2_TSourceValue_IHasAttributes_0`2
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_ExtractAttribute_Public_Static_ComputedAttribute_2_ExtractVersionedData_2_TSourceValue_IAttribute_1_TTargetValue_TTargetValue_TSourceValue_AttributeDefinition_1_TTargetValue_Func_2_TSourceValue_IAttribute_1_TTargetValue_0`2
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_Transform_Public_Static_TransformAttribute_2_TSourceValue_TTargetValue_IAttribute_1_TSourceValue_AttributeDefinition_1_TTargetValue_Func_2_TSourceValue_TTargetValue_0`2
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_ComputeFrom_Public_Static_TransformAttribute_3_TSourceValue1_TSourceValue2_TTargetValue_AttributeDefinition_1_TTargetValue_IAttribute_1_TSourceValue1_IAttribute_1_TSourceValue2_Func_3_TSourceValue1_TSourceValue2_TTargetValue_0`3
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_GetAttribute_Public_Virtual_Final_New_IAttribute_1_V_AttributeDefinition_1_V_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_AddLazyAttribute_Public_Void_AttributeDefinition_1_T_Func_2_AttributeDefinition_1_T_IAttribute_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_SetLazyAttribute_Public_Void_AttributeDefinition_1_T_Func_2_AttributeDefinition_1_T_IAttribute_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD Void .cctor()
+
