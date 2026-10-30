@@ -1,156 +1,178 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
+using canis.archetypes;
+using worm.canis;
+using worm.canis.archetypes;
+using worm.canis.entities;
+using worm.canis.actions.phases;
 
 namespace DuneProbe
 {
-    [BepInPlugin(GUID, "Dune Probe", "0.6.0")]
+    [BepInPlugin(GUID, "Dune Probe", "1.3.0")]
     public class Plugin : BasePlugin
     {
         public const string GUID = "local.duneprobe";
 
         internal static ManualLogSource Logger;
-        private static bool _injected;
+        private static readonly List<WormPlayer> Players = new List<WormPlayer>();
+        private static WormMatch _match;
+        private static bool _done;
 
         public override void Load()
         {
             Logger = Log;
-            Logger.LogInfo("========== [PROBE v6] 注入尝试 ==========");
-
-            var harmony = new Harmony("local.duneprobe.harmony");
-            var postfix = new HarmonyMethod(typeof(Plugin).GetMethod(nameof(OnCreateDecks),
-                BindingFlags.Static | BindingFlags.NonPublic));
-
-            var t = FindType("worm.canis.actions.phases.SetupPhase");
-            var mi = t?.GetMethod("CreateDecks", BindingFlags.Public | BindingFlags.NonPublic |
-                                                BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            if (mi == null) { Logger.LogWarning("[PROBE] CreateDecks 未找到"); return; }
-
-            harmony.Patch(mi, postfix: postfix);
-            Logger.LogInfo("[PROBE] CreateDecks 已挂 postfix");
-            Logger.LogInfo("========== [PROBE v6] 就绪 ==========");
+            Logger.LogInfo("========== [PROBE v13] 诊断 ==========");
+            var h = new Harmony("local.duneprobe.harmony");
+            Patch(h, "SetupPlayer", nameof(OnSetupPlayer));
+            Patch(h, "CreateDecks", nameof(OnAfter));
+            Logger.LogInfo("========== [PROBE v13] 就绪 ==========");
         }
 
-        private static void OnCreateDecks(object __instance)
+        private static void Patch(Harmony h, string name, string handler)
         {
-            if (_injected) return;
             try
             {
-                object match = GetProp(__instance, "wormMatch");
-                if (match == null) { Logger.LogWarning("[PROBE] wormMatch 为 null"); return; }
+                var mi = typeof(SetupPhase).GetMethod(name, BindingFlags.Public | BindingFlags.NonPublic |
+                                                             BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                if (mi == null) { Logger.LogWarning($"[PROBE] {name} 未找到"); return; }
+                h.Patch(mi, postfix: new HarmonyMethod(typeof(Plugin).GetMethod(handler,
+                    BindingFlags.Static | BindingFlags.NonPublic)));
+                Logger.LogInfo($"[PROBE] 已挂载 {name}");
+            }
+            catch (Exception e) { Logger.LogWarning($"[PROBE] 挂载 {name} 失败: {e.GetType().Name}"); }
+        }
 
-                object order = GetProp(match, "PlayerTurnOrder");
-                var players = ToList(order);
-                Logger.LogInfo($"[PROBE] 玩家数: {players.Count}");
+        private static void OnSetupPlayer(SetupPhase __instance, object[] __args)
+        {
+            try
+            {
+                if (_match == null && __instance.wormMatch != null) _match = __instance.wormMatch;
+                var p = __args != null && __args.Length > 0 ? __args[0] as WormPlayer : null;
+                if (p == null) return;
+                if (Players.Any(x => x.Pointer == p.Pointer)) return;
+                Players.Add(p);
+            }
+            catch { }
+        }
 
-                foreach (var p in players)
+        private static void OnAfter(SetupPhase __instance)
+        {
+            if (_done) return;
+            _done = true;
+            try
+            {
+                if (_match == null && __instance.wormMatch != null) _match = __instance.wormMatch;
+                Logger.LogInfo($"[PROBE] 玩家数: {Players.Count}, 对局: {_match != null}");
+
+                DumpSigs();
+                DumpArchs();
+                DumpDeckInfo();
+            }
+            catch (Exception e) { Logger.LogWarning("[PROBE] 异常: " + e.GetType().Name + ": " + e.Message); }
+        }
+
+        private static void DumpSigs()
+        {
+            Logger.LogInfo("[PROBE] ---- ArchetypeIDUtils 签名 ----");
+            foreach (var t in FindAllTypes("ArchetypeIDUtils"))
+            {
+                Logger.LogInfo("[PROBE]  类型: " + t.FullName);
+                foreach (var m in t.GetMethods(BindingFlags.Public | BindingFlags.Static))
                 {
-                    if (p == null) continue;
-                    bool human = ToBool(GetProp(p, "IsHuman"));
-                    var deck = GetProp(p, "Deck");
-                    Logger.LogInfo($"[PROBE] 玩家 {Str(GetProp(p, "EntityName"))} 人类={human} 牌组={Count(deck)}");
-                    if (human && !_injected)
-                    {
-                        DoInject(match, p, deck);
-                        _injected = true;
-                    }
+                    if (m.DeclaringType != t) continue;
+                    var ps = string.Join(", ", m.GetParameters().Select(x => x.ParameterType.Name + " " + x.Name));
+                    Logger.LogInfo($"[PROBE]    {m.ReturnType.Name} {m.Name}({ps})");
                 }
             }
-            catch (Exception e)
+
+            Logger.LogInfo("[PROBE] ---- Archetype 静态方法 ----");
+            var at = typeof(Archetype);
+            foreach (var m in at.GetMethods(BindingFlags.Public | BindingFlags.Static))
             {
-                Logger.LogWarning("[PROBE] 异常: " + e.GetType().Name + ": " + e.Message);
+                var ps = string.Join(", ", m.GetParameters().Select(x => x.ParameterType.Name + " " + x.Name));
+                Logger.LogInfo($"[PROBE]    {m.ReturnType.Name} {m.Name}({ps})");
             }
         }
 
-        private static void DoInject(object match, object player, object deck)
+        private static void DumpArchs()
         {
-            if (deck == null) { Logger.LogWarning("[PROBE] Deck 为 null"); return; }
-
-            var archType = FindType("worm.canis.archetypes.WormArchetypes");
-            var archetypeType = FindType("canis.archetypes.Archetype");
-            if (archType == null || archetypeType == null) { Logger.LogWarning("[PROBE] 类型缺失"); return; }
-
-            object inst = GetProp(archType, "Instance") ?? archType.GetProperty("Instance")?.GetValue(null);
-            if (inst == null) { Logger.LogWarning("[PROBE] 单例为 null"); return; }
-
-            object all = archType.GetMethod("AllArchetypes").Invoke(inst, null);
-            object dagger = null;
-            foreach (var a in ToList(all))
-            {
-                if (a != null && a.GetType().Name == "Dagger") { dagger = a; break; }
-            }
-            if (dagger == null) { Logger.LogWarning("[PROBE] 未找到 Dagger"); return; }
-            Logger.LogInfo($"[PROBE] 原型: {dagger.GetType().FullName}");
-
-            MethodInfo create = null;
-            foreach (var m in archType.GetMethods(BindingFlags.Public | BindingFlags.Instance))
-            {
-                if (m.Name != "CreateEntity") continue;
-                var ps = m.GetParameters();
-                if (ps.Length == 4 && ps[0].ParameterType == archetypeType) { create = m; break; }
-            }
-            if (create == null) { Logger.LogWarning("[PROBE] 未找到 CreateEntity(Archetype,...)"); return; }
-
-            int before = Count(deck);
-            object entity = null;
             try
             {
-                var ps = create.GetParameters();
-                entity = create.Invoke(inst, new object[] { dagger, match, player, null });
-            }
-            catch (Exception e)
-            {
-                Logger.LogWarning("[PROBE] CreateEntity 失败: " + e.GetType().Name + ": " +
-                                  (e.InnerException?.Message ?? e.Message));
-                return;
-            }
-            if (entity == null) { Logger.LogWarning("[PROBE] 实体为 null"); return; }
-            Logger.LogInfo($"[PROBE] 实体类型: {entity.GetType().Name}");
+                var inst = WormArchetypes.Instance;
+                var pi = typeof(WormArchetypes).GetProperty("archs",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                object lazy = pi?.GetValue(inst);
+                object arr = lazy?.GetType().GetProperty("Value")?.GetValue(lazy);
+                if (arr == null) { Logger.LogWarning("[PROBE] archs 为 null"); return; }
 
-            var add = deck.GetType().GetMethod("Add", new[] { entity.GetType() }) ??
-                      deck.GetType().GetMethod("Add");
-            if (add == null) { Logger.LogWarning("[PROBE] Deck 无 Add 方法"); return; }
-
-            try
-            {
-                var pt = add.GetParameters()[0].ParameterType;
-                Logger.LogInfo($"[PROBE] Add 参数类型={pt.Name} 实体是否匹配={pt.IsInstanceOfType(entity)}");
-                add.Invoke(deck, new[] { entity });
-                Logger.LogWarning($"[PROBE] >>> 注入完成: 牌组 {before} -> {Count(deck)}");
+                var lenProp = arr.GetType().GetProperty("Length");
+                int len = Convert.ToInt32(lenProp.GetValue(arr));
+                var item = arr.GetType().GetProperty("Item");
+                Logger.LogInfo($"[PROBE] archs 长度 {len}，前 8 个：");
+                for (int i = 0; i < Math.Min(8, len); i++)
+                {
+                    var a = item.GetValue(arr, new object[] { i });
+                    if (a == null) { Logger.LogInfo($"[PROBE]   #{i} null"); continue; }
+                    string name = "?", id = "?";
+                    try { name = a.GetType().GetProperty("EntityName")?.GetValue(a)?.ToString(); } catch { }
+                    try { id = a.GetType().GetProperty("ArchetypeID")?.GetValue(a)?.ToString(); } catch { }
+                    Logger.LogInfo($"[PROBE]   #{i} {a.GetType().Name} | {name} | {id}");
+                }
             }
-            catch (Exception e)
-            {
-                Logger.LogWarning("[PROBE] Add 失败: " + e.GetType().Name + ": " + (e.InnerException?.Message ?? e.Message));
-            }
+            catch (Exception e) { Logger.LogWarning("[PROBE] archs 转储失败: " + e.GetType().Name + ": " + e.Message); }
         }
 
-        private static List<object> ToList(object coll)
+        private static void DumpDeckInfo()
         {
-            var result = new List<object>();
-            if (coll == null) return result;
-
-            if (coll is IEnumerable e)
+            try
             {
-                foreach (var x in e) result.Add(x);
-                return result;
+                if (Players.Count == 0) return;
+                var deck = Players[0].Deck;
+                if (deck == null) { Logger.LogWarning("[PROBE] Deck null"); return; }
+
+                Logger.LogInfo($"[PROBE] Deck 类型: {deck.GetType().FullName}");
+                foreach (var p in deck.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    if (p.Name.IndexOf("Child", StringComparison.OrdinalIgnoreCase) < 0 &&
+                        p.Name.IndexOf("Card", StringComparison.OrdinalIgnoreCase) < 0 &&
+                        p.Name.IndexOf("Count", StringComparison.OrdinalIgnoreCase) < 0) continue;
+                    object v = null;
+                    try { v = p.GetValue(deck); } catch { }
+                    Logger.LogInfo($"[PROBE]   Deck.{p.Name} : {p.PropertyType.Name} = {SafeLen(v)}");
+                }
             }
+            catch (Exception e) { Logger.LogWarning("[PROBE] Deck 转储失败: " + e.GetType().Name); }
+        }
 
-            int n = Count(coll);
-            if (n <= 0) return result;
-
-            var item = coll.GetType().GetProperty("Item");
-            if (item == null) return result;
-            for (int i = 0; i < n; i++)
+        private static string SafeLen(object v)
+        {
+            if (v == null) return "null";
+            try
             {
-                try { result.Add(item.GetValue(coll, new object[] { i })); }
-                catch { }
+                var len = v.GetType().GetProperty("Length");
+                if (len != null) return "len=" + len.GetValue(v);
+                var cnt = v.GetType().GetProperty("Count");
+                if (cnt != null) return "count=" + cnt.GetValue(v);
+                return v.ToString();
             }
-            return result;
+            catch { return "<err>"; }
+        }
+
+        private static IEnumerable<Type> FindAllTypes(string simpleName)
+        {
+            foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                Type[] ts;
+                try { ts = a.GetTypes(); } catch { continue; }
+                foreach (var t in ts)
+                    if (t.Name == simpleName) yield return t;
+            }
         }
 
         private static Type FindType(string full)
@@ -161,39 +183,6 @@ namespace DuneProbe
                 if (t != null) return t;
             }
             return null;
-        }
-
-        private static object GetProp(object o, string name)
-        {
-            if (o == null) return null;
-            try
-            {
-                var p = o.GetType().GetProperty(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-                return p?.GetValue(o);
-            }
-            catch { return null; }
-        }
-
-        private static bool ToBool(object o)
-        {
-            try { return o != null && Convert.ToBoolean(o); } catch { return false; }
-        }
-
-        private static string Str(object o)
-        {
-            if (o == null) return "null";
-            try { return o.ToString(); } catch { return "<err>"; }
-        }
-
-        private static int Count(object coll)
-        {
-            if (coll == null) return -1;
-            try
-            {
-                var c = coll.GetType().GetProperty("Count");
-                return c != null ? Convert.ToInt32(c.GetValue(coll)) : -1;
-            }
-            catch { return -1; }
         }
     }
 }
