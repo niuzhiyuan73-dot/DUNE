@@ -1,0 +1,14 @@
+C:\Users\17789\Desktop\DUNE\tools\ApiDump\bin\Release\net8.0\ApiDump.exe
+C:\Users\17789\Desktop\DUNE\tools\ApiDump\bin\Release\net8.0\ApiDump.deps.json
+C:\Users\17789\Desktop\DUNE\tools\ApiDump\bin\Release\net8.0\ApiDump.runtimeconfig.json
+C:\Users\17789\Desktop\DUNE\tools\ApiDump\bin\Release\net8.0\ApiDump.dll
+C:\Users\17789\Desktop\DUNE\tools\ApiDump\bin\Release\net8.0\ApiDump.pdb
+C:\Users\17789\Desktop\DUNE\tools\ApiDump\obj\Release\net8.0\ApiDump.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\17789\Desktop\DUNE\tools\ApiDump\obj\Release\net8.0\ApiDump.AssemblyInfoInputs.cache
+C:\Users\17789\Desktop\DUNE\tools\ApiDump\obj\Release\net8.0\ApiDump.AssemblyInfo.cs
+C:\Users\17789\Desktop\DUNE\tools\ApiDump\obj\Release\net8.0\ApiDump.csproj.CoreCompileInputs.cache
+C:\Users\17789\Desktop\DUNE\tools\ApiDump\obj\Release\net8.0\ApiDump.dll
+C:\Users\17789\Desktop\DUNE\tools\ApiDump\obj\Release\net8.0\refint\ApiDump.dll
+C:\Users\17789\Desktop\DUNE\tools\ApiDump\obj\Release\net8.0\ApiDump.pdb
+C:\Users\17789\Desktop\DUNE\tools\ApiDump\obj\Release\net8.0\ApiDump.genruntimeconfig.cache
+C:\Users\17789\Desktop\DUNE\tools\ApiDump\obj\Release\net8.0\ref\ApiDump.dll
