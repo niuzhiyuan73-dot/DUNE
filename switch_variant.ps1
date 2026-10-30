@@ -6,7 +6,7 @@
 
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet("original", "v1", "v2a", "v2b", "v2c")]
+    [ValidateSet("original", "v1", "v2a", "v2b", "v2c", "v3solo")]
     [string]$Name
 )
 
@@ -77,6 +77,11 @@ switch ($Name) {
             Copy-Item -LiteralPath $loc -Destination $LocTarget -Force
             Write-Host ("  localization    <- v2c ({0} B)" -f (Get-Item -LiteralPath $loc).Length)
         }
+    }
+    "v3solo" {
+        Write-Host "Installing: v3solo (standard solo, explicit decks for all players)"
+        Install-Bundle (Join-Path $Out "v3solo_$BundleName") "v3solo" | Out-Null
+        Restore-Localization
     }
 }
 
