@@ -274,3 +274,233 @@ PowerShell 输出中文乱码（GBK/UTF-8 混用），只能靠错误码（CS024
 - **运行时动态修改**（例如对局中途改变规则）
 
 其余一切优先走 JSON。
+
+---
+
+## 十一、第二轮：拦截创建（v14 → v19）全部失败
+
+路线 A 成功后，目标转向「造新卡 / 改卡 / 改领袖」。这三件事共用同一个前提：
+**拿到卡牌实体背后的 Archetype 或 Ability 定义**。第二轮就是围绕这个前提打的。
+
+### 11.1 关键结论：拦截实体创建是死路
+
+| 版本 | 钩子 | 结果 |
+|---|---|---|
+| v14–v16 | `SetupPhase.*` + `RoundPhase.DrawCards` | 触发正常，但手牌读数恒为 0 |
+| v17 | `WormArchetypes.CreateEntity`（2 个重载） | **零调用** |
+| v18 | 同族 6 个方法 + `AddDescendent` 兜底 | 闪退（见坑 8） |
+| v19 | 12 个创建/反序列化方法（`DeclaredOnly`） | **全部零调用** |
+
+零调用的原因：IL2CPP 把这类内部调用内联为 native 直连，托管层的 Harmony 补丁拦不到。
+**这不是参数写错，是路径本身不可拦截。** 继续在这条路上投入不会有结果。
+
+### 11.2 意外收获：崩溃日志吐出了真实签名
+
+v18 崩溃时 HarmonyX 打印的警告里带着完整签名，这比我自己猜的准：
+
+```
+Canis.entities.Entity Archetypes::CreateEntity(
+    Match m, ArchetypeID archetypeID, Entity parent,
+    PlayerEntity player, Nullable<int> positionInParent)
+```
+
+**有 `parent` 和 `positionInParent`** —— 说明游戏提供了「把实体创建到指定容器的指定位置」的完整能力。
+之前我只看到 4 参数简化版，那个版本从未被调用过。
+
+### 11.3 v14–v19 的迭代记录
+
+| # | 假设 | 结果 | 结论 |
+|---|---|---|---|
+| v14 | 卡牌在 Setup 阶段已存在 | 手牌恒为 0 | 发牌在更晚阶段 |
+| v15 | 钩 `RoundPhase.DrawCards` | 触发 6 次，手牌仍 0 | 看错了容器 |
+| v16 | 区分 `Hand.Children` 与 `HandCards()` | 两者皆 0 | 同上 |
+| v17 | 钩 `CreateEntity` | 零调用 | 创建不可拦截 |
+| v18 | 同族 6 方法 + `AddDescendent` | **崩溃** | 重复打补丁 → 栈溢出 |
+| v19 | 12 个方法，`DeclaredOnly` | 零调用 | 确认 native 内联 |
+
+---
+
+## 十二、第三轮：实体树突破（v20 → v23）
+
+### 12.1 转折点：不问「怎么创建」，问「现在在哪」
+
+v20 放弃拦截，改为遍历 `WormMatch.WormPlaymat` 的实体树。一次就拿到了全貌：
+
+```
+WormPlaymat | Playmat | 子=25
+  WormPlayer | Player | 子=16
+    Entity | Hand    | 子=0      ← 一直是 0，我早期一直盯这里
+    Entity | Deck    | 子=10     ← 卡牌实际在这里
+    Entity | Supply  | 子=33
+    Entity | Leader  | 子=2
+```
+
+**在此之前所有「手牌为 0」的困惑，根因就是看错了容器。**
+
+### 12.2 卡牌实体的真实形态（重大修正）
+
+```
+卡牌实体类型: Canis.entities.Entity | 名称: ImperiumPlayable
+继承链: Entity <- ObjectAttributes <- Object <- Il2CppObjectBase
+```
+
+**卡牌运行时不是 `WormImperiumPlayable`，而是通用 `Canis.entities.Entity`。**
+身份只体现在 `EntityName` 这个字符串上。
+
+这条修正推翻了此前一个错误预期：`WormImperiumPlayable::AcquireValue`、
+`WormPlayable::AddChildAbility` 这些成员虽然真实存在于 interop 中，
+但**不属于运行时卡牌对象**，对着卡牌实体调用必然失败。
+
+### 12.3 领袖能力是以子实体形式存在的
+
+```
+Leader | 子=2
+  Entity | AgentSupply | 子=2 → Agent, Agent
+  Entity | Abilities   | 子=1 → ManipulateAbility
+```
+
+这说明游戏的整个对局状态是 **「通用实体 + 属性 + 子能力实体」的纯数据模型**，
+而不是一堆硬编码的 C# 类。能力是一个叫 `ManipulateAbility` 的实体节点。
+
+**这是造新卡 / 改卡 / 改领袖的共同基础**：三者都是「操作实体树 + 属性」，
+不是「写新类」。
+
+### 12.4 属性读取受阻（未解）
+
+`MutableAttributes` 的 API 面（v22 实测）：
+
+```
+Void  StoreAttribute(IAttribute)
+IMutableAttribute GetAttribute(IAttributeDefinition)
+Boolean HasAttribute(Int32)
+Void  SetAttribute(AttributeDefinition`1, V)
+Void  ClearAttribute(Int32) / RemoveAttribute(Int32)
+属性  data : ConcurrentDictionary`2      ← 真正存储
+属性  AsReadOnly : ReadOnlyAttributes
+```
+
+两个卡点：
+
+- **没有 `GetAttribute(int)` 重载**——必须传 `IAttributeDefinition` 对象，
+  所以 `attr[10000]` 恒为 null，不能按整数 id 直接取值
+- `MutableAttributes` 与 `data` 字典**枚举均返回 0 条**——
+  与坑 1 同源：Il2Cpp 泛型接口未桥接到 .NET，`IEnumerator` 转换静默失败
+
+### 12.5 v20–v23 迭代记录
+
+| # | 目标 | 结果 |
+|---|---|---|
+| v20 | 遍历实体树 | ✅ 全貌拿到，定位 `Deck / Supply / Leader` |
+| v21 | 解剖一张卡牌 | ✅ 实体为通用 `Entity`；有 `attributes` + `parentAttributes`；**无 `Archetype` 属性** |
+| v22 | 读属性容器 API | ✅ 方法表完整；❌ 索引器与整数 id 均不可用 |
+| v23 | 枚举属性 + 领袖子树 | ❌ 属性枚举 0 条；✅ 领袖能力为子实体 |
+
+---
+
+## 十三、修正后的架构模型（当前认知）
+
+```
+WormMatch
+ └─ WormPlaymat（实体树根）
+     ├─ WormPlayer
+     │   ├─ Deck / Hand / Supply / Discard …（都是 Entity，EntityName 标识用途）
+     │   ├─ Leader ──► AgentSupply / Abilities ──► ManipulateAbility …
+     │   └─ 各类数值以属性存在（如 910014 = 牌组 GUID 列表）
+     ├─ Supply（33 个子实体 = 市场上的卡）
+     └─ …
+```
+
+要点三条：
+
+1. **一切皆 `Entity`**：卡牌、容器、能力、领袖都是同一个类，靠 `EntityName` 区分
+2. **身份在属性里**：卡牌是「哪张卡」由属性 + ArchetypeID 决定，不是由类型决定
+3. **能力是节点**：`Abilities` 是容器实体，其子节点一个个都是能力
+
+### 13.1 由此推出的可操作接口
+
+| 需求 | 接口 | 来源 |
+|---|---|---|
+| 实体 → 原型 | `Entity.GetArchetype()` | `Canis.entities.Entity` 实例方法 |
+| 实体 → 原型 ID | `IEntityExtensions.ArchID(IEntity)` | `Canis.attributes.IEntityExtensions` 静态扩展 |
+| ID → 原型 | `Archetype.Get(ArchetypeID)` | `Canis.archetypes.Archetype` 静态 |
+| 原型表生成 | `MakeArchetypes<TArchetype>()` | 扫描程序集，解释 `archs` 为何是 534 个通用原型 |
+| 导出实体数据 | `Entity.Serialize()` | 绕开属性枚举的替代路径 |
+| 改实体树 | `AddChild / AddDescendent / RemoveChild / MoveTo` | `Entity` 实例方法 |
+| 造实体（带位置） | `CreateEntity(Match, ArchetypeID, Entity parent, PlayerEntity, int?)` | v18 崩溃日志实证 |
+
+**关键判断**：既然存在 `GetArchetype()`，就不必再拦截创建。
+「改卡 = 取原型改属性」，「造新卡 = 克隆原型换 ID」，
+「改领袖 = 改其 `Abilities` 下的能力实体」——三条路都落在已确认的接口上。
+
+---
+
+## 十四、第二轮新增的坑
+
+### 坑 8：同时给基类和派生类打补丁 → 栈溢出闪退
+
+v18 里我对 `WormPlayArea.AddDescendent` 和其基类 `Entity.AddDescendent` 都打了补丁，
+调用被重定向两次，直接栈溢出。HarmonyX 当时已有警告：
+
+```
+[Warning: HarmonyX] You should only patch implemented methods/constructors
+```
+
+**教训**：`GetMethods()` 会返回继承来的方法，打补丁前必须加 `BindingFlags.DeclaredOnly`，
+且同一方法链上只打一个点。
+
+### 坑 9：void 方法不能用带 `__result` 的后置补丁
+
+`CreateEntities` 返回 void，我却用了 `__result`，报 `Cannot get result from void method`。
+void 方法与有返回值方法必须拆成两个处理器。
+
+### 坑 10：类型名对得上 ≠ 是同一个对象
+
+interop 里 `WormImperiumPlayable`、`WormPlayable` 都有完整方法表，
+但运行时卡牌是 `Canis.entities.Entity`。**interop 里的类齐全，不代表运行时会用到它们。**
+
+**教训**：任何「这个类有什么方法」的结论，都必须先用 `GetType().FullName` 确认
+运行时实例的真实类型，否则等于对着错误的类型写代码。
+
+### 坑 11：`Count` / `Item` 也不是万能兜底
+
+对 Il2Cpp 集合依次试过 `IEnumerable`、`GetEnumerator` 反射、`Count`+`Item` 三种方式，
+`MutableAttributes` 与 `ConcurrentDictionary` 三者皆返回 0。
+泛型容器在 interop 下可能完全不暴露可用的枚举路径。
+
+**教训**：遇到泛型容器枚举失败，不要继续换遍历写法，应改用**非枚举路径**
+（如 `Serialize()` 导出、`HasAttribute(int)` 逐项判断）。
+
+### 坑 12：把「拦截」当成唯一入口
+
+前 6 个版本都在找「谁创建了卡牌」，但更简单的问题是「它现在在哪」。
+实体树遍历一次就解决了拦截 12 个方法都没解决的问题。
+
+**教训**：在一个动态系统里，**读状态**通常比**拦事件**简单一个数量级。
+先用读状态把结构摸清，再决定是否需要拦截。
+
+---
+
+## 十五、当前进度与下一步
+
+### 已确证可用
+
+- BepInEx 在 Unity 6 上稳定加载，Harmony 补丁真实命中（v1 已验证）
+- 实体树可完整遍历，能定位玩家、牌组、市场、领袖
+- `Entity.GetArchetype()` / `ArchID()` / `Archetype.Get()` 构成原型访问链
+- `CreateEntity` 带 `parent` + `position` 的完整签名
+- 数据层精通：`wormPlayers` 可在单人标准局生效（路线 A，已实测）
+
+### 待验证（按优先级）
+
+| # | 目标 | 验证方式 |
+|---|---|---|
+| 1 | `card.GetArchetype()` 能否返回具体卡原型 | 打印类型名是否形如 `…ImperiumArchetypes.BaseSet.Dagger` |
+| 2 | `Entity.Serialize()` 能否导出卡牌全部属性 | 打印序列化结果的字段 |
+| 3 | 改原型属性是否影响局内表现 | 改一张卡的数值，看卡面 |
+| 4 | 克隆原型 + 新 ID 能否注册成功 | 加进牌组后能否正常打出 |
+| 5 | 往 `Abilities` 加子实体是否加出新能力 | 观察卡牌行为变化 |
+
+### 明确不做
+
+- 不再尝试拦截 `CreateEntity` 一族（已证死路）
+- 不再用反射枚举 Il2Cpp 泛型集合（改用 `Serialize` 等非枚举路径）
