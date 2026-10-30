@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DuneProbe")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bbacb33972bde407492ed3d5dbde09c351c06f2a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1b56cbe421bf866ce79336e45dfad94591c816e5")]
 [assembly: System.Reflection.AssemblyProductAttribute("DuneProbe")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DuneProbe")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
