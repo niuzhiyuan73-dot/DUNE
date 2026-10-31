@@ -141,7 +141,7 @@ namespace DuneAiProbe
         }
 
         /// 在游戏线程里调用：pending 必须是已经转成托管字符串的文本。
-        public static void Observe(string playerName, int counter, string pending)
+        public static void Observe(string playerName, int counter, string stateBlock, string pending)
         {
             if (!Enabled || string.IsNullOrEmpty(pending)) return;
 
@@ -156,18 +156,19 @@ namespace DuneAiProbe
 
             pending = Humanize(pending);
             if (pending.Length > 6000) pending = pending.Substring(0, 6000) + " …(截断)";
-            string user = "AI 玩家：" + (playerName ?? "?") + "（第 " + counter + " 号选择）\n待选列表：\n" + pending;
+            string user = "AI 玩家：" + (playerName ?? "?") + "（第 " + counter + " 号选择）\n";
+            if (!string.IsNullOrEmpty(stateBlock)) user += stateBlock + "\n";
+            user += "待选列表：\n" + pending;
 
-            Task.Run(() => Send(seq, playerName, pending));
+            Task.Run(() => Send(seq, playerName, user, pending));
         }
 
         /// 在后台线程同步完成一次请求（不能用 async lambda：本工程引用的 Il2Cppmscorlib 缺 NullableAttribute）。
-        private static void Send(int seq, string playerName, string pending)
+        private static void Send(int seq, string playerName, string user, string pending)
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
             try
             {
-                string user = "AI 玩家：" + (playerName ?? "?") + "\n待选列表：\n" + pending;
                 string body = "{\"model\":\"" + Model + "\",\"messages\":["
                     + "{\"role\":\"system\",\"content\":" + Json.Str(SystemPrompt) + "},"
                     + "{\"role\":\"user\",\"content\":" + Json.Str(user) + "}],"

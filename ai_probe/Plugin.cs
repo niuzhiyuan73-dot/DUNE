@@ -225,7 +225,12 @@ namespace DuneAiProbe
 
                     string name = null;
                     try { name = asker != null ? asker.PlayerName : null; } catch { }
-                    if (!string.IsNullOrEmpty(pending)) Coach.Observe(name, counter, pending);
+
+                    string stateBlock = null;
+                    try { stateBlock = State.Render(asker, L); }
+                    catch (Exception e) { L.LogInfo("[STATE] " + e.Message); }
+
+                    if (!string.IsNullOrEmpty(pending)) Coach.Observe(name, counter, stateBlock, pending);
                 }
                 catch (Exception e) { L.LogWarning("[COACH] dump: " + e.Message); }
             }

@@ -48,6 +48,14 @@
       <HintPath>$(GameDir)\BepInEx\interop\boardgames.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Attributes">
+      <HintPath>$(GameDir)\BepInEx\interop\Attributes.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="core-canis">
+      <HintPath>$(GameDir)\BepInEx\interop\core-canis.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 
 </Project>
