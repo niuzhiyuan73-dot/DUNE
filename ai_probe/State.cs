@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using BepInEx.Logging;
-using Canis.attributes;
 using Canis.entities;
 using worm.canis.entities;
 
@@ -11,14 +10,11 @@ namespace DuneAiProbe
     /// <summary>
     /// 局面渲染器：把"当前局势"压成几行中文，拼进 prompt。
     ///
-    /// 属性名不能靠猜，所以这里对每个候选名 try 一遍：
-    /// 成功的写进局势块，失败的记一次日志——第一次运行就能把真实属性名试出来。
+    /// 取值全部走游戏自带的 WormEntityExtensions（VictoryPoints / Solari / Spice / Water / Troops），
+    /// 不再靠属性名字符串去猜——那些名字在 AttributeDefinitions 里对不上。
     /// </summary>
     internal static class State
     {
-        private static readonly string[] VpNames = { "VictoryPoints", "VictoryPoint", "Score", "VPs" };
-        private static readonly string[] ResNames = { "Solari", "Spice", "Water", "Troops", "Garrison", "Influence" };
-
         private static bool _probed;
 
         public static string Render(PlayerEntity asker, ManualLogSource log)
@@ -36,8 +32,6 @@ namespace DuneAiProbe
                 if (players == null) { log.LogInfo("[STATE] no players"); return null; }
 
                 int n = players.Count;
-                log.LogInfo("[STATE] players=" + n);
-
                 sb.Append("【局势】\n");
                 for (int i = 0; i < n; i++)
                 {
@@ -45,23 +39,20 @@ namespace DuneAiProbe
                     try { p = players[i]; } catch { }
                     if (p == null) continue;
 
-                    string nm = Safe(() => p.PlayerName);
+                    string nm = SafeStr(p);
                     bool isAI = false;
                     try { isAI = p.IsAI; } catch { }
                     bool isMe = false;
-                    try { isMe = p.Pointer == asker.Pointer; } catch { }
+                    try { isMe = asker != null && p.Pointer == asker.Pointer; } catch { }
 
-                    string vp = FirstInt(p, VpNames);
-                    var res = new List<string>();
-                    foreach (var r in ResNames)
-                    {
-                        string v = TryInt(p, r);
-                        if (v != null) res.Add(r + " " + v);
-                    }
+                    sb.Append("- ").Append(nm)
+                      .Append(isMe ? "（本 AI）" : (isAI ? "（AI）" : "（玩家）"));
 
-                    sb.Append("- ").Append(nm ?? "?").Append(isMe ? "（本 AI）" : (isAI ? "（AI）" : "（玩家）"));
-                    if (vp != null) sb.Append("｜VP ").Append(vp);
-                    if (res.Count > 0) sb.Append("｜").Append(string.Join("，", res));
+                    TryAppend(sb, "VP", () => WormEntityExtensions.VictoryPoints(p));
+                    TryAppend(sb, "太阳币", () => WormEntityExtensions.Solari(p));
+                    TryAppend(sb, "香料", () => WormEntityExtensions.Spice(p));
+                    TryAppend(sb, "水", () => WormEntityExtensions.Water(p));
+                    TryAppend(sb, "兵", () => WormEntityExtensions.Troops(p));
                     sb.Append('\n');
                 }
 
@@ -79,32 +70,15 @@ namespace DuneAiProbe
             }
         }
 
-        private static string FirstInt(PlayerEntity p, string[] names)
+        private static void TryAppend(StringBuilder sb, string label, Func<int> get)
         {
-            foreach (var n in names)
-            {
-                string v = TryInt(p, n);
-                if (v != null) return v;
-            }
-            return null;
+            try { sb.Append("｜").Append(label).Append(' ').Append(get()); }
+            catch { }
         }
 
-        private static string TryInt(PlayerEntity p, string attrName)
+        private static string SafeStr(PlayerEntity p)
         {
-            try
-            {
-                var def = AttributeDefinitions.GetDefinition<int>(attrName);
-                if (def == null) return null;
-                var a = p.GetAttribute(def);
-                if (a == null) return null;
-                return a.Value.ToString();
-            }
-            catch { return null; }
-        }
-
-        private static string Safe(Func<string> f)
-        {
-            try { return f(); } catch { return null; }
+            try { return p.PlayerName ?? "?"; } catch { return "?"; }
         }
     }
 }

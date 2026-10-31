@@ -10,6 +10,7 @@ using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using UnityEngine;
 using worm.canis.actions.phases;
+using worm.canis.entities;
 using Canis.entities;
 using Canis.entities.ai;
 using WormAIConstants = worm.canis.ai.AIConstants;
@@ -204,9 +205,36 @@ namespace DuneAiProbe
                     try
                     {
                         counter = __instance.GetLatestSelectionCounter();
-                        // 关键：正在被问的是 GetPlayerEntityForCounter(counter)，
-                        // 不是 LatestRespondedPlayer（那是刚回答完的人，常常是人类）
-                        asker = __instance.GetPlayerEntityForCounter(counter);
+
+                        // 先看这个 counter 归属谁；只有 AI 才值得观察
+                        try
+                        {
+                            var owner = __instance.GetPlayerEntityForCounter(counter);
+                            if (owner != null && owner.IsAI) asker = owner;
+                        }
+                        catch { }
+
+                        // 否则在所有 AI 玩家里找"此刻有 pending 的那个"
+                        if (asker == null && p != null)
+                        {
+                            try
+                            {
+                                var wp = p.TryCast<WormPlayer>();
+                                var players = wp != null && wp.match != null ? wp.match.players : null;
+                                if (players != null)
+                                {
+                                    for (int i = 0; i < players.Count; i++)
+                                    {
+                                        var cand = players[i];
+                                        if (cand == null || !cand.IsAI) continue;
+                                        var ps0 = __instance.GetPlayerPendingResponse(cand, counter);
+                                        if (ps0 != null) { asker = cand; break; }
+                                    }
+                                }
+                            }
+                            catch (Exception e) { L.LogInfo("[COACH] scan ai: " + e.Message); }
+                        }
+
                         if (asker != null)
                         {
                             var ps = __instance.GetPlayerPendingResponse(asker, counter);
@@ -215,12 +243,17 @@ namespace DuneAiProbe
                     }
                     catch (Exception e) { L.LogInfo("[COACH] asker pending: " + e.Message); }
 
+                    if (asker == null)
+                    {
+                        // 没找到 AI 被问的场景就不发，避免把人类的选择当成 AI 的
+                        L.LogInfo("[COACH] skip: counter " + counter + " 没有 AI 待选");
+                        return;
+                    }
+
                     if (string.IsNullOrEmpty(pending))
                     {
-                        // 取不到就整份 dump，但至少标注一下，别当成单人的选择
-                        pending = "[未取到单人待选，以下为全部待处理选择]\n" + __instance.DumpPendingResponses();
-                        asker = null;
-                        counter = -1;
+                        L.LogInfo("[COACH] skip: AI 待选为空");
+                        return;
                     }
 
                     string name = null;
