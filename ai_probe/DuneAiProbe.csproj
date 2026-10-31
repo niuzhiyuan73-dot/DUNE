@@ -56,6 +56,14 @@
       <HintPath>$(GameDir)\BepInEx\interop\core-canis.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Networking">
+      <HintPath>$(GameDir)\BepInEx\interop\Networking.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="DwdJson">
+      <HintPath>$(GameDir)\BepInEx\interop\DwdJson.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 
 </Project>

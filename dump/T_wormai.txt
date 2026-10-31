@@ -1,0 +1,214 @@
+================================================================
+TYPE worm.canis.ai.WormAIProfile
+  BASE Canis.entities.ai.AIProfileAbs
+  PROP worm.canis.entities.WormPlayer WormPlayer
+  PROP worm.canis.WormMatch WormMatch
+  PROP Il2CppSystem.Nullable<Boolean> _isClimax
+  PROP Il2CppSystem.Nullable<Boolean> _isFinalRound
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Int32, Double> _cachedBuyGains
+  PROP Il2CppSystem.Collections.Generic.List<canis.archetypes.Archetype> _cachedUprisingConflicts
+  PROP Canis.Match Match
+  PROP Canis.entities.PlayerEntity Player
+  PROP worm.canis.ai.AIConstantsRef Constants
+  PROP Canis.ai.value.AIValueSummer<Double> DefaultValueSummer
+  PROP Int32 PossiblePersuasion
+  PROP Il2CppSystem.Collections.Generic.Dictionary<worm.canis.data.enums.AgentIcons, Int32> DeckAgentIcons
+  PROP Boolean IsClimax
+  PROP Boolean IsFinalRound
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Int32>>, Il2CppSystem.Collections.Generic.IEnumerable<Double>> ValuesDict
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Int32>>, Il2CppSystem.Collections.Generic.IEnumerable<Double>> AbundanceThresholdDict
+  PROP Double CardDrawValue
+  PROP Double IntrigueValue
+  PROP Double TrashCardValue
+  PROP Double MinimumAcquireValue
+  PROP Double SwordmasterValue
+  PROP Double HighCouncilValue
+  PROP Double FoldspaceValue
+  PROP Double MentatValue
+  PROP Double ControlSolariValue
+  PROP Double ControlSpiceValue
+  PROP Double ControlValueAvg
+  PROP Boolean IsSolariShort
+  PROP Boolean IsSolariLong
+  PROP Boolean IsSpiceShort
+  PROP Boolean IsTroopShort
+  PROP Boolean IsWaterLong
+  PROP Il2CppSystem.Collections.Generic.List<worm.canis.entities.WormIntriguePlayable> GetBadIntrigueCardsInHand
+  PROP Double ConflictCompetitors
+  PROP Il2CppSystem.ValueTuple<Double, Double> ConflictPostureBounds
+  PROP Double NegotiateTechValue
+  PROP Double DiscardValue
+  PROP Double FreighterValue
+  METHOD [Static] Void .cctor()
+  METHOD Canis.Match get_Match()
+  METHOD Canis.entities.PlayerEntity get_Player()
+  METHOD Void .ctor(worm.canis.entities.WormPlayer wormPlayer, worm.canis.WormMatch match)
+  METHOD Void AILog(String str)
+  METHOD worm.canis.ai.AIConstantsRef get_Constants()
+  METHOD Boolean IsPredeterminedSelection(Networking.selection.messages.SelectionMessage selection)
+  METHOD Boolean TryGetPredeterminedSelection(Networking.selection.messages.SelectionMessage selection, ref Networking.selection.messages.outgoing.ISelectionCounter response)
+  METHOD Networking.selection.messages.outgoing.ISelectionCounter MakeChoice(Networking.selection.messages.SelectionMessage selection, worm.canis.ai.WormAIChoiceContext choiceContext)
+  METHOD [Static] Canis.ai.value.AIValueSummer<Double> get_DefaultValueSummer()
+  METHOD Int32 get_PossiblePersuasion()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormImperiumPlayable> PredictCardBuys(Int32 withPersuasion)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormImperiumPlayable> GetAcquireCardsByValue(Int32 withPersuasion)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<worm.canis.data.enums.AgentIcons, Int32> get_DeckAgentIcons()
+  METHOD Boolean get_IsClimax()
+  METHOD Boolean get_IsFinalRound()
+  METHOD Int32 GetPossibleEndOfRoundScore(worm.canis.entities.WormPlayer player)
+  METHOD Int32 GetGameArc()
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Int32>>, Il2CppSystem.Collections.Generic.IEnumerable<Double>> get_ValuesDict()
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Int32>>, Il2CppSystem.Collections.Generic.IEnumerable<Double>> get_AbundanceThresholdDict()
+  METHOD Int32 GetAbundanceLevel(Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Int32>> attribute)
+  METHOD Double GetResourceValue(Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Int32>> attribute, Int32 amount, Boolean includeCombatPostureMod)
+  METHOD Double GetPersuasionValue(Int32 amount)
+  METHOD Double GetSolariValue(Int32 amount)
+  METHOD Double GetSpiceValue(Int32 amount)
+  METHOD Double GetWaterValue(Int32 amount)
+  METHOD Double GetSpecimenValue(Int32 amount)
+  METHOD Double GetStrengthValue(Int32 amount, Boolean includeCombatPostureMod)
+  METHOD Double GetTroopValue(Int32 amount, Boolean includeCombatPostureMod)
+  METHOD Double GetDreadnoughtValue(Int32 amount, Boolean includeCombatPostureMod)
+  METHOD Double GetSandWormValue(Int32 amount, Boolean includeCombatPostureMod)
+  METHOD Double SelectForGameArc(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Double> choices)
+  METHOD Double get_CardDrawValue()
+  METHOD Double CardDrawValueWithBuyGains()
+  METHOD Double get_IntrigueValue()
+  METHOD Double get_TrashCardValue()
+  METHOD Double get_MinimumAcquireValue()
+  METHOD Double TrashMod()
+  METHOD Double get_SwordmasterValue()
+  METHOD Double get_HighCouncilValue()
+  METHOD Double get_FoldspaceValue()
+  METHOD Double get_MentatValue()
+  METHOD Double get_ControlSolariValue()
+  METHOD Double get_ControlSpiceValue()
+  METHOD Double get_ControlValueAvg()
+  METHOD Double GetBuyGains(Int32 amount)
+  METHOD Double GetBuyValue()
+  METHOD Double GetVictoryPointValue(Int32 amount)
+  METHOD Canis.ai.value.AIValueSummer<Double> GetGainInfluenceValue(worm.canis.data.enums.Factions faction, Int32 amount, Int32 currentRank, Boolean hasAlliance)
+  METHOD Boolean HasOrWouldGainAlliance(worm.canis.data.enums.Factions faction, Int32 amount)
+  METHOD Il2CppSystem.ValueTuple<worm.canis.data.enums.Factions, worm.canis.data.enums.Factions, Double> GetBestInfluenceExchange(Int32 loseAmount, Int32 gainAmount, Boolean showLog, Il2CppSystem.Collections.Generic.List<worm.canis.data.enums.Factions> loseFactionList, Il2CppSystem.Collections.Generic.List<worm.canis.data.enums.Factions> gainFactionList)
+  METHOD Canis.ai.value.AIValueSummer<Double> GetSynergyMod(worm.canis.entities.WormPlayable card)
+  METHOD Canis.ai.value.AIValueSummer<Double> GetFriendshipMod(worm.canis.entities.WormPlayable card)
+  METHOD Canis.ai.value.AIValueSummer<Double> GetAcquireEffectsValue(worm.canis.entities.WormPlayable wp)
+  METHOD Canis.ai.value.AIValueSummer<Double> GetSpecificAcquireBonus(worm.canis.entities.WormPlayable wp)
+  METHOD Int32 GetSpiceForSellMelange()
+  METHOD Int32 GetSpiceForSpiceRefinery()
+  METHOD Boolean CanAgentAbilityBePlayedWithSpace(worm.canis.entities.WormSpace space, Canis.attributes.AttributeDefinition<Il2CppSystem.Nullable<Int32>> attribute, Int32 amount)
+  METHOD Il2CppSystem.ValueTuple<worm.canis.entities.WormImperiumPlayable, Double> GetCardToTrash(Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormImperiumPlayable> targets, Double minTrashValue)
+  METHOD Double OpponentRatio(Il2CppSystem.Func<worm.canis.entities.WormPlayer, Boolean> condition)
+  METHOD Il2CppSystem.Collections.Generic.LinkedList<worm.canis.entities.WormPlayer> GetOrderedPlayers()
+  METHOD Int32 PossiblePersuasionGain()
+  METHOD Il2CppSystem.ValueTuple<worm.canis.entities.WormImperiumPlayable, worm.canis.entities.WormSpace, Double> GetBestOption(Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormImperiumPlayable> possibleCards)
+  METHOD Boolean HasTurnBeforeOpponentNextRound(worm.canis.entities.WormPlayer opponent)
+  METHOD Boolean get_IsSolariShort()
+  METHOD Boolean get_IsSolariLong()
+  METHOD Boolean get_IsSpiceShort()
+  METHOD Boolean get_IsTroopShort()
+  METHOD Boolean get_IsWaterLong()
+  METHOD Il2CppSystem.Collections.Generic.List<worm.canis.entities.WormIntriguePlayable> get_GetBadIntrigueCardsInHand()
+  METHOD worm.canis.entities.WormAgent GetRecallAgent(Il2CppSystem.Collections.Generic.List<worm.canis.entities.WormAgent> agentList, Boolean logAI)
+  METHOD Int32 PlayIntrigueForFinalRoundOrHandSize(Canis.entities.Entity card)
+  METHOD Double DeployValue(Canis.entities.Entity ownerEntity)
+  METHOD Double get_ConflictCompetitors()
+  METHOD Il2CppSystem.ValueTuple<Double, Double> get_ConflictPostureBounds()
+  METHOD Double GetCombatPositioning()
+  METHOD Double GetCombatPostureMod()
+  METHOD Il2CppSystem.Collections.Generic.List<canis.archetypes.Archetype> GetUprisingConflicts()
+  METHOD Canis.ai.value.AIValueSummer<Double> RelativeConflictValue(Boolean logAvgConflictValue)
+  METHOD Canis.ai.value.AIValueSummer<Double> CurrentConflictInterest()
+  METHOD Int32 IntrigueHandStrengthValue()
+  METHOD Canis.ai.value.AIValueSummer<Int32> EstOpponentStrength(worm.canis.entities.WormPlayer opponent)
+  METHOD Canis.ai.value.AIValueSummer<Int32> EstStrength()
+  METHOD Canis.ai.value.AIValueSummer<Int32> PotentialStrength(Int32 maxUnits)
+  METHOD Il2CppSystem.Collections.Generic.List<worm.canis.entities.WormUnit> GetUnitsToDeploy(Il2CppSystem.Collections.Generic.List<worm.canis.entities.WormUnit> unitList, Int32 max)
+  METHOD Int32 GetTroopsToRetreat(Int32 max)
+  METHOD Il2CppSystem.Nullable<Int32> EstimatedConflictRank(Int32 bonusStrength)
+  METHOD Il2CppSystem.Nullable<Int32> CurrentConflictRank(Int32 bonusStrength)
+  METHOD Il2CppSystem.Nullable<Int32> GetConflictRank(Il2CppSystem.Func<worm.canis.entities.WormPlayer, Int32> oppStrengthFunc, Int32 bonusStrength)
+  METHOD Il2CppSystem.Collections.Generic.List<worm.canis.entities.WormPlayer> GetCurrentCombatOrder()
+  METHOD Il2CppSystem.Collections.Generic.List<worm.canis.entities.WormPlayer> GetExpectedCombatOrder()
+  METHOD Il2CppSystem.Collections.Generic.List<Il2CppSystem.Tuple<worm.canis.entities.WormPlayer, Int32>> GetExpectedCombatOrderWithStrength()
+  METHOD worm.canis.entities.WormPlayer GetHeighlinerPotentialPlayer()
+  METHOD Boolean HasHighlinerPotential()
+  METHOD Boolean HasHighlinerPotential(worm.canis.entities.WormPlayer player)
+  METHOD Int32 ShouldPlayRetreatIntrigue(String cardName, Int32 notFirstExtraStrength, Int32 firstExtraStrength, Int32 retreatUnits)
+  METHOD Int32 ShouldPlayTroopIntrigue(String cardName, Int32 notFirstExtraStrength, Int32 firstExtraStrength, Int32 troops)
+  METHOD Double get_NegotiateTechValue()
+  METHOD Double get_DiscardValue()
+  METHOD Double get_FreighterValue()
+  METHOD Double BuyTechValue(Int32 discount, Boolean allowSolari)
+  METHOD worm.canis.entities.WormTechTilePlayable TechTileToAcquire(Int32 discount, Boolean allowSolari)
+  METHOD Double TechOptionsMod(Int32 discount, Boolean allowSolari)
+  METHOD Il2CppSystem.ValueTuple<Int32, Int32, String> GetFreighterSelections(Int32 space)
+  METHOD Canis.ai.value.AIValueSummer<Double> ResearchValue()
+  METHOD Canis.ai.value.AIValueSummer<Double> TleilaxuValue(Int32 amount)
+  METHOD Double TrashIntrigueValue()
+  METHOD Canis.ai.value.AIValueSummer<Double> SpyValue()
+  METHOD Canis.ai.value.AIValueSummer<Double> RecallSpyValue()
+  METHOD Int32 WantContractCount()
+  METHOD Canis.ai.value.AIValueSummer<Double> GainContractValue()
+  METHOD Canis.ai.value.AIValueSummer<Double> GetBattleIconValue(worm.canis.data.enums.BattleIcons icon)
+  METHOD Double MakerHooksValue()
+  METHOD Double GetOpponentMakerHooksRatio()
+  METHOD Double RecallAgentValue()
+  METHOD Canis.ai.value.AIValueSummer<Double> BlowWallValue()
+  METHOD Il2CppSystem.ValueTuple<worm.canis.entities.WormContractPlayable, Double> GetBestContract(Il2CppSystem.Collections.Generic.IReadOnlyList<worm.canis.entities.WormContractPlayable> contractTargets, Boolean logAI, Boolean forced)
+  METHOD Il2CppSystem.ValueTuple<worm.canis.entities.WormObservationPost, Double> GetBestPost(Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormObservationPost> postTargets, Boolean logAI, Boolean unseenNetwork)
+  METHOD Il2CppSystem.ValueTuple<worm.canis.entities.WormSpy, Double> GetRecallSpy(Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormSpy> spyTargets, Boolean logAI)
+  METHOD Il2CppSystem.ValueTuple<Il2CppSystem.Collections.Generic.List<worm.canis.entities.WormSpy>, Double> GetRecallSpies(Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormSpy> spyTargets, Int32 take, Boolean logAI)
+  METHOD Il2CppSystem.ValueTuple<Il2CppSystem.Collections.Generic.List<worm.canis.entities.WormObservationPost>, Double> GetPostSelection(Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormObservationPost> postTargets, Int32 take, Boolean best, Boolean logAI, Boolean unseenNetwork)
+  METHOD Boolean LadyJessicaReturnMemories()
+  METHOD Boolean ShouldBlowWall()
+  METHOD Boolean IntrigueBlowWall()
+  METHOD worm.canis.entities.WormPlayer GetWormPotentialPlayer(worm.canis.entities.WormSpace space)
+  METHOD Boolean CanPlayToDesertSpaceWithHooks(worm.canis.entities.WormPlayer player, worm.canis.entities.WormSpace space)
+  METHOD worm.canis.entities.WormPlayer GetWormPotentialAPlayer()
+  METHOD worm.canis.entities.WormPlayer GetWormPotentialBPlayer()
+  METHOD Boolean HasWormPotentialA(worm.canis.entities.WormPlayer player)
+  METHOD Boolean HasWormPotentialB(worm.canis.entities.WormPlayer player)
+  METHOD Boolean HasWormPotentialA()
+  METHOD Boolean HasWormPotentialB()
+  METHOD Boolean HasWormPotential()
+  METHOD Boolean HasWormPotential(worm.canis.entities.WormPlayer player)
+  METHOD Boolean _GetResourceValue_b__34_0(worm.canis.data.enums.Factions _)
+  METHOD Canis.ai.value.AIValueSummer<Double> _GetResourceValue_b__34_2(worm.canis.entities.WormImperiumPlayable btc)
+  METHOD Double _GetBuyGains_b__70_0(worm.canis.entities.WormImperiumPlayable _)
+  METHOD Double _GetBuyGains_b__70_1(worm.canis.entities.WormImperiumPlayable _)
+  METHOD Double _GetBuyValue_b__71_0(worm.canis.entities.WormImperiumPlayable _)
+  METHOD Double Method_Private_Double_Factions_0(worm.canis.data.enums.Factions faction)
+  METHOD Double Method_Private_Double_Factions_1(worm.canis.data.enums.Factions faction)
+  METHOD Canis.ai.value.AIValueSummer<Double> _GetSpecificAcquireBonus_b__79_0(worm.canis.abilities.WormAbilityDefinition _)
+  METHOD Boolean _GetOrderedPlayers_b__85_0(worm.canis.entities.WormPlayer _)
+  METHOD Boolean _GetOrderedPlayers_b__85_1(worm.canis.entities.WormPlayer _)
+  METHOD Boolean _get_GetBadIntrigueCardsInHand_b__100_0(worm.canis.entities.WormIntriguePlayable card)
+  METHOD Boolean _get_GetBadIntrigueCardsInHand_b__100_1(worm.canis.abilities.PlayAbilities.IntrigueAbility ability)
+  METHOD Boolean _get_ConflictCompetitors_b__105_0(worm.canis.entities.WormPlayer op)
+  METHOD Boolean _GetCombatPositioning_b__108_0(worm.canis.entities.WormPlayer _)
+  METHOD Int32 _IntrigueHandStrengthValue_b__114_1(worm.canis.abilities.PlayAbilities.StrengthIntrigueAbility ability)
+  METHOD Int32 _EstStrength_b__116_2(worm.canis.entities.WormIntriguePlayable handCard)
+  METHOD Int32 _EstStrength_b__116_3(worm.canis.abilities.PlayAbilities.IntrigueAbility _)
+  METHOD Int32 _PotentialStrength_b__117_1(worm.canis.entities.WormIntriguePlayable handCard)
+  METHOD Int32 _PotentialStrength_b__117_3(worm.canis.abilities.PlayAbilities.IntrigueAbility _)
+  METHOD Int32 _EstimatedConflictRank_b__120_0(worm.canis.entities.WormPlayer _)
+  METHOD Il2CppSystem.Tuple<worm.canis.entities.WormPlayer, Int32> _GetExpectedCombatOrderWithStrength_b__125_0(worm.canis.entities.WormPlayer _)
+  METHOD Boolean _GetHeighlinerPotentialPlayer_b__126_6(Canis.utils.ids.ArchetypeID _)
+  METHOD Canis.ai.value.AIValueSummer<Double> _TechTileToAcquire_b__138_0(worm.canis.entities.WormTechTilePlayable _)
+  METHOD Boolean _GetFreighterSelections_b__140_1(worm.canis.entities.WormTechTilePlayable _)
+  METHOD Boolean _TrashIntrigueValue_b__143_0(worm.canis.entities.WormIntriguePlayable card)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD worm.canis.entities.WormPlayer get_WormPlayer()
+  METHOD Void set_WormPlayer(worm.canis.entities.WormPlayer)
+  METHOD worm.canis.WormMatch get_WormMatch()
+  METHOD Void set_WormMatch(worm.canis.WormMatch)
+  METHOD Il2CppSystem.Nullable<Boolean> get__isClimax()
+  METHOD Void set__isClimax(Il2CppSystem.Nullable<Boolean>)
+  METHOD Il2CppSystem.Nullable<Boolean> get__isFinalRound()
+  METHOD Void set__isFinalRound(Il2CppSystem.Nullable<Boolean>)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Int32, Double> get__cachedBuyGains()
+  METHOD Void set__cachedBuyGains(Il2CppSystem.Collections.Generic.Dictionary<Int32, Double>)
+  METHOD Il2CppSystem.Collections.Generic.List<canis.archetypes.Archetype> get__cachedUprisingConflicts()
+  METHOD Void set__cachedUprisingConflicts(Il2CppSystem.Collections.Generic.List<canis.archetypes.Archetype>)
+

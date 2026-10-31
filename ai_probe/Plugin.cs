@@ -82,6 +82,21 @@ namespace DuneAiProbe
             }
             catch (Exception e) { L.LogWarning("[AIPROBE] RunAIResponses hook: " + e.Message); }
 
+            // 真正的 AI 决策入口：worm.canis.ai.WormAIProfile.MakeChoice（AIProfileAbs 那条从没触发过）
+            try
+            {
+                var wm = typeof(worm.canis.ai.WormAIProfile).GetMethod("MakeChoice",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                if (wm != null)
+                {
+                    h.Patch(wm, prefix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(OnWormMakeChoice),
+                        BindingFlags.Static | BindingFlags.NonPublic)));
+                    L.LogInfo("[AIPROBE] hooked WormAIProfile.MakeChoice");
+                }
+                else L.LogWarning("[AIPROBE] WormAIProfile.MakeChoice not found");
+            }
+            catch (Exception e) { L.LogWarning("[AIPROBE] WormAIProfile hook: " + e.Message); }
+
             // 更早的触发点：AI 档案创建时（若此时常量已就绪，可省掉一次 AI 决策）
             try
             {
@@ -173,6 +188,35 @@ namespace DuneAiProbe
         private static int _setupCalls;
         private static bool _runAiSeen;
 
+        private static int _wormChoices;
+
+        /// WormAIProfile.MakeChoice 里能同时拿到"谁在被问"和"在选什么"，是目前唯一可靠的观察点。
+        private static void OnWormMakeChoice(worm.canis.ai.WormAIProfile __instance,
+            Networking.selection.messages.SelectionMessage selection)
+        {
+            _wormChoices++;
+            if (!Coach.Enabled) return;
+            try
+            {
+                PlayerEntity asker = null;
+                try { asker = __instance.Player; } catch { }
+
+                string pending = null;
+                try { pending = selection != null ? selection.ToString() : null; } catch { }
+                if (string.IsNullOrEmpty(pending)) return;
+
+                string name = null;
+                try { name = asker != null ? asker.PlayerName : null; } catch { }
+
+                string stateBlock = null;
+                try { stateBlock = State.Render(asker, L); }
+                catch (Exception e) { L.LogInfo("[STATE] " + e.Message); }
+
+                Coach.Observe(name, _wormChoices, stateBlock, pending);
+            }
+            catch (Exception e) { L.LogWarning("[COACH] worm: " + e.Message); }
+        }
+
         private static void OnRunAIStart(Canis.hasExecutionStack.HasExecutionStack __instance)
         {
             _batchStart = Environment.TickCount64;
@@ -194,79 +238,7 @@ namespace DuneAiProbe
             try { p = __instance.LatestRespondedPlayer; } catch { }
             EnsureResolved(p, "RunAIResponses");
 
-            // T1 观察者：把 AI 面对的待选列表异步发给 DeepSeek（只读，不影响对局）
-            if (Coach.Enabled)
-            {
-                try
-                {
-                    int counter = -1;
-                    string pending = null;
-                    PlayerEntity asker = null;
-                    try
-                    {
-                        counter = __instance.GetLatestSelectionCounter();
 
-                        // 先看这个 counter 归属谁；只有 AI 才值得观察
-                        try
-                        {
-                            var owner = __instance.GetPlayerEntityForCounter(counter);
-                            if (owner != null && owner.IsAI) asker = owner;
-                        }
-                        catch { }
-
-                        // 否则在所有 AI 玩家里找"此刻有 pending 的那个"
-                        if (asker == null && p != null)
-                        {
-                            try
-                            {
-                                var wp = p.TryCast<WormPlayer>();
-                                var players = wp != null && wp.match != null ? wp.match.players : null;
-                                if (players != null)
-                                {
-                                    for (int i = 0; i < players.Count; i++)
-                                    {
-                                        var cand = players[i];
-                                        if (cand == null || !cand.IsAI) continue;
-                                        var ps0 = __instance.GetPlayerPendingResponse(cand, counter);
-                                        if (ps0 != null) { asker = cand; break; }
-                                    }
-                                }
-                            }
-                            catch (Exception e) { L.LogInfo("[COACH] scan ai: " + e.Message); }
-                        }
-
-                        if (asker != null)
-                        {
-                            var ps = __instance.GetPlayerPendingResponse(asker, counter);
-                            if (ps != null) pending = ps.ToString();
-                        }
-                    }
-                    catch (Exception e) { L.LogInfo("[COACH] asker pending: " + e.Message); }
-
-                    if (asker == null)
-                    {
-                        // 没找到 AI 被问的场景就不发，避免把人类的选择当成 AI 的
-                        L.LogInfo("[COACH] skip: counter " + counter + " 没有 AI 待选");
-                        return;
-                    }
-
-                    if (string.IsNullOrEmpty(pending))
-                    {
-                        L.LogInfo("[COACH] skip: AI 待选为空");
-                        return;
-                    }
-
-                    string name = null;
-                    try { name = asker != null ? asker.PlayerName : null; } catch { }
-
-                    string stateBlock = null;
-                    try { stateBlock = State.Render(asker, L); }
-                    catch (Exception e) { L.LogInfo("[STATE] " + e.Message); }
-
-                    if (!string.IsNullOrEmpty(pending)) Coach.Observe(name, counter, stateBlock, pending);
-                }
-                catch (Exception e) { L.LogWarning("[COACH] dump: " + e.Message); }
-            }
         }
 
         private static void OnProfileCtor(AIProfileAbs __instance)
