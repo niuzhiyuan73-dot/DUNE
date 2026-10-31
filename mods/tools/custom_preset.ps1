@@ -64,7 +64,8 @@ $ModeDefs = @(
     @{ Text = "马拉松（20 分，冲突可循环）";        Key = "marathon" },
     @{ Text = "分阵营（10 分，标准冲突）";          Key = "faction" },
     @{ Text = "分阵营 Pro（12 分，5 二级 + 5 三级）"; Key = "faction_pro" },
-    @{ Text = "分阵营 Extra（14 分，3 张三级循环）";   Key = "faction_extra" }
+    @{ Text = "分阵营 Extra（14 分，10 张三级）";     Key = "faction_extra" },
+    @{ Text = "分阵营 Ultra（14 分，固定跃迁+Ultra）"; Key = "faction_ultra" }
 )
 
 $FacDefs = @(
@@ -84,7 +85,7 @@ $ModDefs = @(
 # ---------------------------------------------------------------- 窗体
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "自定义玩法 · Dune Imperium"
-$form.ClientSize = New-Object System.Drawing.Size(736, 786)
+$form.ClientSize = New-Object System.Drawing.Size(736, 820)
 $form.StartPosition = "CenterScreen"
 $form.FormBorderStyle = "FixedSingle"
 $form.MaximizeBox = $false
@@ -139,7 +140,7 @@ foreach ($d in $SetDefs) {
 $form.Controls.Add($grpSets)
 
 # ---- 模式
-$grpMode = New-Group "模式" 372 78 344 172
+$grpMode = New-Group "模式" 372 78 344 206
 $my = 30
 foreach ($d in $ModeDefs) {
     $rb = New-Object System.Windows.Forms.RadioButton
@@ -153,7 +154,7 @@ foreach ($d in $ModeDefs) {
 $form.Controls.Add($grpMode)
 
 # ---- 阵营
-$grpFac = New-Group "阵营（四家各不同，只选你自己那家）" 20 262 344 150
+$grpFac = New-Group "阵营（四家各不同，只选你自己那家）" 20 296 344 150
 $fy = 30
 foreach ($d in $FacDefs) {
     $rb = New-Object System.Windows.Forms.RadioButton
@@ -167,7 +168,7 @@ foreach ($d in $FacDefs) {
 $form.Controls.Add($grpFac)
 
 # ---- 叠加
-$grpMods = New-Group "叠加玩法（可多选，可全不选）" 372 262 344 150
+$grpMods = New-Group "叠加玩法（可多选，可全不选）" 372 296 344 150
 $ky = 30
 foreach ($d in $ModDefs) {
     $cb = New-Object System.Windows.Forms.CheckBox
@@ -181,7 +182,7 @@ foreach ($d in $ModDefs) {
 $form.Controls.Add($grpMods)
 
 # ---- 先手
-$grpFirst = New-Group "先手" 20 424 696 78
+$grpFirst = New-Group "先手" 20 458 696 78
 $rbFirstRandom = New-Object System.Windows.Forms.RadioButton
 $rbFirstRandom.Text = "随机排座（推荐）"
 $rbFirstRandom.Tag = "random"
@@ -214,7 +215,7 @@ $btnBuild.FlatStyle = "Flat"
 $btnBuild.FlatAppearance.BorderSize = 0
 $btnBuild.BackColor = $ClrAccent
 $btnBuild.ForeColor = [System.Drawing.Color]::White
-$btnBuild.Location = New-Object System.Drawing.Point(20, 514)
+$btnBuild.Location = New-Object System.Drawing.Point(20, 548)
 $btnBuild.Size = New-Object System.Drawing.Size(200, 44)
 $btnBuild.Cursor = [System.Windows.Forms.Cursors]::Hand
 $form.Controls.Add($btnBuild)
@@ -227,7 +228,7 @@ $btnClose.FlatAppearance.BorderSize = 1
 $btnClose.FlatAppearance.BorderColor = [System.Drawing.Color]::FromArgb(200, 206, 214)
 $btnClose.BackColor = $ClrCard
 $btnClose.ForeColor = $ClrText
-$btnClose.Location = New-Object System.Drawing.Point(236, 514)
+$btnClose.Location = New-Object System.Drawing.Point(236, 548)
 $btnClose.Size = New-Object System.Drawing.Size(110, 44)
 $btnClose.Cursor = [System.Windows.Forms.Cursors]::Hand
 $form.Controls.Add($btnClose)
@@ -236,7 +237,7 @@ $lblStatus = New-Object System.Windows.Forms.Label
 $lblStatus.Text = ""
 $lblStatus.Font = $FontUI
 $lblStatus.ForeColor = $ClrSub
-$lblStatus.Location = New-Object System.Drawing.Point(372, 526)
+$lblStatus.Location = New-Object System.Drawing.Point(372, 560)
 $lblStatus.Size = New-Object System.Drawing.Size(344, 22)
 $form.Controls.Add($lblStatus)
 
@@ -249,7 +250,7 @@ $txtLog.Font = $FontMono
 $txtLog.BackColor = $ClrCard
 $txtLog.ForeColor = $ClrSub
 $txtLog.BorderStyle = "FixedSingle"
-$txtLog.Location = New-Object System.Drawing.Point(20, 570)
+$txtLog.Location = New-Object System.Drawing.Point(20, 604)
 $txtLog.Size = New-Object System.Drawing.Size(696, 196)
 $form.Controls.Add($txtLog)
 
@@ -267,8 +268,20 @@ function Update-FactionEnabled {
     $grpFac.Enabled = $enabled
     $grpFac.ForeColor = if ($enabled) { $ClrText } else { $ClrSub }
 }
+# 分阵营 Ultra 模式本身就固定开启「跃迁 + 最后的时代 Ultra」，界面上锁死这两项
+function Update-ModeConstraints {
+    $mode = ($grpMode.Controls | Where-Object { $_.Checked } | Select-Object -First 1).Tag
+    $ultraMode = ($mode -eq "faction_ultra")
+    foreach ($c in $grpMods.Controls) {
+        switch ($c.Tag) {
+            "holtzman"       { $c.Enabled = -not $ultraMode; if ($ultraMode) { $c.Checked = $true } }
+            "lasttime_ultra" { $c.Enabled = -not $ultraMode; if ($ultraMode) { $c.Checked = $true } }
+            "lasttime"       { $c.Enabled = -not $ultraMode; if ($ultraMode) { $c.Checked = $false } }
+        }
+    }
+}
 foreach ($rb in $grpMode.Controls) {
-    $rb.Add_CheckedChanged({ Update-FactionEnabled })
+    $rb.Add_CheckedChanged({ Update-FactionEnabled; Update-ModeConstraints })
 }
 
 # 「最后的时代」与 Ultra 互斥：勾一个自动取消另一个
@@ -364,4 +377,5 @@ $btnBuild.Add_Click({
 })
 
 Update-FactionEnabled
+Update-ModeConstraints
 [void]$form.ShowDialog()

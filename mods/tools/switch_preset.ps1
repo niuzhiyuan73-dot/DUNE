@@ -20,10 +20,14 @@ $Presets = @(
     @{ Key = "pro-bene";         File = "preset_faction_pro_bene_$Name";      Label = "姐妹会     12 分 + 为了全人类，冲突 5 张二级 + 5 张三级" },
     @{ Key = "pro-guild";        File = "preset_faction_pro_guild_$Name";     Label = "宇航工会   12 分 + 公会协约/公会使者，冲突 5 张二级 + 5 张三级" },
     @{ Key = "pro-emperor";      File = "preset_faction_pro_emperor_$Name";   Label = "皇帝       12 分 + 全面进攻，冲突 5 张二级 + 5 张三级" },
-    @{ Key = "extra-fremen";     File = "preset_faction_extra_fremen_$Name";  Label = "弗雷曼     14 分 + 沙虫骑士 / 为勇士唱赞歌，3 张三级循环" },
-    @{ Key = "extra-bene";       File = "preset_faction_extra_bene_$Name";    Label = "姐妹会     14 分 + 魁萨茨·哈德拉克，3 张三级循环" },
-    @{ Key = "extra-guild";      File = "preset_faction_extra_guild_$Name";   Label = "宇航工会   14 分 + 公会领航员，3 张三级循环" },
-    @{ Key = "extra-emperor";    File = "preset_faction_extra_emperor_$Name"; Label = "皇帝       14 分 + 奢靡 / 萨多卡协同作战，3 张三级循环" }
+    @{ Key = "extra-fremen";     File = "preset_faction_extra_fremen_$Name";  Label = "弗雷曼     14 分 + 沙虫骑士 / 为勇士唱赞歌，10 张三级冲突" },
+    @{ Key = "extra-bene";       File = "preset_faction_extra_bene_$Name";    Label = "姐妹会     14 分 + 魁萨茨·哈德拉克，10 张三级冲突" },
+    @{ Key = "extra-guild";      File = "preset_faction_extra_guild_$Name";   Label = "宇航工会   14 分 + 公会领航员，10 张三级冲突" },
+    @{ Key = "extra-emperor";    File = "preset_faction_extra_emperor_$Name"; Label = "皇帝       14 分 + 奢靡 / 萨多卡协同作战，10 张三级冲突" },
+    @{ Key = "ultra-fremen";     File = "preset_faction_ultra_fremen_$Name";  Force = "_holtz_ultra"; Label = "弗雷曼     +斯第尔格/领导力，捕风器" },
+    @{ Key = "ultra-bene";       File = "preset_faction_ultra_bene_$Name";    Force = "_holtz_ultra"; Label = "姐妹会     +杰西卡夫人/圣母莫希阿姆，思录机" },
+    @{ Key = "ultra-guild";      File = "preset_faction_ultra_guild_$Name";   Force = "_holtz_ultra"; Label = "宇航工会   +公会领航员/公会银行家，缩微胶片" },
+    @{ Key = "ultra-emperor";    File = "preset_faction_ultra_emperor_$Name"; Force = "_holtz_ultra"; Label = "皇帝       +登基大典/占领+高等议会，掩护炮击" }
 )
 
 $script:Holtz = $false
@@ -44,6 +48,7 @@ function Show-Menu {
     Write-Host "   最后的时代：  每人开局 3 个工人（自带剑术大师）"
     Write-Host "   最后的时代 Ultra：每人开局 4 个工人 + 1 块霍兹曼引擎（与「最后的时代」二选一）"
     Write-Host "   议会霸权：    每人多一块弹药制约科技 + 1 太阳币"
+    Write-Host "   注：14-17 已固定开启跃迁与 Ultra，m/n/u 对它们无效，只有 c 可叠加"
     Write-Host ""
     Write-Host "  马拉松（20 分）"
     Write-Host "    1) $($Presets[0].Label)"
@@ -65,6 +70,12 @@ function Show-Menu {
     Write-Host "   11) $($Presets[10].Label)"
     Write-Host "   12) $($Presets[11].Label)"
     Write-Host "   13) $($Presets[12].Label)"
+    Write-Host ""
+    Write-Host "  分阵营 Ultra（14 分，固定开跃迁 + 最后的时代 Ultra；兵营 5 支 + 钩杖 + 引爆）"
+    Write-Host "   14) $($Presets[13].Label)"
+    Write-Host "   15) $($Presets[14].Label)"
+    Write-Host "   16) $($Presets[15].Label)"
+    Write-Host "   17) $($Presets[16].Label)"
     Write-Host ""
     Write-Host "    m) 切换霍尔兹曼跃迁叠加"
     Write-Host "    n) 切换最后的时代叠加（3 工人）"
@@ -141,10 +152,16 @@ while ($true) {
     $p = $Presets[$idx - 1]
     $file = $p.File
     $extra = ""
-    if ($script:Holtz) { $extra += "_holtz" }
-    if ($script:Last) { $extra += "_last" }
-    if ($script:Ultra) { $extra += "_ultra" }
-    if ($script:Council) { $extra += "_council" }
+    if ($p.Force) {
+        # Ultra 模式自带跃迁 + 最后的时代 Ultra，只允许再叠议会霸权
+        $extra = $p.Force
+        if ($script:Council) { $extra += "_council" }
+    } else {
+        if ($script:Holtz) { $extra += "_holtz" }
+        if ($script:Last) { $extra += "_last" }
+        if ($script:Ultra) { $extra += "_ultra" }
+        if ($script:Council) { $extra += "_council" }
+    }
     if ($extra) { $file = $file.Replace("_$Name", "$($extra)_$Name") }
     $src = Join-Path $OutDir $file
     if (-not (Test-Path -LiteralPath $src)) {
@@ -155,10 +172,10 @@ while ($true) {
     }
 
     Copy-Item -LiteralPath $src -Destination $GameBundle -Force
-    $tag = ""
-    if ($script:Holtz) { $tag += " + 霍尔兹曼跃迁" }
-    if ($script:Last) { $tag += " + 最后的时代" }
-    if ($script:Ultra) { $tag += " + 最后的时代 Ultra" }
+    $tag = if ($p.Force) { " + 霍尔兹曼跃迁 + 最后的时代 Ultra" } else { "" }
+    if (-not $p.Force -and $script:Holtz) { $tag += " + 霍尔兹曼跃迁" }
+    if (-not $p.Force -and $script:Last) { $tag += " + 最后的时代" }
+    if (-not $p.Force -and $script:Ultra) { $tag += " + 最后的时代 Ultra" }
     if ($script:Council) { $tag += " + 议会霸权" }
     Write-Host "[完成] 已安装：$($p.Key)$tag"
     Write-Host "       开游戏 -> 单人模式 -> 标准剧本"

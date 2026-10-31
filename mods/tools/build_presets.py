@@ -80,6 +80,15 @@ CARD = {
     "Steersman":          "a3c2d1da-82e3-4e5d-bd42-bf70a61f5256",   # 公会领航员（崛起）
     "Opulence":           "772456a8-05ea-44fd-b599-abc1e70a1e97",   # 奢靡（基础）
     "SardaukarCoord":     "5f57324b-8d5d-43cf-99c7-ed018f01dde3",   # 萨多卡协同作战（崛起）
+
+    # 分阵营 Ultra 专属
+    "Stilgar":            "6179044e-13a7-4c3a-95bf-709f4fe0b259",   # 斯第尔格（基础版）
+    "Leadership":         "74b3e24b-2291-4350-a4e8-55f3c33ef397",   # 领导力（崛起）
+    "LadyJessica":        "86b22d77-ed89-4a3c-885b-9ef09bbab8fd",   # 杰西卡夫人（基础）
+    "Mohiam":             "8312bf60-af37-42e4-b5e2-8ba5e43a95f4",   # 圣母莫希阿姆（基础）
+    "GuildBanker":        "20f16328-3e0e-4c2e-94c4-8fd14ac287ad",   # 公会银行家（基础）
+    "Coronation":         "ce6ea4e7-3490-4a72-b928-b85a70e1e0d4",   # 登基大典（不朽）
+    "Occupation":         "e7dd7dc8-2e15-4706-98a6-8fce043d2257",   # 占领（不朽）
 }
 
 BASE_DECK = ([CARD["Dagger"]] * 2 + [CARD["Dune"]] * 2 + [CARD["ConvincingArgument"]] * 2
@@ -93,6 +102,10 @@ BASE_DECK = ([CARD["Dagger"]] * 2 + [CARD["Dune"]] * 2 + [CARD["ConvincingArgume
 TECH = {
     "HoltzmanEngine":   "db3857e8-8373-4f1a-8420-2669fc684204",   # 霍兹曼引擎（伊克斯）
     "RestrictedOrdnance": "aae7fdc9-dd0a-498a-8491-dddd6c6d583d",  # 弹药制约（伊克斯）
+    "Windtraps":        "190c7161-e1fa-4453-b311-4e8686e3b71e",   # 捕风器（伊克斯）
+    "Artillery":        "0625a9d9-6fd0-47d0-93ae-bf71b0299507",   # 掩护炮击（伊克斯）
+    "Memocorders":      "2ee0c66a-f610-4236-8220-b3e249b3efc4",   # 思录机（伊克斯）
+    "Minimicfilm":      "4d5e182c-07af-4224-b718-75634e353ba1",   # 缩微胶片（伊克斯）
 }
 
 # 引爆（阴谋牌，崛起）：摧毁屏障山脉 + 从兵营部署至多 4 支部队
@@ -294,11 +307,32 @@ MODES = {
         "extra_deck": [],
         "use_faction": True,
         # 只有三张三级冲突（基础版），打完一轮后重洗继续：厄拉奇恩 / 帝国盆地 / 迦太格
-        "conflict_deck": EXTRA_CONFLICT_3,
+        "conflict_deck": CONFLICT_T3_POOL,   # 全部 10 张三级冲突
         "conflict_order": "natural",
-        "conflict_shuffle_repeat": True,     # 3 张撑不满 14 分，必须循环
+        "conflict_shuffle_repeat": False,
         "conflict_repeat_last": 0,
-        "note": "14 分胜利，冲突只有 3 张三级（厄拉奇恩 / 帝国盆地 / 迦太格），循环使用",
+        "note": "14 分胜利，10 张冲突全部为三级；Pro 加牌之上再各加两张",
+    },
+    "faction_ultra": {
+        "label": "分阵营 Ultra",
+        "endgame": 14,
+        "water": 1, "spice": 0, "solari": 0,
+        "extra_deck": [],
+        "use_faction": True,
+        # 在 Extra 的基础上再改：四家都去掉说服，按阵营加专属牌
+        "ultra_ops": True,
+        # 固定开启两个叠加：霍尔兹曼跃迁（多一块引擎）+ 最后的时代 Ultra（4 工人 + 引擎）
+        "force_mods": ["holtzman", "lasttime_ultra"],
+        # 开局：兵营 5 支、人人有造物主钩杖、每人一张「引爆」
+        "garrison": 5,
+        "maker_hooks": True,
+        "blow_wall": True,
+        # 冲突：第 1 张固定宣传策略，其余 9 张是那三张三级冲突的随机循环（每次生成重新随机）
+        "conflict_builder": "ultra_cycle",
+        "conflict_order": "fixed",
+        "conflict_shuffle_repeat": False,
+        "conflict_repeat_last": 0,
+        "note": "14 分；冲突 = 宣传策略 + 三张三级随机循环；固定开跃迁与 Ultra；兵营 5 支 + 钩杖 + 引爆",
     },
 }
 
@@ -315,6 +349,9 @@ FACTIONS = {
         "pro_remove": [],
         "extra_add": [CARD["WormRiders"], CARD["LongLiveFighters"]],
         "extra_remove": [CARD["Reconnaissance"], CARD["Jamis"]],
+        "ultra_add": [CARD["Stilgar"], CARD["Leadership"]],
+        "ultra_remove": [],
+        "ultra_tech": [TECH["Windtraps"]],
         "note": "+晶牙匕(基础)+毛拉枪+詹米，-2 沙丘",
     },
     "bene": {
@@ -328,6 +365,9 @@ FACTIONS = {
         "pro_remove": [],
         "extra_add": [CARD["KwisatzHaderach"]],
         "extra_remove": [CARD["Dagger"]],
+        "ultra_add": [CARD["LadyJessica"], CARD["Mohiam"]],
+        "ultra_remove": [],
+        "ultra_tech": [TECH["Memocorders"]],
         "note": "+1 随机密卡，+暗中准备+奇异女士+基因操控，-侦查-沙丘-匕首",
     },
     "guild": {
@@ -342,6 +382,9 @@ FACTIONS = {
         "pro_remove": [CARD["SpaceTravel"]],
         "extra_add": [CARD["Steersman"]],
         "extra_remove": [CARD["ConvincingArgument"]],   # 一张说服换回沙丘（沙丘不再被移除）
+        "ultra_add": [CARD["Steersman"], CARD["GuildBanker"]],
+        "ultra_remove": [],
+        "ultra_tech": [TECH["Minimicfilm"]],
         "note": "+1 香料，+私人航班+降落许可+太空旅行+卫星禁令，-匕首-沙丘-侦查-寻求盟友",
     },
     "emperor": {
@@ -355,6 +398,11 @@ FACTIONS = {
         "pro_remove": [],
         "extra_add": [CARD["Opulence"], CARD["SardaukarCoord"]],
         "extra_remove": [CARD["ConvincingArgument"], CARD["Dagger"]],
+        # Ultra：再拿掉一张匕首，加登基大典 + 占领，开局进高等议会
+        "ultra_add": [CARD["Coronation"], CARD["Occupation"]],
+        "ultra_remove": [CARD["Dagger"]],
+        "ultra_tech": [TECH["Artillery"]],
+        "ultra_high_council": True,
         "note": "+1 太阳币，+双面间谍+萨多卡士兵+帝国镇暴兵，-说服-匕首-侦查",
     },
 }
@@ -473,13 +521,13 @@ def faction_loadout(mode, faction_key, sets):
             else:
                 print(f"      [警告] 待删除卡不在牌组中: {name_of(gid)}")
         deck.extend(fac["add"])
-        if mode in ("faction_pro", "faction_extra"):
+        if mode in ("faction_pro", "faction_extra", "faction_ultra"):
             for gid in fac.get("pro_remove", []):
                 if gid in deck:
                     deck.remove(gid)
                     removed.append(gid)
             deck.extend(fac.get("pro_add", []))
-        if mode == "faction_extra":
+        if mode in ("faction_extra", "faction_ultra"):
             for gid in fac.get("extra_remove", []):
                 if gid in deck:
                     deck.remove(gid)
@@ -523,7 +571,8 @@ def effective_workers(agents, swordmaster):
 
 
 def make_player(idx, human, deck, intrigue, res, techs=None, agents=2, swordmaster=False,
-                seat=None, garrison=0, bonus_garrison=0, maker_hooks=False):
+                seat=None, garrison=0, bonus_garrison=0, maker_hooks=False,
+                high_council=False):
     # seat 是「座位号」（0 = 先手）。它同时决定 StartingOrder 与 PlayerColor，
     # 早期版本固定写成 idx，导致人类玩家（idx 0）永远是先手。
     seat = idx if seat is None else seat
@@ -547,7 +596,7 @@ def make_player(idx, human, deck, intrigue, res, techs=None, agents=2, swordmast
             "BonusStartingGarrison": bonus_garrison, "ControlLocations": [],
             "BonusStartingVP": 0,
             "StartingSwordmaster": swordmaster,
-            "StartingHighCouncil": False,
+            "StartingHighCouncil": high_council,
             "StartingMakerHooks": maker_hooks,
             "StartingSolari": res["solari"],
             "StartingSpice": res["spice"],
@@ -580,8 +629,27 @@ def load_base():
 def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
           conflict_order=None, conflict_repeat=None, mods=None, first_order=None,
           extra_techs=None, conflict_same=None, conflict_count=10,
-          garrison=None, bonus_garrison=0, maker_hooks=False, blow_wall=False):
+          garrison=None, bonus_garrison=0, maker_hooks=False, blow_wall=False,
+          high_council=None):
     m = dict(MODES[mode])
+    # 模式自带的固定叠加（例如分阵营 Ultra 必定开跃迁 + 最后的时代 Ultra）
+    cli_garrison, cli_hooks, cli_wall = garrison, maker_hooks, blow_wall
+    for fm in m.get("force_mods", []):
+        if fm not in mods:
+            mods.append(fm)
+    # 模式自带的开局设置，可被命令行显式参数覆盖
+    if garrison is None:
+        garrison = m.get("garrison")
+    maker_hooks = maker_hooks or bool(m.get("maker_hooks"))
+    blow_wall = blow_wall or bool(m.get("blow_wall"))
+    # 模式自带的冲突牌堆构造器（随机性在生成时决定）
+    if m.get("conflict_builder") == "ultra_cycle":
+        cdeck = [CONFLICT_NAME["宣传策略"]]
+        for _ in range(3):
+            cyc = list(EXTRA_CONFLICT_3)
+            random.shuffle(cyc)          # 每三张一轮，内部顺序随机
+            cdeck.extend(cyc)
+        m["conflict_deck"] = cdeck
     if conflict_same:
         # 实验用：整副冲突牌堆都是同一张（允许重复 ArchetypeID）
         m["conflict_deck"] = [conflict_same] * max(1, int(conflict_count))
@@ -674,18 +742,30 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
                 else:
                     deck.append(new_gid)
                     mod_log.append(("追加", None, new_gid))
+        ultra_removed = []
+        if m.get("ultra_ops") and fk:
+            f = FACTIONS[fk]
+            # 四家都去掉所有「说服」，再按阵营去掉各自的牌
+            for gid in [CARD["ConvincingArgument"], CARD["ConvincingArgument"]] + list(f.get("ultra_remove", [])):
+                if gid in deck:
+                    deck.remove(gid)
+                    ultra_removed.append(gid)
+            deck.extend(f.get("ultra_add", []))
+            techs.extend(f.get("ultra_tech", []))
         if extra_techs:
-            # 实验用：直接追加科技，允许重复（用于验证「同一玩家两份相同科技」是否被引擎接受）
+            # 实验用：直接追加科技，允许重复（用于验证「同一玩家同一份科技」是否被引擎接受）
             techs.extend(extra_techs)
+        hc = bool(m.get("ultra_ops") and fk and FACTIONS[fk].get("ultra_high_council"))
         players.append(make_player(i, i == 0, deck, intrigue, res, techs,
                                    agents=agents, swordmaster=swordmaster, seat=seats[i],
                                    garrison=0, bonus_garrison=gbonus,
-                                   maker_hooks=maker_hooks))
+                                   maker_hooks=maker_hooks, high_council=hc))
         loadouts.append({"faction": fk, "deck": deck, "resources": res,
                          "intrigue": intrigue, "removed": removed, "swapped": swapped,
                          "techs": techs, "mod_log": mod_log,
                          "agents": agents, "swordmaster": swordmaster,
                          "garrison": garrison or 0, "bonus_garrison": gbonus,
+                         "ultra_removed": ultra_removed, "high_council": hc,
                          "maker_hooks": maker_hooks,
                          "seat": seats[i]})
 
@@ -740,13 +820,13 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
         stem += "_techx"          # 实验包单独命名，避免覆盖正常预设
     if conflict_same:
         stem += "_same"
-    if maker_hooks:
+    if cli_hooks:
         stem += "_hook"
-    if garrison:
-        stem += f"_g{garrison}"
+    if cli_garrison:
+        stem += f"_g{cli_garrison}"
     elif bonus_garrison:
         stem += f"_gb{bonus_garrison:+d}".replace("+", "p")
-    if blow_wall:
+    if cli_wall:
         stem += "_wall"
     out = os.path.join(OUT_DIR, f"{stem}_{BUNDLE}")
     with open(out, "wb") as f:
@@ -847,6 +927,10 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
                       + (" + 剑术大师 1）" if lo["swordmaster"] else "）"))
             if lo.get("maker_hooks"):
                 print("           开局持有：造物主钩杖")
+            if lo.get("high_council"):
+                print("           开局：高等议会席位")
+            if lo.get("ultra_removed"):
+                print(f"           Ultra 移除：{ '、'.join(name_of(g) for g in lo['ultra_removed']) }")
             if lo.get("garrison") or lo.get("bonus_garrison"):
                 print(f"           兵营：目标 {BASE_GARRISON + lo['bonus_garrison']} 支"
                       f"（基础 {BASE_GARRISON} + Bonus {lo['bonus_garrison']:+d}）")
@@ -854,7 +938,7 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
                 if act == "替换":
                     print(f"           模组替换：{name_of(a)} → {name_of(b)}")
                 else:
-                    print(f"           模组加牌：{name_of(b)}（原牌组无 {name_of(MODS[mods[0]]['replace'][0][0])}）")
+                    print(f"           模组加牌：{name_of(b)}（原牌组没有可替换的牌，直接追加）")
 
     meta = {
         "mode": mode, "mode_label": m["label"],
@@ -872,6 +956,7 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
                      "agents": lo["agents"], "swordmaster": lo["swordmaster"],
                      "workers": effective_workers(lo["agents"], lo["swordmaster"]),
                      "garrison": lo.get("garrison", 0),
+                     "high_council": lo.get("high_council", False),
                      "garrison_target": BASE_GARRISON + lo.get("bonus_garrison", 0),
                      "maker_hooks": lo.get("maker_hooks", False),
                      "seat": lo["seat"]}
@@ -987,10 +1072,11 @@ if __name__ == "__main__":
         todo += [("faction", k) for k in FACTION_ORDER]
         todo += [("faction_pro", k) for k in FACTION_ORDER]
         todo += [("faction_extra", k) for k in FACTION_ORDER]
+        todo += [("faction_ultra", k) for k in FACTION_ORDER]
     else:
         if mode_arg in (None, "marathon"):
             todo.append(("marathon", None))
-        for md in ("faction", "faction_pro", "faction_extra"):
+        for md in ("faction", "faction_pro", "faction_extra", "faction_ultra"):
             if mode_arg not in (None, md):
                 continue
             keys = [faction] if faction else FACTION_ORDER
