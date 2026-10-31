@@ -1,0 +1,82 @@
+================================================================
+TYPE Canis.ai.value.AIValueSummer`1
+  BASE Il2CppSystem.Object
+  PROP Il2CppSystem.Func<T0, T0, T0> addOp
+  PROP T0 value
+  PROP T0 Value
+  PROP T0 Sum
+  PROP Il2CppSystem.Func<T0, T0, T0> Operation
+  PROP Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.ai.value.ValueReason<T0>> Entries
+  PROP Int32 Count
+  METHOD [Static] Void .cctor()
+  METHOD T0 get_Value()
+  METHOD Void .ctor(Il2CppSystem.Func<T0, T0, T0> addOp)
+  METHOD Void .ctor(Canis.ai.value.AIValueSummer<T0> orig)
+  METHOD Void .ctor(Il2CppSystem.Func<T0, T0, T0> addOp, Int32 capacity)
+  METHOD T0 get_Sum()
+  METHOD Il2CppSystem.Func<T0, T0, T0> get_Operation()
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.ai.value.ValueReason<T0>> get_Entries()
+  METHOD [Static] Canis.ai.value.AIValueSummer<T0> op_Addition(Canis.ai.value.AIValueSummer<T0> self, Canis.ai.value.AIValueSummer<T0> other)
+  METHOD [Static] Canis.ai.value.AIValueSummer<Double> op_Addition(Canis.ai.value.AIValueSummer<T0> self, Double amt)
+  METHOD [Static] Canis.ai.value.AIValueSummer<Double> op_Subtraction(Canis.ai.value.AIValueSummer<Double> self, Canis.ai.value.AIValueSummer<T0> other)
+  METHOD [Static] Canis.ai.value.AIValueSummer<Double> op_Multiply(Canis.ai.value.AIValueSummer<T0> self, Double amt)
+  METHOD [Static] Canis.ai.value.AIValueSummer<Double> op_Subtraction(Canis.ai.value.AIValueSummer<T0> self, Double amt)
+  METHOD Int32 get_Count()
+  METHOD Il2CppSystem.ValueTuple<T0, String> At(Int32 index)
+  METHOD Void Add(T0 value, Utils.strings.DebugOnlyStringInterpolationHandler reason)
+  METHOD Void Add(T0 value, String reason)
+  METHOD Void Add(Il2CppSystem.ValueTuple<T0, String> tuple)
+  METHOD Void Add(Canis.ai.value.IReadOnlyAIValueSummer<T0> other, String prependReason)
+  METHOD Void Add(Canis.ai.value.IReadOnlyAIValueSummer<T0> other, Utils.strings.DebugOnlyStringInterpolationHandler prependReason)
+  METHOD Void Add(Canis.ai.value.IReadOnlyAIValueSummer<T0> other)
+  METHOD Canis.ai.value.AIValueSummer<T0> AddTo(Canis.ai.value.AIValueSummer<T0> other)
+  METHOD Canis.ai.value.AIValueSummer<T0> AddTo(Canis.ai.value.AIValueSummer<T0> other, String prependReason)
+  METHOD Void Merge(Canis.ai.value.IReadOnlyAIValueSummer<T0> other)
+  METHOD Void MergePrependReason(Canis.ai.value.IReadOnlyAIValueSummer<T0> other, Utils.strings.DebugOnlyStringInterpolationHandler prependReason)
+  METHOD Void MergePrependReason(Canis.ai.value.IReadOnlyAIValueSummer<T0> other, String prependReason)
+  METHOD Void MergeReasonsOnly(Canis.ai.value.AIValueSummer<T0> other)
+  METHOD [Static] Canis.ai.value.AIValueSummer<T0> Concatenate(Il2CppSystem.Collections.Generic.IEnumerable<Canis.ai.value.AIValueSummer<T0>> list)
+  METHOD Int32 CompareTo(Canis.ai.value.IReadOnlyAIValueSummer<T0> other)
+  METHOD String ToString()
+  METHOD String Breakdown()
+  METHOD [Static] Canis.ai.value.AIValueSummer<Double> Empty(Il2CppSystem.Nullable<Int32> capacity)
+  METHOD Il2CppSystem.TypeCode GetTypeCode()
+  METHOD Boolean ToBoolean(Il2CppSystem.IFormatProvider provider)
+  METHOD Byte ToByte(Il2CppSystem.IFormatProvider provider)
+  METHOD Char ToChar(Il2CppSystem.IFormatProvider provider)
+  METHOD Il2CppSystem.DateTime ToDateTime(Il2CppSystem.IFormatProvider provider)
+  METHOD Il2CppSystem.Decimal ToDecimal(Il2CppSystem.IFormatProvider provider)
+  METHOD Double ToDouble(Il2CppSystem.IFormatProvider provider)
+  METHOD Int16 ToInt16(Il2CppSystem.IFormatProvider provider)
+  METHOD Int32 ToInt32(Il2CppSystem.IFormatProvider provider)
+  METHOD Int64 ToInt64(Il2CppSystem.IFormatProvider provider)
+  METHOD SByte ToSByte(Il2CppSystem.IFormatProvider provider)
+  METHOD Single ToSingle(Il2CppSystem.IFormatProvider provider)
+  METHOD String ToString(Il2CppSystem.IFormatProvider provider)
+  METHOD Il2CppSystem.Object ToType(Il2CppSystem.Type conversionType, Il2CppSystem.IFormatProvider provider)
+  METHOD UInt16 ToUInt16(Il2CppSystem.IFormatProvider provider)
+  METHOD UInt32 ToUInt32(Il2CppSystem.IFormatProvider provider)
+  METHOD UInt64 ToUInt64(Il2CppSystem.IFormatProvider provider)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Func<T0, T0, T0> get_addOp()
+  METHOD Void set_addOp(Il2CppSystem.Func<T0, T0, T0>)
+  METHOD T0 get_value()
+  METHOD Void set_value(T0)
+
+================================================================
+TYPE Canis.ai.value.AIValueSummerExtensions
+  BASE Il2CppSystem.Object
+  METHOD [Static] Void .cctor()
+  METHOD [Static] Canis.ai.value.AIValueSummer<Double> Sum(Il2CppSystem.Collections.Generic.IEnumerable<M0> source, Il2CppSystem.Func<M0, Canis.ai.value.AIValueSummer<Double>> func)
+  METHOD [Static] Canis.ai.value.AIValueSummer<Double> Average(Il2CppSystem.Collections.Generic.IEnumerable<M0> source, Il2CppSystem.Func<M0, Canis.ai.value.AIValueSummer<Double>> func)
+  METHOD [Static] Void InjectNoise(Canis.ai.value.AIValueSummer<Double> summer, Canis.entities.PlayerEntity player)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.entities.ai.AIEntityExtensions
+  BASE Il2CppSystem.Object
+  METHOD [Static] Void .cctor()
+  METHOD [Static] Canis.ai.value.IReadOnlyAIValueSummer<Double> GetValueForPlay(Canis.entities.PlayerEntity player, Canis.entities.Entity source)
+  METHOD [Static] Canis.ai.value.IReadOnlyAIValueSummer<Double> GetValueForPlayOn(Canis.entities.PlayerEntity player, Canis.entities.Entity source, Canis.entities.Entity target)
+  METHOD Void .ctor(IntPtr pointer)
+

@@ -384,6 +384,7 @@ namespace DuneAiProbe
 
             foreach (var kv in table)
             {
+                if (kv.Key.StartsWith("_")) continue;   // 说明性字段
                 var targets = new List<KeyValuePair<string, WormAIConstantsRef>>();
                 if (kv.Key == "all")
                 {
