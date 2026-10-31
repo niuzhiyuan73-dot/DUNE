@@ -1,0 +1,42 @@
+================================================================
+TYPE Canis.matchThread.MatchPauseTypes
+  BASE System.Enum
+  FIELD Int32 value__   [Public, SpecialName, RTSpecialName, HasDefault]
+  FIELD Canis.matchThread.MatchPauseTypes WaitingForHumanInput   [Public, Static, Literal, HasDefault]   = 0
+  FIELD Canis.matchThread.MatchPauseTypes WaitingForAIInput   [Public, Static, Literal, HasDefault]   = 1
+  FIELD Canis.matchThread.MatchPauseTypes MatchOver   [Public, Static, Literal, HasDefault]   = 2
+  FIELD Canis.matchThread.MatchPauseTypes Error   [Public, Static, Literal, HasDefault]   = 3
+  FIELD Canis.matchThread.MatchPauseTypes NonMainStack   [Public, Static, Literal, HasDefault]   = 4
+
+================================================================
+TYPE Canis.entities.ai.SelectFromEvaluator
+  BASE Canis.entities.ai.AISelectionEvaluator
+  PROP Boolean LoggingEnabled
+  METHOD [Static] Void .cctor()
+  METHOD Canis.ai.value.AIValueSummer<Double> Evaluate(Canis.entities.Entity target, Canis.Match match, Canis.entities.PlayerEntity player)
+  METHOD Canis.entities.ai.AIChoice Evaluate(Canis.entities.ai.AIChoiceContext context)
+  METHOD Canis.ai.value.AIValueSummer<Double> EvaluateThenLog(Canis.entities.Entity target, Canis.Match match, Canis.entities.PlayerEntity player)
+  METHOD Canis.entities.ai.SelectFromEvaluator WithLogging()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Boolean get_LoggingEnabled()
+  METHOD Void set_LoggingEnabled(Boolean)
+
+================================================================
+TYPE Canis.entities.ai.SelectFromTargetsEvaluator
+  BASE Canis.entities.ai.AISelectionEvaluator
+  METHOD [Static] Void .cctor()
+  METHOD Canis.ai.value.AIValueSummer<Double> Evaluate(Canis.entities.Entity source, Canis.entities.Entity target, Canis.Match match, Canis.entities.PlayerEntity player)
+  METHOD Canis.entities.ai.AIChoice Evaluate(Canis.entities.ai.AIChoiceContext context)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.entities.ai.XChoiceEvaluator
+  BASE Canis.entities.ai.AISelectionEvaluator
+  METHOD [Static] Void .cctor()
+  METHOD Canis.ai.value.AIValueSummer<Double> Evaluate(Int32 choice, Canis.Match match, Canis.entities.PlayerEntity player)
+  METHOD Canis.entities.ai.AIChoice Evaluate(Canis.entities.ai.AIChoiceContext context)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+

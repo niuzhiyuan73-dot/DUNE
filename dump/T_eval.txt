@@ -1,0 +1,384 @@
+================================================================
+TYPE Canis.entities.ai.AIChoice
+  BASE Il2CppSystem.Object
+  PROP Il2CppSystem.Nullable<Int32> AIDecisionDelay
+  PROP Int32 ConsecutiveSelectionLoopThreshold
+  PROP Int32 _rank_k__BackingField
+  PROP Canis.entities.ai.AIChoiceContext _context_k__BackingField
+  PROP String notes
+  PROP Int32 rank
+  PROP Canis.entities.ai.AIChoiceContext context
+  METHOD [Static] Void .cctor()
+  METHOD Int32 get_rank()
+  METHOD Void set_rank(Int32 value)
+  METHOD Canis.entities.ai.AIChoiceContext get_context()
+  METHOD Void .ctor(Canis.entities.ai.AIChoiceContext c, Int32 r)
+  METHOD Void SendResponse()
+  METHOD Networking.selection.messages.outgoing.ISelectionCounter GetResponse()
+  METHOD Boolean ResponseExpected()
+  METHOD Void SetRank(Int32 value)
+  METHOD String colorNumber(Int32 num)
+  METHOD String ToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD [Static] Il2CppSystem.Nullable<Int32> get_AIDecisionDelay()
+  METHOD [Static] Void set_AIDecisionDelay(Il2CppSystem.Nullable<Int32>)
+  METHOD [Static] Int32 get_ConsecutiveSelectionLoopThreshold()
+  METHOD [Static] Void set_ConsecutiveSelectionLoopThreshold(Int32)
+  METHOD Int32 get__rank_k__BackingField()
+  METHOD Void set__rank_k__BackingField(Int32)
+  METHOD Canis.entities.ai.AIChoiceContext get__context_k__BackingField()
+  METHOD Void set__context_k__BackingField(Canis.entities.ai.AIChoiceContext)
+  METHOD String get_notes()
+  METHOD Void set_notes(String)
+
+================================================================
+TYPE Canis.entities.ai.AIChoiceContext
+  BASE Il2CppSystem.Object
+  PROP Canis.context.Context offlineContext
+  PROP Canis.Match match
+  PROP Networking.selection.messages.SelectionMessage selection
+  PROP Il2CppSystem.Collections.Generic.Dictionary<String, Canis.entities.ai.IntentFitness> intents
+  PROP Il2CppSystem.Collections.Generic.List<Canis.entities.ai.IntentFitness> rankedIntents
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor(Canis.Match m, Networking.selection.messages.SelectionMessage s)
+  METHOD Int32 IntentFor(String intent)
+  METHOD Canis.entities.ai.IntentFitness RankedIntentFor(String intent)
+  METHOD Canis.entities.ai.IntentFitness fitnessFor(String intent)
+  METHOD Void IncrementFitnessFor(String intent, Int32 amount)
+  METHOD String ToString()
+  METHOD String SelectionToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.context.Context get_offlineContext()
+  METHOD Void set_offlineContext(Canis.context.Context)
+  METHOD Canis.Match get_match()
+  METHOD Void set_match(Canis.Match)
+  METHOD Networking.selection.messages.SelectionMessage get_selection()
+  METHOD Void set_selection(Networking.selection.messages.SelectionMessage)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<String, Canis.entities.ai.IntentFitness> get_intents()
+  METHOD Void set_intents(Il2CppSystem.Collections.Generic.Dictionary<String, Canis.entities.ai.IntentFitness>)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.entities.ai.IntentFitness> get_rankedIntents()
+  METHOD Void set_rankedIntents(Il2CppSystem.Collections.Generic.List<Canis.entities.ai.IntentFitness>)
+
+================================================================
+TYPE Canis.entities.ai.AIChoiceEntityGrouping
+  BASE Canis.entities.ai.AIChoice
+  PROP Networking.selection.targetresponse.EntityListTargetResponse response
+  PROP Canis.entities.AbilityDefinition ability
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor(Canis.entities.AbilityDefinition ability, Canis.entities.ai.AIChoiceContext c, Int32 r)
+  METHOD Void SetTarget(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID> responses)
+  METHOD Networking.selection.messages.outgoing.ISelectionCounter GetResponse()
+  METHOD String ToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Networking.selection.targetresponse.EntityListTargetResponse get_response()
+  METHOD Void set_response(Networking.selection.targetresponse.EntityListTargetResponse)
+  METHOD Canis.entities.AbilityDefinition get_ability()
+  METHOD Void set_ability(Canis.entities.AbilityDefinition)
+
+================================================================
+TYPE Canis.entities.ai.AIChoiceSelectionWithTargets
+  BASE Canis.entities.ai.AIChoice
+  PROP Canis.entities.AbilityDefinition ability
+  PROP Il2CppSystem.Collections.Generic.List<Networking.selection.targetresponse.TargetResponse> response
+  PROP Networking.selection.messages.SelectionWithTargetsRequired selection
+  PROP Il2CppSystem.Random Random
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor(Canis.entities.AbilityDefinition a, Canis.entities.ai.AIChoiceContext c, Int32 r)
+  METHOD Void UpdateChoice(Int32 newRank, Canis.utils.ids.EntityID target)
+  METHOD Void UpdateChoice(Int32 newRank)
+  METHOD Void DefaultTarget()
+  METHOD Canis.utils.ids.EntityID FirstTarget()
+  METHOD Canis.utils.ids.EntityID FirstResponse()
+  METHOD Networking.selection.targetinformation.EntityListTargetInformation GetTargetInfo()
+  METHOD Void SetTarget(Canis.utils.ids.EntityID target)
+  METHOD Void SetTargets(Il2CppSystem.Collections.Generic.IEnumerable<Canis.utils.ids.EntityID> targets)
+  METHOD Void AddTarget(Canis.utils.ids.EntityID target)
+  METHOD Networking.selection.messages.outgoing.ISelectionCounter GetResponse()
+  METHOD String ToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.entities.AbilityDefinition get_ability()
+  METHOD Void set_ability(Canis.entities.AbilityDefinition)
+  METHOD Il2CppSystem.Collections.Generic.List<Networking.selection.targetresponse.TargetResponse> get_response()
+  METHOD Void set_response(Il2CppSystem.Collections.Generic.List<Networking.selection.targetresponse.TargetResponse>)
+  METHOD Networking.selection.messages.SelectionWithTargetsRequired get_selection()
+  METHOD Void set_selection(Networking.selection.messages.SelectionWithTargetsRequired)
+  METHOD [Static] Il2CppSystem.Random get_Random()
+  METHOD [Static] Void set_Random(Il2CppSystem.Random)
+
+================================================================
+TYPE Canis.entities.ai.AIChoiceSelectionWithTargetsAndSubtargets
+  BASE Canis.entities.ai.AIChoice
+  PROP Canis.entities.AbilityDefinition ability
+  PROP Networking.selection.messages.SelectionWithTargetsRequired selection
+  PROP Canis.utils.ids.EntityID targetID
+  PROP Canis.utils.ids.EntityID subtargetID
+  PROP Il2CppSystem.Random Random
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor(Canis.entities.AbilityDefinition a, Canis.entities.ai.AIChoiceContext c, Int32 r)
+  METHOD Void UpdateChoice(Int32 newRank, Canis.utils.ids.EntityID target, Canis.utils.ids.EntityID subtarget)
+  METHOD Void UpdateChoice(Int32 newRank)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetinformation.TargetInformation>> GetTargetInfo()
+  METHOD Void SetTarget(Canis.utils.ids.EntityID target, Canis.utils.ids.EntityID subtarget)
+  METHOD Void DefaultTarget()
+  METHOD Networking.selection.messages.outgoing.ISelectionCounter GetResponse()
+  METHOD String ToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.entities.AbilityDefinition get_ability()
+  METHOD Void set_ability(Canis.entities.AbilityDefinition)
+  METHOD Networking.selection.messages.SelectionWithTargetsRequired get_selection()
+  METHOD Void set_selection(Networking.selection.messages.SelectionWithTargetsRequired)
+  METHOD Canis.utils.ids.EntityID get_targetID()
+  METHOD Void set_targetID(Canis.utils.ids.EntityID)
+  METHOD Canis.utils.ids.EntityID get_subtargetID()
+  METHOD Void set_subtargetID(Canis.utils.ids.EntityID)
+  METHOD [Static] Il2CppSystem.Random get_Random()
+  METHOD [Static] Void set_Random(Il2CppSystem.Random)
+
+================================================================
+TYPE Canis.entities.ai.AIChoiceSelectionWithTargetsCustomChoice
+  BASE Canis.entities.ai.AIChoice
+  PROP Canis.entities.AbilityDefinition ability
+  PROP Il2CppSystem.Collections.Generic.List<Networking.selection.targetresponse.TargetResponse> response
+  PROP Networking.selection.messages.SelectionWithTargetsRequired selection
+  PROP Il2CppSystem.Random Random
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor(Canis.entities.AbilityDefinition a, Canis.entities.ai.AIChoiceContext c, Int32 r)
+  METHOD Void UpdateChoice(Int32 newRank, Int32 target)
+  METHOD Void UpdateChoice(Int32 newRank)
+  METHOD Void DefaultTarget()
+  METHOD Networking.selection.targetinformation.CustomChoiceTargetInformation GetTargetInfo()
+  METHOD Void SetTarget(Int32 target)
+  METHOD Networking.selection.messages.outgoing.ISelectionCounter GetResponse()
+  METHOD String ToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.entities.AbilityDefinition get_ability()
+  METHOD Void set_ability(Canis.entities.AbilityDefinition)
+  METHOD Il2CppSystem.Collections.Generic.List<Networking.selection.targetresponse.TargetResponse> get_response()
+  METHOD Void set_response(Il2CppSystem.Collections.Generic.List<Networking.selection.targetresponse.TargetResponse>)
+  METHOD Networking.selection.messages.SelectionWithTargetsRequired get_selection()
+  METHOD Void set_selection(Networking.selection.messages.SelectionWithTargetsRequired)
+  METHOD [Static] Il2CppSystem.Random get_Random()
+  METHOD [Static] Void set_Random(Il2CppSystem.Random)
+
+================================================================
+TYPE Canis.entities.ai.AIChoiceCustom
+  BASE Canis.entities.ai.AIChoice
+  PROP Canis.entities.AbilityDefinition ability
+  PROP Int32 response
+  PROP Networking.selection.messages.CustomChoiceRequired selection
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor(Canis.entities.AbilityDefinition a, Canis.entities.ai.AIChoiceContext c, Int32 r)
+  METHOD Void UpdateChoice(Int32 val, Int32 res)
+  METHOD Void SetSelection(Int32 val)
+  METHOD Networking.selection.messages.outgoing.ISelectionCounter GetResponse()
+  METHOD String ToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.entities.AbilityDefinition get_ability()
+  METHOD Void set_ability(Canis.entities.AbilityDefinition)
+  METHOD Int32 get_response()
+  METHOD Void set_response(Int32)
+  METHOD Networking.selection.messages.CustomChoiceRequired get_selection()
+  METHOD Void set_selection(Networking.selection.messages.CustomChoiceRequired)
+
+================================================================
+TYPE Canis.entities.ai.AIEvaluator
+  BASE Il2CppSystem.Object
+  PROP Canis.entities.ai.AISelectionEvaluator Evaluator
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.entities.ai.AISelectionEvaluator get_Evaluator()
+  METHOD Void set_Evaluator(Canis.entities.ai.AISelectionEvaluator)
+
+================================================================
+TYPE Canis.entities.ai.AISelectionEvaluator
+  BASE Il2CppSystem.Object
+  PROP Canis.utils.ids.EntityID AbilityID
+  PROP Canis.entities.AbilityDefinition ability
+  METHOD [Static] Void .cctor()
+  METHOD Canis.entities.AbilityDefinition GetAbility(Canis.Match match)
+  METHOD Canis.entities.ai.AIChoice Evaluate(Canis.entities.ai.AIChoiceContext context)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.utils.ids.EntityID get_AbilityID()
+  METHOD Void set_AbilityID(Canis.utils.ids.EntityID)
+  METHOD Canis.entities.AbilityDefinition get_ability()
+  METHOD Void set_ability(Canis.entities.AbilityDefinition)
+
+================================================================
+TYPE Canis.entities.ai.FallbackAISelectionEvaluator
+  BASE Canis.entities.ai.AISelectionEvaluator
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.Dictionary<String, Il2CppSystem.Object> parameters)
+  METHOD Canis.entities.ai.AIChoice Evaluate(Canis.entities.ai.AIChoiceContext context)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.entities.ai.SelectFromEvaluator
+  BASE Canis.entities.ai.AISelectionEvaluator
+  PROP Boolean LoggingEnabled
+  METHOD [Static] Void .cctor()
+  METHOD Canis.ai.value.AIValueSummer<Double> Evaluate(Canis.entities.Entity target, Canis.Match match, Canis.entities.PlayerEntity player)
+  METHOD Canis.entities.ai.AIChoice Evaluate(Canis.entities.ai.AIChoiceContext context)
+  METHOD Canis.ai.value.AIValueSummer<Double> EvaluateThenLog(Canis.entities.Entity target, Canis.Match match, Canis.entities.PlayerEntity player)
+  METHOD Canis.entities.ai.SelectFromEvaluator WithLogging()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Boolean get_LoggingEnabled()
+  METHOD Void set_LoggingEnabled(Boolean)
+
+================================================================
+TYPE Canis.entities.ai.SimpleAIChoice
+  BASE Il2CppSystem.Object
+  PROP Int32 rank
+  PROP Canis.utils.ids.EntityID target
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor(Canis.utils.ids.EntityID orderID, Int32 amt)
+  METHOD Boolean IsDefaultChoice()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Int32 get_rank()
+  METHOD Void set_rank(Int32)
+  METHOD Canis.utils.ids.EntityID get_target()
+  METHOD Void set_target(Canis.utils.ids.EntityID)
+
+================================================================
+TYPE Canis.entities.ai.standard.StandardAIChoice
+  BASE Canis.entities.ai.AIChoice
+  PROP Canis.entities.AbilityDefinition Ability
+  PROP Canis.entities.ai.standard.StandardAIChoiceContext Context
+  PROP Double value
+  PROP Canis.entities.PlayerEntity Player
+  PROP Canis.entities.ai.AIProfileAbs AIProfile
+  PROP Double Value
+  METHOD [Static] Void .cctor()
+  METHOD Canis.entities.PlayerEntity get_Player()
+  METHOD Canis.entities.ai.AIProfileAbs get_AIProfile()
+  METHOD Double get_Value()
+  METHOD Void set_Value(Double value)
+  METHOD Void .ctor(Double value, Canis.entities.AbilityDefinition ability, Canis.entities.ai.standard.StandardAIChoiceContext context)
+  METHOD Void SetRank(Int32 value)
+  METHOD Void SendResponse()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.entities.AbilityDefinition get_Ability()
+  METHOD Void set_Ability(Canis.entities.AbilityDefinition)
+  METHOD Canis.entities.ai.standard.StandardAIChoiceContext get_Context()
+  METHOD Void set_Context(Canis.entities.ai.standard.StandardAIChoiceContext)
+  METHOD Double get_value()
+  METHOD Void set_value(Double)
+
+================================================================
+TYPE Canis.entities.ai.standard.StandardAIChoiceContext
+  BASE Canis.entities.ai.AIChoiceContext
+  PROP Networking.selection.messages.SelectionMessage OriginalSelection
+  PROP Canis.Match Match
+  PROP Canis.entities.PlayerEntity Player
+  PROP Canis.entities.ai.AIProfileAbs AIProfile
+  METHOD [Static] Void .cctor()
+  METHOD Canis.entities.ai.AIProfileAbs get_AIProfile()
+  METHOD Void .ctor(Canis.Match m, Networking.selection.messages.SelectionMessage s, Canis.entities.PlayerEntity player)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Networking.selection.messages.SelectionMessage get_OriginalSelection()
+  METHOD Void set_OriginalSelection(Networking.selection.messages.SelectionMessage)
+  METHOD Canis.Match get_Match()
+  METHOD Void set_Match(Canis.Match)
+  METHOD Canis.entities.PlayerEntity get_Player()
+  METHOD Void set_Player(Canis.entities.PlayerEntity)
+
+================================================================
+TYPE Canis.entities.ai.standard.StandardAIChoiceSelectionWithTargets
+  BASE Canis.entities.ai.standard.StandardAIChoice
+  PROP Networking.selection.messages.SelectionWithTargetsRequired selection
+  PROP Il2CppSystem.Collections.Generic.List<Networking.selection.targetresponse.TargetResponse> responses
+  PROP Canis.ai.value.AIValueSummer<Double> valueSummer
+  PROP Canis.ai.value.AIValueSummer<Double> secondBest
+  PROP Il2CppSystem.DateTime startTime
+  PROP Canis.utils.ids.EntityID _FirstSelectionID_k__BackingField
+  PROP Il2CppSystem.Collections.Generic.IReadOnlyList<Networking.selection.targetresponse.TargetResponse> Responses
+  PROP Canis.utils.ids.EntityID FirstSelectionID
+  PROP Boolean IgnoreFirst
+  PROP Boolean Forced
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetinformation.TargetInformation>> TargetMap
+  METHOD [Static] Void .cctor()
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<Networking.selection.targetresponse.TargetResponse> get_Responses()
+  METHOD Canis.utils.ids.EntityID get_FirstSelectionID()
+  METHOD Void set_FirstSelectionID(Canis.utils.ids.EntityID value)
+  METHOD Boolean get_IgnoreFirst()
+  METHOD Boolean get_Forced()
+  METHOD Void .ctor(Canis.entities.ai.AIChoiceContext context)
+  METHOD Void .ctor(Canis.entities.ai.standard.StandardAIChoiceContext context)
+  METHOD Void .ctor(Canis.entities.AbilityDefinition ability, Canis.entities.ai.AIChoiceContext context)
+  METHOD Void .ctor(Canis.entities.AbilityDefinition ability, Canis.entities.ai.standard.StandardAIChoiceContext context)
+  METHOD [Static] Canis.ai.value.AIValueSummer<Double> DefaultSummer(Double value, Utils.strings.DebugOnlyStringInterpolationHandler reason)
+  METHOD Void UpdateTargets(Canis.ai.value.AIValueSummer<Double> summer, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID> targets)
+  METHOD Void UpdateChoices(Canis.ai.value.AIValueSummer<Double> summer, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.attributes.SerializableAttributes> choices)
+  METHOD Void UpdateXChoices(Canis.ai.value.AIValueSummer<Double> summer, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Int32> choices)
+  METHOD Void UpdateTargets(Double value, Utils.strings.DebugOnlyStringInterpolationHandler reason, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID> targets)
+  METHOD Void UpdateTargets(Double value, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID> targets)
+  METHOD Boolean MustRespond()
+  METHOD Void UpdateSelectionTargets(Canis.ai.value.AIValueSummer<Double> summer, Canis.utils.ids.EntityID firstSelectionID, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID> targets)
+  METHOD Void UpdateSelectionXChoices(Canis.ai.value.AIValueSummer<Double> summer, Canis.utils.ids.EntityID firstSelectionID, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Int32> choices)
+  METHOD Void UpdateSelectionChoices(Canis.ai.value.AIValueSummer<Double> summer, Canis.utils.ids.EntityID firstSelectionID, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.attributes.SerializableAttributes> choices)
+  METHOD Void UpdateResponses(Canis.ai.value.AIValueSummer<Double> summer, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetresponse.TargetResponse> responses)
+  METHOD Void UpdateResponses(Double value, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetresponse.TargetResponse> responses)
+  METHOD Void UpdateResponses(Double value, Utils.strings.DebugOnlyStringInterpolationHandler reason, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetresponse.TargetResponse> responses)
+  METHOD Void UpdateSelectionResponses(Canis.ai.value.AIValueSummer<Double> summer, Canis.utils.ids.EntityID firstSelectionID, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetresponse.TargetResponse> responses)
+  METHOD Void UpdateSkipResponse(Double value)
+  METHOD Void UpdateSkipResponse(Canis.ai.value.AIValueSummer<Double> summer)
+  METHOD Void UpdateChoice(Canis.entities.ai.standard.StandardAIChoiceSelectionWithTargets otherChoice)
+  METHOD Void UpdateChoice(Canis.ai.value.AIValueSummer<Double> replacementSummer, Canis.entities.ai.standard.StandardAIChoiceSelectionWithTargets otherChoice)
+  METHOD Boolean TryGetTargetInformation(Canis.utils.ids.EntityID sourceID, ref Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetinformation.TargetInformation> infos)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetinformation.TargetInformation>> get_TargetMap()
+  METHOD [Static] Canis.entities.ai.standard.StandardAIChoiceSelectionWithTargets Combine(Canis.entities.ai.standard.StandardAIChoiceSelectionWithTargets choice1, Canis.entities.ai.standard.StandardAIChoiceSelectionWithTargets choice2)
+  METHOD Networking.selection.messages.outgoing.ISelectionCounter GetResponse()
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.entities.Entity, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetinformation.TargetInformation>> GetTargetMap()
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetinformation.TargetInformation> GetTargetInfos(Canis.entities.Entity owner)
+  METHOD Networking.selection.targetinformation.TargetInformation GetTargetInfo()
+  METHOD Networking.selection.targetinformation.EntityListTargetInformation GetEntityTargetInfo()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> GetTargets()
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.attributes.SerializableAttributes> GetChoices()
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Int32> GetXChoices()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> GetTargets(Canis.entities.Entity source)
+  METHOD String ToString()
+  METHOD String ExplainYourChoice()
+  METHOD Boolean IsSkip()
+  METHOD String ExplainYourSkip(Il2CppSystem.Collections.Generic.List<Canis.entities.Entity> targets, Canis.ai.value.AIValueSummer<Double> value)
+  METHOD String ExplainTheQuestion()
+  METHOD String ExplainYourResponse()
+  METHOD String ExplainYourThinkingTime()
+  METHOD String ExplainYourBreakdown()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> _GetTargets_b__49_0(Canis.utils.ids.EntityID id)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<String> _ToString_b__50_0(Networking.selection.targetresponse.EntityListTargetResponse eltr)
+  METHOD String _ToString_b__50_1(Canis.utils.ids.EntityID eid)
+  METHOD Void UpdateTargets(Canis.ai.value.AIValueSummer<Double> summer, Canis.utils.ids.EntityID[] targets)
+  METHOD Void UpdateChoices(Canis.ai.value.AIValueSummer<Double> summer, Canis.attributes.SerializableAttributes[] choices)
+  METHOD Void UpdateXChoices(Canis.ai.value.AIValueSummer<Double> summer, Int32[] choices)
+  METHOD Void UpdateTargets(Double value, Utils.strings.DebugOnlyStringInterpolationHandler reason, Canis.utils.ids.EntityID[] targets)
+  METHOD Void UpdateTargets(Double value, Canis.utils.ids.EntityID[] targets)
+  METHOD Void UpdateSelectionTargets(Canis.ai.value.AIValueSummer<Double> summer, Canis.utils.ids.EntityID firstSelectionID, Canis.utils.ids.EntityID[] targets)
+  METHOD Void UpdateSelectionXChoices(Canis.ai.value.AIValueSummer<Double> summer, Canis.utils.ids.EntityID firstSelectionID, Int32[] choices)
+  METHOD Void UpdateSelectionChoices(Canis.ai.value.AIValueSummer<Double> summer, Canis.utils.ids.EntityID firstSelectionID, Canis.attributes.SerializableAttributes[] choices)
+  METHOD Void UpdateResponses(Canis.ai.value.AIValueSummer<Double> summer, Networking.selection.targetresponse.TargetResponse[] responses)
+  METHOD Void UpdateResponses(Double value, Networking.selection.targetresponse.TargetResponse[] responses)
+  METHOD Void UpdateResponses(Double value, Utils.strings.DebugOnlyStringInterpolationHandler reason, Networking.selection.targetresponse.TargetResponse[] responses)
+  METHOD Void UpdateSelectionResponses(Canis.ai.value.AIValueSummer<Double> summer, Canis.utils.ids.EntityID firstSelectionID, Networking.selection.targetresponse.TargetResponse[] responses)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Networking.selection.messages.SelectionWithTargetsRequired get_selection()
+  METHOD Void set_selection(Networking.selection.messages.SelectionWithTargetsRequired)
+  METHOD Il2CppSystem.Collections.Generic.List<Networking.selection.targetresponse.TargetResponse> get_responses()
+  METHOD Void set_responses(Il2CppSystem.Collections.Generic.List<Networking.selection.targetresponse.TargetResponse>)
+  METHOD Canis.ai.value.AIValueSummer<Double> get_valueSummer()
+  METHOD Void set_valueSummer(Canis.ai.value.AIValueSummer<Double>)
+  METHOD Canis.ai.value.AIValueSummer<Double> get_secondBest()
+  METHOD Void set_secondBest(Canis.ai.value.AIValueSummer<Double>)
+  METHOD Il2CppSystem.DateTime get_startTime()
+  METHOD Void set_startTime(Il2CppSystem.DateTime)
+  METHOD Canis.utils.ids.EntityID get__FirstSelectionID_k__BackingField()
+  METHOD Void set__FirstSelectionID_k__BackingField(Canis.utils.ids.EntityID)
+
+================================================================
+TYPE MethodInfoStoreGeneric_MakeEvaluatorAttribute_Public_Static_MutableAttribute_1_AIEvaluator_AbilityDefinitionForGame_1_TMatch_AIEvaluateSelection_0`1
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD [Static] Void .cctor()
+

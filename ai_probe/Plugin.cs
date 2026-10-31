@@ -40,6 +40,12 @@ namespace DuneAiProbe
         private const string DumpPath = Root + "/dump/ai_constants_runtime.json";
         private const string OverridePath = Root + "/mods/ai/ai_override.json";
         private const string ForceLevelPath = Root + "/mods/ai/force_level.txt";
+        private const string TimeoutPath = Root + "/mods/ai/extend_timeout.txt";
+
+        private static double _timeoutFactor = 1.0;
+        private static int _timeoutCalls;
+        private static long _batchStart;
+        private static int _batchCount;
 
         internal static ManualLogSource L;
         private static int _attempts;
@@ -53,6 +59,8 @@ namespace DuneAiProbe
             LogEnvironment();
 
             var h = new Harmony(GUID + ".harmony");
+            ReadTimeoutFactor();
+            SurveyTimeoutApi(h);
 
             // 最可靠的一处：所有 AI 响应都在这里生成（含开局选领袖）
             try
@@ -61,8 +69,11 @@ namespace DuneAiProbe
                     BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 if (rr != null)
                 {
-                    h.Patch(rr, postfix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(OnRunAIResponses),
-                        BindingFlags.Static | BindingFlags.NonPublic)));
+                    h.Patch(rr,
+                        prefix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(OnRunAIStart),
+                            BindingFlags.Static | BindingFlags.NonPublic)),
+                        postfix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(OnRunAIResponses),
+                            BindingFlags.Static | BindingFlags.NonPublic)));
                     L.LogInfo("[AIPROBE] hooked HasExecutionStack.RunAIResponses");
                 }
                 else L.LogWarning("[AIPROBE] RunAIResponses not found");
@@ -160,12 +171,22 @@ namespace DuneAiProbe
         private static int _setupCalls;
         private static bool _runAiSeen;
 
+        private static void OnRunAIStart(Canis.hasExecutionStack.HasExecutionStack __instance)
+        {
+            _batchStart = Environment.TickCount64;
+        }
+
         private static void OnRunAIResponses(Canis.hasExecutionStack.HasExecutionStack __instance)
         {
             if (!_runAiSeen)
             {
                 _runAiSeen = true;
                 L.LogInfo("[AIPROBE] first AI response batch (RunAIResponses fired)");
+            }
+            if (_batchCount < 20)
+            {
+                _batchCount++;
+                L.LogInfo("[AIPROBE] AI batch #" + _batchCount + " took " + (Environment.TickCount64 - _batchStart) + " ms");
             }
             PlayerEntity p = null;
             try { p = __instance.LatestRespondedPlayer; } catch { }
@@ -448,6 +469,81 @@ namespace DuneAiProbe
             }
             catch (Exception e) { L.LogWarning("[AIPROBE] force_level: " + e.Message); }
             return -1;
+        }
+
+        // ---------- 超时研究与绕过 ----------
+
+        private static void ReadTimeoutFactor()
+        {
+            try
+            {
+                if (!File.Exists(TimeoutPath))
+                {
+                    L.LogInfo("[AIPROBE] no extend_timeout.txt, timeout untouched (factor=1)");
+                    return;
+                }
+                string raw = File.ReadAllText(TimeoutPath).Trim();
+                if (double.TryParse(raw, System.Globalization.NumberStyles.Float,
+                        System.Globalization.CultureInfo.InvariantCulture, out double f) && f >= 1.0 && f <= 1000.0)
+                {
+                    _timeoutFactor = f;
+                    L.LogWarning("[AIPROBE] timeout factor = " + f);
+                }
+                else L.LogWarning("[AIPROBE] extend_timeout.txt 内容无效: '" + raw + "'（应为 1–1000 的倍数）");
+            }
+            catch (Exception e) { L.LogWarning("[AIPROBE] extend_timeout: " + e.Message); }
+        }
+
+        /// 枚举 AIAlgorithmUtil 的全部方法，并把 BestRankTimeout 打上补丁。
+        /// 它是泛型静态方法：能否一次打中所有实例化，正是这次实验要回答的问题。
+        private static void SurveyTimeoutApi(Harmony h)
+        {
+            try
+            {
+                var t = typeof(AIAlgorithmUtil);
+                L.LogInfo("[AIPROBE] AIAlgorithmUtil methods:");
+                foreach (var mi in t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
+                {
+                    if (mi.DeclaringType != t) continue;
+                    var ps = string.Join(", ", mi.GetParameters().Select(x => x.ParameterType.Name + " " + x.Name));
+                    L.LogInfo("[AIPROBE]   " + mi.Name + "<" + mi.GetGenericArguments().Length + "> genericDef="
+                              + mi.IsGenericMethodDefinition + " (" + ps + ")");
+                }
+
+                int ok = 0, fail = 0;
+                foreach (var mi in t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
+                {
+                    if (mi.DeclaringType != t || mi.Name != "BestRankTimeout") continue;
+                    try
+                    {
+                        h.Patch(mi, prefix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(OnBestRankTimeout),
+                            BindingFlags.Static | BindingFlags.NonPublic)));
+                        ok++;
+                        L.LogInfo("[AIPROBE]   patched " + mi.Name + " (genericDef=" + mi.IsGenericMethodDefinition + ")");
+                    }
+                    catch (Exception e)
+                    {
+                        fail++;
+                        L.LogWarning("[AIPROBE]   patch failed: " + mi.Name + " -> " + e.GetType().Name + ": " + e.Message);
+                    }
+                }
+                L.LogInfo("[AIPROBE] BestRankTimeout patch result: ok=" + ok + " fail=" + fail);
+            }
+            catch (Exception e) { L.LogWarning("[AIPROBE] survey: " + e.GetType().Name + ": " + e.Message); }
+        }
+
+        private static void OnBestRankTimeout(ref long timeout)
+        {
+            if (_timeoutCalls < 20)
+            {
+                _timeoutCalls++;
+                L.LogInfo("[AIPROBE] BestRankTimeout called, timeout=" + timeout + ", factor=" + _timeoutFactor);
+            }
+            if (_timeoutFactor > 1.0 && timeout > 0)
+            {
+                double v = timeout * _timeoutFactor;
+                timeout = v >= long.MaxValue / 2 ? long.MaxValue / 2 : (long)v;
+            }
         }
 
         // ---------- 环境 ----------
