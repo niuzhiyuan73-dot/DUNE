@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using BepInEx.Logging;
 using Canis.entities;
@@ -137,7 +138,7 @@ namespace DuneAiProbe
                     var parts = new List<string>();
                     for (int i = 0; i < list.Count && parts.Count < 12; i++)
                     {
-                        string one = Describe(list[i], match);
+                        string one = Describe(list[i], match, log);
                         if (!string.IsNullOrEmpty(one))
                         {
                             if (one.StartsWith("可选 ", StringComparison.Ordinal)) withTargets++;
@@ -160,7 +161,7 @@ namespace DuneAiProbe
             }
         }
 
-        private static string Describe(object ti, Canis.Match match)
+        private static string Describe(object ti, Canis.Match match, ManualLogSource log)
         {
             if (ti == null) return null;
             string typeName = null;
@@ -168,7 +169,7 @@ namespace DuneAiProbe
 
             // TargetMap 里的元素声明类型是基类 TargetInformation，GetType() 只会返回基类，
             // 反射 therefore 找不到 ValidTargets。IL2CPP 的真实类型要靠 TryCast 问原生侧。
-            string byTargets = ValidTargetsOf(ti, match);
+            string byTargets = ValidTargetsOf(ti, match, log);
             if (byTargets != null) return byTargets;
 
             // 其余类型：ToString 已经带了 Choices / 提示，用它的结果
@@ -188,7 +189,7 @@ namespace DuneAiProbe
         /// 两种带 ValidTargets 的目标类型，走 TryCast 拿到真正的派生类型包装器后反射取列表。
         /// 取不到（类型不符 / 列表为空）返回 null，交给调用方退回 ToString。
         /// </summary>
-        private static string ValidTargetsOf(object ti, Canis.Match match)
+        private static string ValidTargetsOf(object ti, Canis.Match match, ManualLogSource log)
         {
             object cast = null;
             try
@@ -217,8 +218,7 @@ namespace DuneAiProbe
                 foreach (object o in arr)
                 {
                     if (names.Count >= 10) { names.Add("…"); break; }
-                    string s = null;
-                    try { if (o != null) s = Replace(o.ToString(), match); } catch { }
+                    string s = DescribeTarget(o, match, log);
                     if (!string.IsNullOrEmpty(s)) names.Add(s);
                 }
                 return names.Count == 0 ? null : "可选 " + string.Join("/", names.ToArray());
@@ -226,8 +226,68 @@ namespace DuneAiProbe
             catch { return null; }
         }
 
+        private static bool _elemLogged;
+
+        /// <summary>
+        /// ValidTargets 的元素到底是什么类型，只有运行时才知道（可能是 EntityID、Entity、
+        /// 或某种包装）。这里不赌：先看有没有 EntityName，再依次试 _ID / ID / EntityID / Value，
+        /// 拿到真正的 GUID 才交给 Resolve；实在拿不到就返回 null，宁可不写也不要把类型名塞给模型。
+        /// </summary>
+        private static string DescribeTarget(object o, Canis.Match match, ManualLogSource log)
+        {
+            if (o == null) return null;
+
+            Type t = null;
+            try { t = o.GetType(); } catch { }
+            if (t != null && !_elemLogged)
+            {
+                _elemLogged = true;
+                try { log.LogInfo("[TARGETS] validTarget element type = " + t.FullName); } catch { }
+            }
+
+            string en = PropString(t, o, "EntityName");
+            if (!string.IsNullOrEmpty(en)) return en;
+
+            string id = PropString(t, o, "_ID")
+                        ?? PropString(t, o, "ID")
+                        ?? PropString(t, o, "EntityID")
+                        ?? PropString(t, o, "Value");
+            if (id == null)
+            {
+                string raw = null;
+                try { raw = o.ToString(); } catch { }
+                if (IsGuidish(raw)) id = raw;
+            }
+            return id == null ? null : Replace(id, match);
+        }
+
+        private static string PropString(Type t, object o, string name)
+        {
+            if (t == null) return null;
+            try
+            {
+                var pi = t.GetProperty(name, BindingFlags.Public | BindingFlags.Instance);
+                if (pi == null) return null;
+                var v = pi.GetValue(o);
+                if (v == null) return null;
+                if (v is string s) return string.IsNullOrEmpty(s) ? null : s;
+                var vs = v.ToString();
+                return IsGuidish(vs) ? vs : null;
+            }
+            catch { return null; }
+        }
+
+        private static bool IsGuidish(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return false;
+            if (s.Length == 36) { int d = 0; for (int i = 0; i < s.Length; i++) if (s[i] == '-') d++; return d == 4; }
+            return false;
+        }
+
         private static string Resolve(string id, Canis.Match match)
         {
+            // 不是 GUID 就原样返回（多半已经是人话），别按前 8 字符截成 "Canis.ut" 这种垃圾
+            if (!IsGuidish(id)) return id;
             string shortId = id.Substring(0, 8);
 
             // 1) 原型 GUID（attributes 里的 10000 = archetypeID 就是这种）→ 查名称表即可
