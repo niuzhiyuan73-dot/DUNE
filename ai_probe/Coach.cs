@@ -1,0 +1,224 @@
+using System;
+using System.IO;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using BepInEx.Logging;
+
+namespace DuneAiProbe
+{
+    /// <summary>
+    /// T1 观察者：把 AI 面对的待选列表发给 DeepSeek，拿回"它会怎么选 + 为什么"，写日志。
+    ///
+    /// 设计约束：
+    ///   - 全异步，不阻塞对局线程（AI 决策只有 0-400ms，绝不能被网络拖住）
+    ///   - 只读：不修改任何选择，不影响对局结果
+    ///   - 有配额：mods/ai/coach.txt 里写数字 N = 本次会话最多发 N 次
+    ///   - Key 从 mods/ai/deepseek_key.txt 读，不入库
+    /// </summary>
+    internal static class Coach
+    {
+        private const string Endpoint = "https://api.deepseek.com/chat/completions";
+        private const string Model = "deepseek-chat";
+
+        private static ManualLogSource _log;
+        private static HttpClient _http;
+        private static string _key;
+        private static string _outDir;
+        private static int _max;
+        private static int _sent;
+        private static readonly object _lock = new object();
+
+        public static bool Enabled { get; private set; }
+
+        private const string SystemPrompt =
+            "你是《沙丘：帝国》(Dune: Imperium) 的资深教练。玩家会给你一份游戏原生导出的待选列表" +
+            "（Pending Selection，含有 Kind 与若干 Buttons，按钮里带标题、费用等属性）。" +
+            "请判断哪一项对最终胜利最有利，并给出 2-3 句理由。要求：" +
+            "1) 只讨论给出的选项，不要发明新选项；2) 优先考虑胜利点与后期兑现能力，" +
+            "而不是短期资源堆叠；3) 用中文，先给结论（选项标题或序号），再给理由。";
+
+        public static void Init(ManualLogSource log, string root)
+        {
+            _log = log;
+            _outDir = Path.Combine(root, "dump", "llm");
+
+            string keyPath = Path.Combine(root, "mods", "ai", "deepseek_key.txt");
+            string quotaPath = Path.Combine(root, "mods", "ai", "coach.txt");
+
+            if (!File.Exists(keyPath))
+            {
+                _log.LogInfo("[COACH] no deepseek_key.txt, disabled");
+                return;
+            }
+            if (!File.Exists(quotaPath))
+            {
+                _log.LogInfo("[COACH] no coach.txt, disabled (写个数字进去即启用)");
+                return;
+            }
+
+            try
+            {
+                _key = File.ReadAllText(keyPath).Trim();
+                string raw = File.ReadAllText(quotaPath).Trim();
+                if (!int.TryParse(raw, out _max) || _max <= 0)
+                {
+                    _log.LogWarning("[COACH] coach.txt 内容无效: '" + raw + "'（应为正整数）");
+                    return;
+                }
+                _http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
+                _http.DefaultRequestHeaders.Add("Authorization", "Bearer " + _key);
+                Directory.CreateDirectory(_outDir);
+                Enabled = true;
+                _log.LogWarning("[COACH] enabled, quota=" + _max + "/session, out=" + _outDir);
+            }
+            catch (Exception e)
+            {
+                _log.LogWarning("[COACH] init failed: " + e.GetType().Name + ": " + e.Message);
+            }
+        }
+
+        /// 在游戏线程里调用：pending 必须是已经转成托管字符串的文本。
+        public static void Observe(string playerName, string pending)
+        {
+            if (!Enabled || string.IsNullOrEmpty(pending)) return;
+
+            lock (_lock)
+            {
+                if (_sent >= _max) return;
+                _sent++;
+            }
+            int seq = _sent;
+
+            if (pending.Length > 6000) pending = pending.Substring(0, 6000) + " …(截断)";
+            string user = "AI 玩家：" + (playerName ?? "?") + "\n待选列表：\n" + pending;
+
+            Task.Run(() => Send(seq, playerName, pending));
+        }
+
+        /// 在后台线程同步完成一次请求（不能用 async lambda：本工程引用的 Il2Cppmscorlib 缺 NullableAttribute）。
+        private static void Send(int seq, string playerName, string pending)
+        {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            try
+            {
+                string user = "AI 玩家：" + (playerName ?? "?") + "\n待选列表：\n" + pending;
+                string body = "{\"model\":\"" + Model + "\",\"messages\":["
+                    + "{\"role\":\"system\",\"content\":" + Json.Str(SystemPrompt) + "},"
+                    + "{\"role\":\"user\",\"content\":" + Json.Str(user) + "}],"
+                    + "\"max_tokens\":400,\"temperature\":0.3}";
+
+                using (var content = new StringContent(body, Encoding.UTF8, "application/json"))
+                using (var resp = _http.PostAsync(Endpoint, content).GetAwaiter().GetResult())
+                {
+                    string text = resp.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                    sw.Stop();
+                    string answer = Json.ExtractContent(text);
+                    int code = (int)resp.StatusCode;
+                    _log.LogInfo("[COACH] #" + seq + " " + (int)sw.ElapsedMilliseconds + "ms http=" + code
+                                 + " -> " + Short(answer, 300));
+                    Append(seq, playerName, pending, answer, (int)sw.ElapsedMilliseconds, code, text);
+                }
+            }
+            catch (Exception e)
+            {
+                sw.Stop();
+                _log.LogWarning("[COACH] #" + seq + " failed after " + (int)sw.ElapsedMilliseconds + "ms: "
+                                + e.GetType().Name + ": " + e.Message);
+                Append(seq, playerName, pending, null, (int)sw.ElapsedMilliseconds, -1, e.Message);
+            }
+        }
+
+        private static void Append(int seq, string player, string pending, string answer, int ms, int http, string raw)
+        {
+            try
+            {
+                string line = "{\"seq\":" + seq
+                    + ",\"ts\":\"" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\""
+                    + ",\"player\":" + Json.Str(player)
+                    + ",\"ms\":" + ms + ",\"http\":" + http
+                    + ",\"answer\":" + Json.Str(answer)
+                    + ",\"pending\":" + Json.Str(pending)
+                    + (http >= 200 && http < 300 ? "" : ",\"raw\":" + Json.Str(Short(raw, 500)))
+                    + "}";
+                File.AppendAllText(Path.Combine(_outDir, "coach_" + DateTime.Now.ToString("yyyyMMdd") + ".jsonl"),
+                    line + "\n", new UTF8Encoding(false));
+            }
+            catch (Exception e) { _log.LogWarning("[COACH] append: " + e.Message); }
+        }
+
+        private static string Short(string s, int n)
+        {
+            if (string.IsNullOrEmpty(s)) return "";
+            s = s.Replace("\r", " ").Replace("\n", " ");
+            return s.Length <= n ? s : s.Substring(0, n) + "…";
+        }
+    }
+
+    /// 只为这里的两个场景写的极简 JSON 工具：转义 & 取 content 字段。
+    internal static class Json
+    {
+        public static string Str(string s)
+        {
+            if (s == null) return "null";
+            var sb = new StringBuilder(s.Length + 16);
+            sb.Append('"');
+            foreach (char c in s)
+            {
+                switch (c)
+                {
+                    case '"': sb.Append("\\\""); break;
+                    case '\\': sb.Append("\\\\"); break;
+                    case '\n': sb.Append("\\n"); break;
+                    case '\r': sb.Append("\\r"); break;
+                    case '\t': sb.Append("\\t"); break;
+                    default:
+                        if (c < 0x20) sb.Append("\\u").Append(((int)c).ToString("x4"));
+                        else sb.Append(c);
+                        break;
+                }
+            }
+            sb.Append('"');
+            return sb.ToString();
+        }
+
+        /// 从 chat/completions 响应里取 choices[0].message.content
+        public static string ExtractContent(string json)
+        {
+            if (string.IsNullOrEmpty(json)) return "";
+            int i = json.IndexOf("\"content\"", StringComparison.Ordinal);
+            if (i < 0) return json;
+            i = json.IndexOf('"', i + 9);
+            if (i < 0) return json;
+            var sb = new StringBuilder();
+            for (int p = i + 1; p < json.Length; p++)
+            {
+                char c = json[p];
+                if (c == '"') break;
+                if (c == '\\' && p + 1 < json.Length)
+                {
+                    p++;
+                    char e = json[p];
+                    switch (e)
+                    {
+                        case 'n': sb.Append('\n'); break;
+                        case 'r': sb.Append('\r'); break;
+                        case 't': sb.Append('\t'); break;
+                        case 'u':
+                            if (p + 4 < json.Length &&
+                                int.TryParse(json.Substring(p + 1, 4),
+                                    System.Globalization.NumberStyles.HexNumber, null, out int code))
+                            {
+                                sb.Append((char)code);
+                                p += 4;
+                            }
+                            break;
+                        default: sb.Append(e); break;
+                    }
+                }
+                else sb.Append(c);
+            }
+            return sb.ToString();
+        }
+    }
+}

@@ -61,6 +61,7 @@ namespace DuneAiProbe
             var h = new Harmony(GUID + ".harmony");
             ReadTimeoutFactor();
             SurveyTimeoutApi(h);
+            Coach.Init(L, Root);
 
             // 最可靠的一处：所有 AI 响应都在这里生成（含开局选领袖）
             try
@@ -191,6 +192,19 @@ namespace DuneAiProbe
             PlayerEntity p = null;
             try { p = __instance.LatestRespondedPlayer; } catch { }
             EnsureResolved(p, "RunAIResponses");
+
+            // T1 观察者：把 AI 面对的待选列表异步发给 DeepSeek（只读，不影响对局）
+            if (Coach.Enabled)
+            {
+                try
+                {
+                    string pending = __instance.DumpPendingResponses();
+                    string name = null;
+                    try { name = p != null ? p.PlayerName : null; } catch { }
+                    if (!string.IsNullOrEmpty(pending)) Coach.Observe(name, pending);
+                }
+                catch (Exception e) { L.LogWarning("[COACH] dump: " + e.Message); }
+            }
         }
 
         private static void OnProfileCtor(AIProfileAbs __instance)
