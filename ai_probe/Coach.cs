@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using BepInEx.Logging;
 
@@ -28,6 +30,10 @@ namespace DuneAiProbe
         private static int _max;
         private static int _sent;
         private static readonly object _lock = new object();
+        private static readonly Dictionary<string, string> _names = new Dictionary<string, string>();
+        private static readonly HashSet<string> _seen = new HashSet<string>();
+        private static readonly Regex GuidRe = new Regex(
+            "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", RegexOptions.Compiled);
 
         public static bool Enabled { get; private set; }
 
@@ -69,8 +75,10 @@ namespace DuneAiProbe
                 _http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
                 _http.DefaultRequestHeaders.Add("Authorization", "Bearer " + _key);
                 Directory.CreateDirectory(_outDir);
+                LoadNameMap(root);
                 Enabled = true;
-                _log.LogWarning("[COACH] enabled, quota=" + _max + "/session, out=" + _outDir);
+                _log.LogWarning("[COACH] enabled, quota=" + _max + "/session, names=" + _names.Count
+                                + ", out=" + _outDir);
             }
             catch (Exception e)
             {
@@ -78,20 +86,65 @@ namespace DuneAiProbe
             }
         }
 
+        private static void LoadNameMap(string root)
+        {
+            try
+            {
+                string p = Path.Combine(root, "mods", "ai", "name_map.tsv");
+                if (!File.Exists(p)) { _log.LogWarning("[COACH] 没有 name_map.tsv，prompt 里会保留机器标识"); return; }
+                foreach (var line in File.ReadAllLines(p, Encoding.UTF8))
+                {
+                    int tab = line.IndexOf('\t');
+                    if (tab <= 0) continue;
+                    _names[line.Substring(0, tab)] = line.Substring(tab + 1).Replace("\\n", " ");
+                }
+            }
+            catch (Exception e) { _log.LogWarning("[COACH] name_map: " + e.Message); }
+        }
+
+        private static readonly Regex KeyRe = new Regex(
+            @"\b(?:worm|card|button)\.[A-Za-z0-9_.]+", RegexOptions.Compiled);
+
+        /// 把机器标识翻成人话：先换本地化键（worm.space.* / 能力名），再换裸 GUID。
+        private static string Humanize(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return s;
+            s = KeyRe.Replace(s, ReplaceKey);
+            return GuidRe.Replace(s, ReplaceGuid);
+        }
+
+        private static readonly MatchEvaluator ReplaceGuid = OnGuidMatch;
+        private static readonly MatchEvaluator ReplaceKey = OnKeyMatch;
+
+        private static string OnGuidMatch(Match m)
+        {
+            if (_names.TryGetValue(m.Value, out string n)) return n;
+            return m.Value.Substring(0, 8);
+        }
+
+        private static string OnKeyMatch(Match m)
+        {
+            if (_names.TryGetValue(m.Value, out string n)) return n;
+            return m.Value;
+        }
+
         /// 在游戏线程里调用：pending 必须是已经转成托管字符串的文本。
-        public static void Observe(string playerName, string pending)
+        public static void Observe(string playerName, int counter, string pending)
         {
             if (!Enabled || string.IsNullOrEmpty(pending)) return;
 
+            string dedupeKey = (playerName ?? "?") + "|" + counter;
             lock (_lock)
             {
+                if (!_seen.Add(dedupeKey)) return;   // 同一个玩家的同一次选择不重复问
                 if (_sent >= _max) return;
                 _sent++;
             }
             int seq = _sent;
 
+            pending = Humanize(pending);
             if (pending.Length > 6000) pending = pending.Substring(0, 6000) + " …(截断)";
-            string user = "AI 玩家：" + (playerName ?? "?") + "\n待选列表：\n" + pending;
+            string user = "AI 玩家：" + (playerName ?? "?") + "（第 " + counter + " 号选择）\n待选列表：\n" + pending;
 
             Task.Run(() => Send(seq, playerName, pending));
         }

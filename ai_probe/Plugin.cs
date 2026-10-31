@@ -198,10 +198,29 @@ namespace DuneAiProbe
             {
                 try
                 {
-                    string pending = __instance.DumpPendingResponses();
+                    int counter = -1;
+                    string pending = null;
+                    try
+                    {
+                        counter = __instance.GetLatestSelectionCounter();
+                        // 只取"这个 AI 玩家自己的"待选，避免把人类玩家的选择也发过去
+                        if (p != null)
+                        {
+                            var ps = __instance.GetPlayerPendingResponse(p, counter);
+                            if (ps != null) pending = ps.ToString();
+                        }
+                    }
+                    catch (Exception e) { L.LogInfo("[COACH] player pending: " + e.Message); }
+
+                    if (string.IsNullOrEmpty(pending))
+                    {
+                        pending = __instance.DumpPendingResponses();
+                        counter = -1;
+                    }
+
                     string name = null;
                     try { name = p != null ? p.PlayerName : null; } catch { }
-                    if (!string.IsNullOrEmpty(pending)) Coach.Observe(name, pending);
+                    if (!string.IsNullOrEmpty(pending)) Coach.Observe(name, counter, pending);
                 }
                 catch (Exception e) { L.LogWarning("[COACH] dump: " + e.Message); }
             }
