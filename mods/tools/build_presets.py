@@ -119,6 +119,19 @@ MODS = {
         "require_sets": [],
         "suffix": "last",
     },
+    "lasttime_ultra": {
+        "label": "最后的时代 Ultra",
+        # 4 个工人：agents 3 + 剑术大师 1。这是最早那版「写满」的配置，
+        # 当时被当成 bug；现在作为独立的 Ultra 档位保留，与 lasttime 互斥。
+        "note": "开局 4 个工人：起始特工 3 + 自带剑术大师（剑术大师本身再解锁 1 个）",
+        "agents": 3,
+        "swordmaster": True,
+        "techs": [],
+        "replace": [],
+        "require_sets": [],
+        "suffix": "ultra",
+        "excludes": ["lasttime"],
+    },
     "council": {
         "label": "议会霸权",
         "note": "每人多一块弹药制约科技（高议会向），并在基础资源上再加 1 太阳币",
@@ -133,7 +146,8 @@ MODS = {
 }
 
 # 叠加时的固定顺序（决定文件名后缀顺序，也保证产物可复现）
-MOD_ORDER = ["holtzman", "lasttime", "council"]
+# lasttime 与 lasttime_ultra 互斥，不会同时出现在同一个包里
+MOD_ORDER = ["holtzman", "lasttime", "lasttime_ultra", "council"]
 
 CONFLICT_T3_POOL = [
     "a5b5668a-706c-43dd-a6eb-a6b3abfb6907",   # 厄拉奇恩之战（基础）
@@ -444,7 +458,11 @@ def effective_workers(agents, swordmaster):
     return agents + (1 if swordmaster else 0)
 
 
-def make_player(idx, human, deck, intrigue, res, techs=None, agents=2, swordmaster=False):
+def make_player(idx, human, deck, intrigue, res, techs=None, agents=2, swordmaster=False,
+                seat=None):
+    # seat 是「座位号」（0 = 先手）。它同时决定 StartingOrder 与 PlayerColor，
+    # 早期版本固定写成 idx，导致人类玩家（idx 0）永远是先手。
+    seat = idx if seat is None else seat
     return {
         "StartingDeck": list(deck),
         "DeckReplacements": [
@@ -454,8 +472,8 @@ def make_player(idx, human, deck, intrigue, res, techs=None, agents=2, swordmast
         "LeaderOptions": [],
         "AllianceTokenVP": 1,
         "StartingAgents": agents,
-        "StartingOrder": idx + 1,
-        "PlayerColor": COLORS[idx % len(COLORS)],
+        "StartingOrder": seat + 1,
+        "PlayerColor": COLORS[seat % len(COLORS)],
         "HagalPlayer": False,
         "StartingTechTiles": list(techs or []),
         "PreferredLeaders": [],
@@ -495,16 +513,37 @@ def load_base():
 
 
 def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
-          conflict_order=None, conflict_repeat=None, mods=None):
+          conflict_order=None, conflict_repeat=None, mods=None, first_order=None):
     m = MODES[mode]
     mods = list(mods or [])
     for mk in mods:
         if mk not in MODS:
             raise SystemExit(f"未知模组：{mk}（可选：{', '.join(MODS)}）")
+    for mk in mods:
+        for bad in MODS[mk].get("excludes", []):
+            if bad in mods:
+                raise SystemExit(
+                    f"「{MODS[mk]['label']}」与「{MODS[bad]['label']}」互斥，只能选一个")
     if m["use_faction"] and faction_key not in FACTIONS:
         raise SystemExit(f"{m['label']} 需要指定阵营：{', '.join(FACTION_ORDER)}")
     if seed is not None:
         random.seed(seed)
+
+    # ---- 座位（决定 StartingOrder 与 PlayerColor）----
+    # 早期版本座位固定 = 玩家下标，人类是 0 号 -> 每局都是先手。
+    # 现在默认随机排座，也可以用 --first human / --first 2..4 钉死。
+    seats = [0, 1, 2, 3]
+    fo = (first_order or "random").strip().lower()
+    if fo == "human":
+        pass                                  # 人类坐 0 号，即先手
+    elif fo == "random":
+        random.shuffle(seats)
+    elif fo.isdigit() and 1 <= int(fo) <= 4:
+        target = int(fo) - 1                  # 1=你，2..4=AI1..AI3
+        seats = [target] + [i for i in range(4) if i != target]
+    else:
+        raise SystemExit(f"未知先手设置：{first_order}（可选：random / human / 1-4）")
+    first_idx = seats.index(0)                # 坐 0 号座位的人 = 先手
 
     # ---- 阵营分配：玩家选的那家给 0 号，AI 随机分剩下的三家 ----
     if m["use_faction"]:
@@ -556,11 +595,12 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
                     deck.append(new_gid)
                     mod_log.append(("追加", None, new_gid))
         players.append(make_player(i, i == 0, deck, intrigue, res, techs,
-                                   agents=agents, swordmaster=swordmaster))
+                                   agents=agents, swordmaster=swordmaster, seat=seats[i]))
         loadouts.append({"faction": fk, "deck": deck, "resources": res,
                          "intrigue": intrigue, "removed": removed, "swapped": swapped,
                          "techs": techs, "mod_log": mod_log,
-                         "agents": agents, "swordmaster": swordmaster})
+                         "agents": agents, "swordmaster": swordmaster,
+                         "seat": seats[i]})
 
     doc["sets"] = sets
     doc["EndgameTriggerScore"] = m["endgame"]
@@ -651,6 +691,8 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
             # 「3 个工人」必须是 2 + 剑术大师，而不是 3 + 剑术大师。
             assert effective_workers(wp["StartingAgents"], o2["StartingSwordmaster"]) == \
                 effective_workers(lo["agents"], lo["swordmaster"]), f"玩家{i}实际工人数不符"
+        orders = [wp["StartingOrder"] for wp in d["wormPlayers"]]
+        assert sorted(orders) == [1, 2, 3, 4], "座位回读不符（应恰好是 1-4 的一个排列）"
         break
 
     title = m["label"] + (f"（你 = {FACTIONS[faction_key]['label']}）" if m["use_faction"] else "")
@@ -659,6 +701,8 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
     print(f"[{title}] {os.path.basename(out)} ({os.path.getsize(out)} B)")
     print(f"     内容集：{', '.join(sets)}")
     print(f"     胜利点 {m['endgame']}")
+    first_name = "你" if first_idx == 0 else f"AI{first_idx}"
+    print(f"     先手：{first_name}（{'随机排座' if fo == 'random' else '指定'}）")
     if repeat_shuffle or repeat_last:
         print(f"     冲突牌堆：耗尽后继续（ShuffleRepeat={repeat_shuffle}, RepeatLast={repeat_last}）")
     if m.get("conflict_deck"):
@@ -714,13 +758,16 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
         "faction_label": FACTIONS[faction_key]["label"] if m["use_faction"] else None,
         "note": m["note"], "endgame": m["endgame"], "sets": sets,
         "mods": mods, "mod_labels": [MODS[mk]["label"] for mk in mods],
+        "first": "你" if first_idx == 0 else f"AI{first_idx}",
+        "first_index": first_idx,
         "players": [{"index": i, "is_human": i == 0,
                      "faction": lo["faction"],
                      "faction_label": FACTIONS[lo["faction"]]["label"] if lo["faction"] else None,
                      "deck": lo["deck"], "resources": lo["resources"],
                      "intrigue": lo["intrigue"], "techs": lo["techs"],
                      "agents": lo["agents"], "swordmaster": lo["swordmaster"],
-                     "workers": effective_workers(lo["agents"], lo["swordmaster"])}
+                     "workers": effective_workers(lo["agents"], lo["swordmaster"]),
+                     "seat": lo["seat"]}
                     for i, lo in enumerate(loadouts)],
         "bundle": os.path.basename(out),
     }
@@ -774,6 +821,7 @@ if __name__ == "__main__":
     if conflict_order and conflict_order not in ("fixed", "shuffle", "natural"):
         print(f"未知冲突顺序：{conflict_order}（可选：fixed / shuffle / natural）")
         raise SystemExit(1)
+    first_arg = take("--first")           # random | human | 1-4（1=你）
     sets_arg = take("--sets")
     if sets_arg:
         sets_arg = [x.strip() for x in sets_arg.split(",") if x.strip()]
@@ -815,7 +863,8 @@ if __name__ == "__main__":
     try:
         for mode, key in todo:
             build(mode, faction_key=key, sets_list=sets_arg, install=install,
-                  conflict_order=conflict_order, conflict_repeat=repeat_val, mods=mods)
+                  conflict_order=conflict_order, conflict_repeat=repeat_val, mods=mods,
+                  first_order=first_arg)
     finally:
         if log_path:
             sys.stdout.flush()

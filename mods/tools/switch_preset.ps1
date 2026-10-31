@@ -28,6 +28,7 @@ $Presets = @(
 
 $script:Holtz = $false
 $script:Last = $false
+$script:Ultra = $false
 $script:Council = $false
 
 function Show-Menu {
@@ -36,10 +37,12 @@ function Show-Menu {
     Write-Host ""
     $s1 = if ($script:Holtz) { "开" } else { "关" }
     $s2 = if ($script:Last) { "开" } else { "关" }
+    $s4 = if ($script:Ultra) { "开" } else { "关" }
     $s3 = if ($script:Council) { "开" } else { "关" }
-    Write-Host "  叠加玩法：霍尔兹曼跃迁 $s1（m）｜ 最后的时代 $s2（n）｜ 议会霸权 $s3（c）"
+    Write-Host "  叠加玩法：霍尔兹曼跃迁 $s1（m）｜ 最后的时代 $s2（n）｜ Ultra $s4（u）｜ 议会霸权 $s3（c）"
     Write-Host "   霍尔兹曼跃迁：起始带霍兹曼引擎 + 寻求盟友→伊克斯舰组"
     Write-Host "   最后的时代：  每人开局 3 个工人（自带剑术大师）"
+    Write-Host "   最后的时代 Ultra：每人开局 4 个工人（与「最后的时代」二选一）"
     Write-Host "   议会霸权：    每人多一块弹药制约科技 + 1 太阳币"
     Write-Host ""
     Write-Host "  马拉松（20 分）"
@@ -64,7 +67,8 @@ function Show-Menu {
     Write-Host "   13) $($Presets[12].Label)"
     Write-Host ""
     Write-Host "    m) 切换霍尔兹曼跃迁叠加"
-    Write-Host "    n) 切换最后的时代叠加"
+    Write-Host "    n) 切换最后的时代叠加（3 工人）"
+    Write-Host "    u) 切换最后的时代 Ultra 叠加（4 工人）"
     Write-Host "    c) 切换议会霸权叠加"
     Write-Host "    0) 还原原版（DLC 选择界面恢复）"
     Write-Host "    q) 退出"
@@ -99,7 +103,16 @@ while ($true) {
 
     if ($choice -eq "n") {
         $script:Last = -not $script:Last
-        Write-Host "[切换] 最后的时代叠加：$(if ($script:Last) { '开' } else { '关' })"
+        if ($script:Last) { $script:Ultra = $false }
+        Write-Host "[切换] 最后的时代叠加：$(if ($script:Last) { '开' } else { '关' })（Ultra 已自动关闭）"
+        Read-Host "按回车继续"
+        continue
+    }
+
+    if ($choice -eq "u") {
+        $script:Ultra = -not $script:Ultra
+        if ($script:Ultra) { $script:Last = $false }
+        Write-Host "[切换] 最后的时代 Ultra 叠加：$(if ($script:Ultra) { '开' } else { '关' })（3 工人版已自动关闭）"
         Read-Host "按回车继续"
         continue
     }
@@ -130,6 +143,7 @@ while ($true) {
     $extra = ""
     if ($script:Holtz) { $extra += "_holtz" }
     if ($script:Last) { $extra += "_last" }
+    if ($script:Ultra) { $extra += "_ultra" }
     if ($script:Council) { $extra += "_council" }
     if ($extra) { $file = $file.Replace("_$Name", "$($extra)_$Name") }
     $src = Join-Path $OutDir $file
@@ -144,6 +158,7 @@ while ($true) {
     $tag = ""
     if ($script:Holtz) { $tag += " + 霍尔兹曼跃迁" }
     if ($script:Last) { $tag += " + 最后的时代" }
+    if ($script:Ultra) { $tag += " + 最后的时代 Ultra" }
     if ($script:Council) { $tag += " + 议会霸权" }
     Write-Host "[完成] 已安装：$($p.Key)$tag"
     Write-Host "       开游戏 -> 单人模式 -> 标准剧本"
