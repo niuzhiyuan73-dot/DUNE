@@ -2,3 +2,17 @@
 # 格式：中文名 <TAB> 文本 <TAB> 来源；空文本行会被忽略；# 开头为注释。
 # 说明：这些实体在游戏本地化里没有文本（冲突只有名字、空间只有名字），必须外部补。
 # 填法：一行一条，文本长度控制在 70 字内。填完直接跑 build_effect_map.py 合并。
+
+# 冲突牌奖励（GUID 作键，来源 dunecardshub 单卡页，已做页内卡名校验）
+34c4273b-8957-4503-a110-af8f81ba7841	1st：1 胜利点、在下方旗帜放控制标记： 厄拉奇恩；2nd：获得 4 太阳币；3rd：获得 2 太阳币	dunecardshub https://dunecardshub.com/cards/434/dune-imperium-siege-of-arrakeen
+3b65a9c6-7df7-4ee2-92c4-b9266e48d805	1st：1 胜利点、在下方旗帜放控制标记： 迦太格；2nd：抽1张阴谋牌、获得 1 香料；3rd：获得 1 香料	dunecardshub https://dunecardshub.com/cards/435/dune-imperium-siege-of-carthag
+4b236fb5-9347-4311-908f-96412471f3be	1st：1 胜利点、在下方旗帜放控制标记： 帝国盆地；2nd：获得 2 水；3rd：获得 1 水	dunecardshub https://dunecardshub.com/cards/436/dune-imperium-secure-imperial-basin
+4f2665a5-ba30-4ead-97da-4ff1132d4ee5	1st：获得 6 太阳币；2nd：获得 4 太阳币；3rd：获得 2 太阳币	dunecardshub https://dunecardshub.com/cards/433/dune-imperium-guild-bank-raid
+55719bee-ea48-491c-9df1-0a90133b33c1	1st：1 胜利点、从手牌/弃牌堆/场上销毁1张牌；2nd：获得 1 水、获得 1 香料；3rd：获得 1 香料	dunecardshub https://dunecardshub.com/cards/432/dune-imperium-terrible-purpose
+8b63a1c7-7454-4ca8-9c81-739f1829965f	1st：抽1张阴谋牌、获得 3 香料；2nd：获得 2 香料；3rd：获得 1 香料	dunecardshub https://dunecardshub.com/cards/428/dune-imperium-raid-stockpiles
+9881835c-47a3-4079-b6fa-745fe340193d	1st：获得 1 影响力 任意阵营、抽2张阴谋牌；2nd：抽1张阴谋牌、获得 1 香料；3rd：抽1张阴谋牌 或 获得 1 香料	dunecardshub https://dunecardshub.com/cards/429/dune-imperium-cloak-and-dagger
+9965c22a-cdab-4393-b432-2d4dcc1cecc3	1st：1 胜利点、获得 1 水；2nd：获得 1 水、获得 1 香料；3rd：获得 1 香料	dunecardshub https://dunecardshub.com/cards/427/dune-imperium-desert-power
+a5b5668a-706c-43dd-a6eb-a6b3abfb6907	1st：2 胜利点、在下方旗帜放控制标记： 厄拉奇恩；2nd：四选二： 抽1张阴谋牌, 获得 2 香料, 或 获得 3 太阳币；3rd：抽1张阴谋牌、获得 2 太阳币	dunecardshub https://dunecardshub.com/cards/440/dune-imperium-battle-for-arrakeen
+b409ad68-69c3-442c-b355-d671ca89ddd3	1st：2 胜利点、在下方旗帜放控制标记： 迦太格；2nd：抽1张阴谋牌、获得 3 香料；3rd：获得 3 香料 When a Conflict card is revealed for a space that	dunecardshub https://dunecardshub.com/cards/439/dune-imperium-battle-for-carthag
+b4c07183-38d9-41df-a833-2ddb5580b00b	1st：2 胜利点、在下方旗帜放控制标记： 帝国盆地；2nd：获得 5 太阳币；3rd：获得 3 太阳币 When a Conflict card is revealed for a space th	dunecardshub https://dunecardshub.com/cards/437/dune-imperium-battle-for-imperial-basin
+c0f3e883-8540-40d6-a62e-101a69ecba0a	1st：获得 2 影响力 with any one Faction、抽1张阴谋牌；2nd：抽1张阴谋牌、获得 3 香料；3rd：获得 3 香料	dunecardshub https://dunecardshub.com/cards/438/dune-imperium-grand-vision

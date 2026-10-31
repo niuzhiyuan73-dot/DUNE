@@ -180,7 +180,9 @@ def build():
             parts = line.split("\t")
             if len(parts) < 2 or not parts[0].strip() or not parts[1].strip():
                 continue
-            key = "name:" + parts[0].strip()
+            raw = parts[0].strip()
+            # 冲突牌同名跨扩展，必须用 GUID 作键；其余实体用中文名
+            key = raw if raw.count("-") == 4 else "name:" + raw
             if key in pairs:
                 continue
             text = parts[1].strip()
