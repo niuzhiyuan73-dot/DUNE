@@ -10,6 +10,7 @@ using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using UnityEngine;
 using worm.canis.actions.phases;
+using Canis.entities;
 using Canis.entities.ai;
 using WormAIConstants = worm.canis.ai.AIConstants;
 using WormAIConstantsRef = worm.canis.ai.AIConstantsRef;
@@ -52,6 +53,21 @@ namespace DuneAiProbe
             LogEnvironment();
 
             var h = new Harmony(GUID + ".harmony");
+
+            // 最可靠的一处：所有 AI 响应都在这里生成（含开局选领袖）
+            try
+            {
+                var rr = typeof(Canis.hasExecutionStack.HasExecutionStack).GetMethod("RunAIResponses",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                if (rr != null)
+                {
+                    h.Patch(rr, postfix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(OnRunAIResponses),
+                        BindingFlags.Static | BindingFlags.NonPublic)));
+                    L.LogInfo("[AIPROBE] hooked HasExecutionStack.RunAIResponses");
+                }
+                else L.LogWarning("[AIPROBE] RunAIResponses not found");
+            }
+            catch (Exception e) { L.LogWarning("[AIPROBE] RunAIResponses hook: " + e.Message); }
 
             // 更早的触发点：AI 档案创建时（若此时常量已就绪，可省掉一次 AI 决策）
             try
@@ -130,7 +146,9 @@ namespace DuneAiProbe
 
         private static void OnSetup(SetupPhase __instance)
         {
-            L.LogInfo("[AIPROBE] setup marker: player being set up");
+            _setupCalls++;
+            L.LogInfo("[AIPROBE] setup marker #" + _setupCalls);
+            EnsureResolved(null, "SetupPlayer");
         }
 
         private static void OnSetInstance(int aiLevel)
@@ -139,9 +157,26 @@ namespace DuneAiProbe
             catch { }
         }
 
+        private static int _setupCalls;
+        private static bool _runAiSeen;
+
+        private static void OnRunAIResponses(Canis.hasExecutionStack.HasExecutionStack __instance)
+        {
+            if (!_runAiSeen)
+            {
+                _runAiSeen = true;
+                L.LogInfo("[AIPROBE] first AI response batch (RunAIResponses fired)");
+            }
+            PlayerEntity p = null;
+            try { p = __instance.LatestRespondedPlayer; } catch { }
+            EnsureResolved(p, "RunAIResponses");
+        }
+
         private static void OnProfileCtor(AIProfileAbs __instance)
         {
-            EnsureResolved(__instance, "AIProfileCtor");
+            PlayerEntity p = null;
+            try { p = __instance.Player; } catch { }
+            EnsureResolved(p, "AIProfileCtor");
         }
 
         private static int _aiLogLines;
@@ -153,15 +188,19 @@ namespace DuneAiProbe
                 _aiLogLines++;
                 try { L.LogInfo("[AIPROBE][ailog] " + (str ?? "")); } catch { }
             }
-            EnsureResolved(__instance, "AILog");
+            PlayerEntity p = null;
+            try { p = __instance.Player; } catch { }
+            EnsureResolved(p, "AILog");
         }
 
         private static void OnMakeChoice(AIProfileAbs __instance)
         {
-            EnsureResolved(__instance, "MakeChoice");
+            PlayerEntity p = null;
+            try { p = __instance.Player; } catch { }
+            EnsureResolved(p, "MakeChoice");
         }
 
-        private static void EnsureResolved(AIProfileAbs __instance, string source)
+        private static void EnsureResolved(PlayerEntity player, string source)
         {
             if (_finished) return;
             _attempts++;
@@ -169,14 +208,13 @@ namespace DuneAiProbe
             int used = -1;
             try
             {
-                var p = __instance.Player;
-                if (p != null)
+                if (player != null)
                 {
-                    used = p.AILevel;
+                    used = player.AILevel;
                     if (!_loggedPlayerLevel)
                     {
                         _loggedPlayerLevel = true;
-                        L.LogInfo("[AIPROBE] first AI decision by player '" + Safe(() => p.PlayerName)
+                        L.LogInfo("[AIPROBE] first AI touch via " + source + ": '" + Safe(() => player.PlayerName)
                                   + "' AILevel=" + used + " (" + LevelName(used) + ")");
                     }
                 }
@@ -192,8 +230,8 @@ namespace DuneAiProbe
 
             if (nonNull == 0)
             {
-                if (_attempts <= 3 || _attempts % 50 == 0)
-                    L.LogInfo("[AIPROBE] attempt " + _attempts + ": all refs still null");
+                if (_attempts <= 6 || _attempts % 200 == 0)
+                    L.LogInfo("[AIPROBE] attempt " + _attempts + " (" + source + "): refs still null");
                 return;
             }
 
@@ -361,19 +399,34 @@ namespace DuneAiProbe
                     foreach (var pv in kv.Value)
                     {
                         if (!props.TryGetValue(pv.Key, out var p)) { L.LogWarning("[AIPROBE] unknown prop " + pv.Key); continue; }
-                        if (!double.TryParse(pv.Value, System.Globalization.NumberStyles.Float,
-                                System.Globalization.CultureInfo.InvariantCulture, out double v))
-                        {
-                            L.LogWarning("[AIPROBE] bad number " + pv.Key + "=" + pv.Value);
-                            continue;
-                        }
                         double old;
                         try { old = (double)p.GetValue(t.Value); } catch { continue; }
+
+                        // 支持三种写法：绝对 "3.5"、倍数 "*1.4"、增量 "+2" / "-0.5"
+                        double v;
+                        string raw = pv.Value;
+                        if (raw.Length > 0 && (raw[0] == '*' || raw[0] == '+'))
+                        {
+                            if (!double.TryParse(raw.Substring(1), System.Globalization.NumberStyles.Float,
+                                    System.Globalization.CultureInfo.InvariantCulture, out double k))
+                            {
+                                L.LogWarning("[AIPROBE] bad modifier " + pv.Key + "=" + raw);
+                                continue;
+                            }
+                            v = raw[0] == '*' ? old * k : old + k;
+                        }
+                        else if (!double.TryParse(raw, System.Globalization.NumberStyles.Float,
+                                     System.Globalization.CultureInfo.InvariantCulture, out v))
+                        {
+                            L.LogWarning("[AIPROBE] bad number " + pv.Key + "=" + raw);
+                            continue;
+                        }
+
                         try
                         {
                             p.SetValue(t.Value, v);
                             if (Math.Abs(old - v) > 1e-9)
-                                L.LogInfo("[AIPROBE] " + t.Key + "." + pv.Key + ": " + old + " -> " + v);
+                                L.LogInfo("[AIPROBE] " + t.Key + "." + pv.Key + ": " + old + " -> " + v + "  (" + raw + ")");
                             n++;
                         }
                         catch (Exception e) { L.LogWarning("[AIPROBE] set " + pv.Key + ": " + e.Message); }

@@ -1,0 +1,75 @@
+================================================================
+TYPE Canis.hasExecutionStack.HasExecutionStack
+  BASE Il2CppSystem.Object
+  PROP String MAIN_EXECUTION_STACK
+  PROP String CHEATS_EXECUTION_STACK
+  PROP String TIMER_EXECUTION_STACK
+  PROP String RESIGN_EXECUTION_STACK
+  PROP String CONNECTION_EXECUTION_STACK
+  PROP String Name
+  PROP Canis.Match Match
+  PROP Canis.entities.PlayerEntity LatestRespondedPlayer
+  PROP Canis.actions.continuations.ExecuteStack _Stack_k__BackingField
+  PROP Int32 MaxRunIterations
+  PROP Int32 selectionsSinceBase
+  PROP Boolean SaveOnPause
+  PROP Canis.actions.continuations.ExecuteStack Stack
+  METHOD [Static] Void .cctor()
+  METHOD Canis.actions.continuations.ExecuteStack get_Stack()
+  METHOD Void set_Stack(Canis.actions.continuations.ExecuteStack value)
+  METHOD Void .ctor(String name, Canis.Match match)
+  METHOD Void PushAction(Canis.actions.Action action)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> ActionStack()
+  METHOD Void PushStack(Canis.actions.continuations.ExecuteStack continuedStack)
+  METHOD Void Run(Boolean allowSaves)
+  METHOD Void RunAIResponses(Canis.matchThread.MatchPauseTypes result)
+  METHOD Canis.matchThread.MatchPauseTypes RunGameLoop()
+  METHOD Int32 CheckForInfiniteLoop(Int32 runIterations)
+  METHOD Void TryIterateGameLoop()
+  METHOD Void LogInfiniteLoop()
+  METHOD Void LogGameCrash(Il2CppSystem.Exception e)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.data.PendingSelection> AllPendingResponses()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Il2CppSystem.ValueTuple<Canis.entities.PlayerEntity, Il2CppSystem.Collections.Generic.IReadOnlyCollection<Canis.data.PendingSelection>>> AllPlayerPendingResponses()
+  METHOD Boolean HasPendingResponses()
+  METHOD Boolean HasPendingResponse(Int32 selectionCounter)
+  METHOD Int32 CountPlayerPendingResponsesForCounter(Int32 selectionCounter)
+  METHOD Canis.data.PendingSelection GetPlayerPendingResponse(Canis.entities.PlayerEntity selectingPlayer, Int32 selectionCounter)
+  METHOD String DumpPendingResponses()
+  METHOD Canis.entities.PlayerEntity GetPlayerEntityForCounter(Int32 selectionCounter)
+  METHOD Int32 GetCounterForPlayerEntity(Canis.entities.PlayerEntity player)
+  METHOD Int32 GetLatestSelectionCounter()
+  METHOD Boolean IsValidSelection(Int32 counter, Canis.entities.PlayerEntity selectingPlayer, Canis.data.PendingSelection pendingSelection)
+  METHOD Boolean ConsumeCounter(Int32 counter, Il2CppSystem.Object inputMessage, Canis.entities.PlayerEntity player)
+  METHOD Void LogPauseLock(Canis.data.PendingSelection pendingSelection, Canis.entities.PlayerEntity selectingPlayer)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.continuations.ActionAcrossTargets> MakeUndo(Canis.entities.PlayerEntity selectingPlayer)
+  METHOD Boolean CancelPendingResponse(Int32 counter)
+  METHOD Void Clear()
+  METHOD Boolean IsInSelectionLoop()
+  METHOD String DebugInfo()
+  METHOD String _DebugInfo_b__43_0(Canis.data.PendingSelection ps)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD [Static] String get_MAIN_EXECUTION_STACK()
+  METHOD [Static] Void set_MAIN_EXECUTION_STACK(String)
+  METHOD [Static] String get_CHEATS_EXECUTION_STACK()
+  METHOD [Static] Void set_CHEATS_EXECUTION_STACK(String)
+  METHOD [Static] String get_TIMER_EXECUTION_STACK()
+  METHOD [Static] Void set_TIMER_EXECUTION_STACK(String)
+  METHOD [Static] String get_RESIGN_EXECUTION_STACK()
+  METHOD [Static] Void set_RESIGN_EXECUTION_STACK(String)
+  METHOD [Static] String get_CONNECTION_EXECUTION_STACK()
+  METHOD [Static] Void set_CONNECTION_EXECUTION_STACK(String)
+  METHOD String get_Name()
+  METHOD Void set_Name(String)
+  METHOD Canis.Match get_Match()
+  METHOD Void set_Match(Canis.Match)
+  METHOD Canis.entities.PlayerEntity get_LatestRespondedPlayer()
+  METHOD Void set_LatestRespondedPlayer(Canis.entities.PlayerEntity)
+  METHOD Canis.actions.continuations.ExecuteStack get__Stack_k__BackingField()
+  METHOD Void set__Stack_k__BackingField(Canis.actions.continuations.ExecuteStack)
+  METHOD [Static] Int32 get_MaxRunIterations()
+  METHOD [Static] Void set_MaxRunIterations(Int32)
+  METHOD Int32 get_selectionsSinceBase()
+  METHOD Void set_selectionsSinceBase(Int32)
+  METHOD Boolean get_SaveOnPause()
+  METHOD Void set_SaveOnPause(Boolean)
+
