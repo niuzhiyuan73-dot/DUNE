@@ -612,7 +612,9 @@ def make_player(idx, human, deck, intrigue, res, techs=None, agents=2, swordmast
         # aiLevel: 0=Easy / 1=Medium / 2=Hard（对应 AIDifficultyLevels 枚举），人类固定 0
         "aiLevel": 0 if human else int(ai_level),
         "metadata": {},
-        "accountID": f"00000000-0000-4000-8000-0000000000{idx:02d}",
+        # accountID 决定游戏内部的玩家排列顺序（AddPlayer 顺序实测与数组无关）。
+        # 用座位号而不是下标，座位随机 → 排列随机。
+        "accountID": f"00000000-0000-4000-8000-0000000000{seat:02d}",
     }
 
 
@@ -786,10 +788,8 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
     doc["sets"] = sets
     doc["EndgameTriggerScore"] = m["endgame"]
     doc["LeaderAssignmentMode"] = "Random"
-    # 关键：数组下标决定「选领袖的顺序」，StartingOrder 决定「行动顺序」。
-    # 之前只随机了 StartingOrder，人类恒在数组第 0 位 → 永远第一个选领袖、却可能最后行动。
-    # 这里按座位重排数组，让两套顺序来自同一个座位号。
-    players.sort(key=lambda p: p["StartingOrder"])
+    # 不做数组重排：实测把人类挪离第 0 位会导致其拿到别人的阵营牌组。
+    # 玩家排列顺序交给 accountID（按座位编号）去影响，见 make_player。
     doc["wormPlayers"] = players
 
     mso_all = doc.setdefault("MatchSoloOptions", {})
