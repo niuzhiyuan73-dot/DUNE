@@ -36,6 +36,10 @@ namespace DuneAiProbe
 
         private static int _hit, _miss;
 
+        // 实体实例 ID -> 原型 GUID，供 Detail 查效果摘要（Resolve 时顺手记下）
+        private static readonly Dictionary<string, string> _effGuid =
+            new Dictionary<string, string>(StringComparer.Ordinal);
+
         public static string Rewrite(Canis.Match match, string text, ManualLogSource log)
         {
             if (string.IsNullOrEmpty(text)) return text;
@@ -45,7 +49,7 @@ namespace DuneAiProbe
 
                 IntPtr mp = IntPtr.Zero;
                 try { if (match != null) mp = match.Pointer; } catch { }
-                if (mp != _cacheMatch) { _cache.Clear(); _cacheMatch = mp; }
+                if (mp != _cacheMatch) { _cache.Clear(); _effGuid.Clear(); _cacheMatch = mp; }
 
                 _hit = 0;
                 _miss = 0;
@@ -123,13 +127,20 @@ namespace DuneAiProbe
                 if (map == null || map.Count == 0) return null;
 
                 var sb = new System.Text.StringBuilder();
-                int rows = 0, withTargets = 0;
+                int rows = 0, withTargets = 0, withEffect = 0;
                 foreach (var kv in map)
                 {
                     if (rows++ >= 12) { sb.Append("- …\n"); break; }
 
-                    string key = "?";
-                    try { if (kv.Key != null) key = Replace(kv.Key.ToString(), match); } catch { }
+                    string kid = null;
+                    try { if (kv.Key != null) kid = kv.Key.ToString(); } catch { }
+                    string key = kid != null ? Replace(kid, match) : "?";
+                    // 选项侧补一句效果：模型反复说「没有效果文本，无法判断」，这一句就是给它判断依据
+                    if (kid != null)
+                    {
+                        string eff = EffectFor(kid, match);
+                        if (!string.IsNullOrEmpty(eff)) { key = key + "〔" + eff + "〕"; withEffect++; }
+                    }
                     sb.Append("- ").Append(key);
 
                     var list = kv.Value;
@@ -151,7 +162,8 @@ namespace DuneAiProbe
 
                 if (sb.Length == 0) return null;
                 // 一行诊断：withTargets == 0 就说明 ValidTargets 还是没取到
-                log.LogInfo("[TARGETS] detail rows=" + rows + " withTargets=" + withTargets);
+                log.LogInfo("[TARGETS] detail rows=" + rows + " withTargets=" + withTargets
+                            + " withEffect=" + withEffect);
                 return "【目标明细】\n" + sb;
             }
             catch (Exception e)
@@ -226,6 +238,26 @@ namespace DuneAiProbe
             catch { return null; }
         }
 
+        /// <summary>选项的效果摘要：Resolve 时记下的原型 GUID 优先，查不到再按中文名回退。</summary>
+        private static string EffectFor(string idString, Canis.Match match)
+        {
+            string g = null;
+            if (!_effGuid.TryGetValue(idString, out g))
+            {
+                Replace(idString, match);          // 触发一次解析，把 GUID 补进缓存
+                _effGuid.TryGetValue(idString, out g);
+            }
+            if (string.IsNullOrEmpty(g)) return null;
+
+            string e = Coach.EffectOf(g);
+            if (string.IsNullOrEmpty(e))
+            {
+                string nm = Coach.NameOf(g);
+                if (!string.IsNullOrEmpty(nm)) e = Coach.EffectOf(nm);
+            }
+            return string.IsNullOrEmpty(e) ? null : e;
+        }
+
         private static bool _elemLogged;
 
         /// <summary>
@@ -292,7 +324,7 @@ namespace DuneAiProbe
 
             // 1) 原型 GUID（attributes 里的 10000 = archetypeID 就是这种）→ 查名称表即可
             string byArch = Coach.NameOf(id);
-            if (byArch != null) { _hit++; return byArch + "(" + shortId + ")"; }
+            if (byArch != null) { _effGuid[id] = id; _hit++; return byArch + "(" + shortId + ")"; }
 
             if (match == null) { _miss++; return shortId; }
 
@@ -321,6 +353,7 @@ namespace DuneAiProbe
                 }
                 catch { }
 
+                if (archGuid != null) _effGuid[id] = archGuid;
                 string human = Coach.NameOf(archGuid) ?? Coach.NameOf(en) ?? en;
                 if (string.IsNullOrEmpty(human)) { _miss++; return shortId; }
 

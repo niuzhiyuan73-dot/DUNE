@@ -141,3 +141,41 @@
   `SelectionWithTargetsRequired.TargetMap` 里有 `EntityListTargetInformation.ValidTargets`，
   已加「目标明细」段把它逐条解析成名字（`Targets.Detail`），待下一局验证。
 - 同名不同副本（两个「渗透」）目前只靠短 ID 区分，模型会要求「按目标区分」，属预期行为。
+
+---
+
+## 九、效果文本：从"这是什么"到"这能干什么"（10-31 深夜）
+
+### 问题
+
+补齐名称与目标后，模型仍有 11/30 的回答在说「没有具体效果文本，无法判断」。
+它能看懂选项叫什么、能放哪儿，但不知道打出这张牌会发生什么——这恰好是唯一影响选牌的信息。
+
+### 数据来源
+
+本地化表（`StreamingAssets/Localization/win/localization`，zh_CN 段）里本来就有：
+
+- 卡牌 `card.<set>.<image>.agent / .reveal / .text / .ability / .static`（含 `.text1`、`.text.1` 两种写法）
+- 领袖 `worm.leader.<image>.staticability.desc / .signetability.desc`
+
+`mods/tools/build_effect_map.py` 把同一个 image 的几段按「特使→展示→文本→能力」顺序拼成一句，
+剥掉 `<br>`、`<sprite>`、`<size>`、`<voffset>` 等富文本并截到 70 字，产出 `mods/ai/effect_map.tsv`。
+
+两张键：`GUID` 与 `name:<中文名>`。前者精确，后者兜底——很多卡有多个 GUID，只有其中一个带文本。
+
+### 接入
+
+`Targets.Detail` 给每个**选项**（targetMap 的键）附一句 `〔效果〕`；
+`Resolve` 解析时顺手把「实体实例 ID → 原型 GUID」记进缓存，避免二次查库。
+`ValidTargets` 里的目标（卡/空间）暂不附效果，否则 prompt 会膨胀。
+
+### 覆盖率（如实记录）
+
+469 条（224 GUID + 245 名字）。基础包（Imperium）的多数卡在 zh_CN 段里**只有 title、没有效果文本**，
+所以 `沙虫骑士`、`外交`、`印章戒指` 这类仍然是空的；有文本的主要是起义/不朽/家族扩展。
+插件侧对查不到的选项不写任何占位，模型看到的就是光牌名——比塞假信息好。
+
+### 附带清理
+
+`Coach.Humanize` 增加富文本清理：`<sprite name=DrawCard>` → `DrawCard`（保留图标语义）、
+其余版式标签直接删。之前 `<sprite name=BuyTech_MinusOne> —或— …` 这种会原样进 prompt。

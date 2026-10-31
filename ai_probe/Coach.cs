@@ -78,9 +78,10 @@ namespace DuneAiProbe
                 _http.DefaultRequestHeaders.Add("Authorization", "Bearer " + _key);
                 Directory.CreateDirectory(_outDir);
                 LoadNameMap(root);
+                LoadEffectMap(root);
                 Enabled = true;
                 _log.LogWarning("[COACH] enabled, quota=" + _max + "/session, names=" + _names.Count
-                                + ", out=" + _outDir);
+                                + ", effects=" + _effects.Count + ", out=" + _outDir);
             }
             catch (Exception e)
             {
@@ -112,13 +113,51 @@ namespace DuneAiProbe
             return _names.TryGetValue(key, out n) ? n : null;
         }
 
+        private static readonly Dictionary<string, string> _effects =
+            new Dictionary<string, string>(StringComparer.Ordinal);
+
+        /// 效果摘要查询（mods/ai/effect_map.tsv）：先按 GUID，再按 "name:<中文名>"。
+        public static string EffectOf(string key)
+        {
+            if (string.IsNullOrEmpty(key)) return null;
+            string e;
+            if (_effects.TryGetValue(key, out e)) return e;
+            if (_effects.TryGetValue("name:" + key, out e)) return e;
+            return null;
+        }
+
+        private static void LoadEffectMap(string root)
+        {
+            try
+            {
+                string p = Path.Combine(root, "mods", "ai", "effect_map.tsv");
+                if (!File.Exists(p)) { _log.LogWarning("[COACH] 没有 effect_map.tsv，选项不带效果文本"); return; }
+                foreach (var line in File.ReadAllLines(p, Encoding.UTF8))
+                {
+                    int tab = line.IndexOf('\t');
+                    if (tab <= 0) continue;
+                    _effects[line.Substring(0, tab)] = line.Substring(tab + 1).Replace("\\n", " ");
+                }
+            }
+            catch (Exception e) { _log.LogWarning("[COACH] effect_map: " + e.Message); }
+        }
+
         private static readonly Regex KeyRe = new Regex(
             @"\b(?:worm|card|button)\.[A-Za-z0-9_.]+", RegexOptions.Compiled);
 
-        /// 把机器标识翻成人话：先换本地化键（worm.space.* / 能力名），再换裸 GUID。
+        // 富文本残留：<sprite name=DrawCard> 之类。图标名本身有信息量（抽牌/军力），
+        // 所以保留名字、去掉标签，而不是整段删掉。
+        private static readonly Regex SpriteRe = new Regex(
+            "<sprite\\s+name=\"?([^\">]+)\"?\\s*/?>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex TagRe = new Regex(
+            "</?(?:b|i|u|size|color|alpha|line-height|voffset|nobr|space|indent)[^>]*>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        /// 把机器标识翻成人话：先去富文本标签，再换本地化键（worm.space.* / 能力名），最后换裸 GUID。
         private static string Humanize(string s)
         {
             if (string.IsNullOrEmpty(s)) return s;
+            s = SpriteRe.Replace(s, "$1");
+            s = TagRe.Replace(s, "");
             s = KeyRe.Replace(s, ReplaceKey);
             return GuidRe.Replace(s, ReplaceGuid);
         }
