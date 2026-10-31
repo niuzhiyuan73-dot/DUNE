@@ -110,6 +110,8 @@ TECH = {
 
 # 引爆（阴谋牌，崛起）：摧毁屏障山脉 + 从兵营部署至多 4 支部队
 DETONATION = "2b43f621-2bef-40fb-ada8-04bb4fdfce1b"
+# 渗透（阴谋牌，基础）：从弃牌堆取回一张牌 / 侦察向的阴谋
+INFILTRATE = "83078df7-122b-4c78-b5fa-a7cf0e1e2423"
 
 # ---------------------------------------------------------------- 冲突牌名 → GUID
 # 同名异版默认取基础版；要指定版本用「卡名@集名」，例如 "厄拉奇恩之战@崛起"。
@@ -323,16 +325,16 @@ MODES = {
         "ultra_ops": True,
         # 固定开启两个叠加：霍尔兹曼跃迁（多一块引擎）+ 最后的时代 Ultra（4 工人 + 引擎）
         "force_mods": ["holtzman", "lasttime_ultra"],
-        # 开局：兵营 5 支、人人有造物主钩杖、每人一张「引爆」
+        # 开局：兵营 5 支、人人有造物主钩杖、每人两张「渗透」（原先是一张「引爆」）
         "garrison": 5,
         "maker_hooks": True,
-        "blow_wall": True,
+        "start_intrigue": [INFILTRATE, INFILTRATE],
         # 冲突：第 1 张固定宣传策略，其余 9 张是那三张三级冲突的随机循环（每次生成重新随机）
         "conflict_builder": "ultra_cycle",
         "conflict_order": "fixed",
         "conflict_shuffle_repeat": False,
         "conflict_repeat_last": 0,
-        "note": "16 分；冲突 = 宣传策略 + 三张三级随机循环；固定开跃迁与 Ultra；兵营 5 支 + 钩杖 + 引爆",
+        "note": "16 分；冲突 = 宣传策略 + 三张三级随机循环；固定开跃迁与 Ultra；兵营 5 支 + 钩杖 + 每人两张渗透",
     },
 }
 
@@ -722,6 +724,8 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
         deck, res, intrigue, removed, swapped = faction_loadout(mode, fk, sets)
         if blow_wall:
             intrigue.append(DETONATION)     # 每人开局一张「引爆」，可自行炸掉屏障山脉
+        for gid in m.get("start_intrigue") or []:
+            intrigue.append(gid)            # 模式自带的起始阴谋（例如分阵营 Ultra 的两张「渗透」）
         techs = []
         mod_log = []
         agents = 2
@@ -769,7 +773,8 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
                                    garrison=0, bonus_garrison=gbonus,
                                    maker_hooks=maker_hooks, high_council=hc,
                                    ai_level=ai_level))
-        loadouts.append({"faction": fk, "deck": deck, "resources": res,
+        loadouts.append({"accountID": players[-1]["accountID"],
+                         "faction": fk, "deck": deck, "resources": res,
                          "intrigue": intrigue, "removed": removed, "swapped": swapped,
                          "techs": techs, "mod_log": mod_log,
                          "agents": agents, "swordmaster": swordmaster,
@@ -781,6 +786,10 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
     doc["sets"] = sets
     doc["EndgameTriggerScore"] = m["endgame"]
     doc["LeaderAssignmentMode"] = "Random"
+    # 关键：数组下标决定「选领袖的顺序」，StartingOrder 决定「行动顺序」。
+    # 之前只随机了 StartingOrder，人类恒在数组第 0 位 → 永远第一个选领袖、却可能最后行动。
+    # 这里按座位重排数组，让两套顺序来自同一个座位号。
+    players.sort(key=lambda p: p["StartingOrder"])
     doc["wormPlayers"] = players
 
     mso_all = doc.setdefault("MatchSoloOptions", {})
@@ -865,8 +874,10 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
             else:
                 assert sorted(got["ConflictDeckOrder"]) == sorted(m["conflict_deck"]), "冲突顺序内容不符"
         assert len(d["wormPlayers"]) == 4, "玩家数回读不符"
+        # 玩家数组已按座位重排，不能再按下标对齐 loadouts，改用 accountID
+        by_acct = {lo["accountID"]: lo for lo in loadouts}
         for i, wp in enumerate(d["wormPlayers"]):
-            lo = loadouts[i]
+            lo = by_acct[wp["accountID"]]
             assert wp["StartingDeck"] == lo["deck"], f"玩家{i}牌组回读不符"
             o2 = wp["PlayerMatchSoloOptions"]
             assert o2["StartingWater"] == lo["resources"]["water"], f"玩家{i}水回读不符"
