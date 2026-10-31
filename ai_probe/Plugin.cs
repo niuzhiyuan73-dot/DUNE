@@ -39,6 +39,9 @@ namespace DuneAiProbe
 
         private const string Root = @"C:/Users/17789/Desktop/DUNE";
         internal const string RootDir = Root;
+
+        /// 每次改动手工递增：日志里能一眼确认加载的是哪份构建（DLL 被锁时会照旧版本跑）
+        internal const string BuildTag = "2026-10-31c";
         private const string DumpPath = Root + "/dump/ai_constants_runtime.json";
         private const string OverridePath = Root + "/mods/ai/ai_override.json";
         private const string ForceLevelPath = Root + "/mods/ai/force_level.txt";
@@ -57,7 +60,7 @@ namespace DuneAiProbe
         public override void Load()
         {
             L = Log;
-            L.LogInfo("========== [AIPROBE] load ==========");
+            L.LogInfo("========== [AIPROBE] load ========== build " + BuildTag);
             LogEnvironment();
 
             var h = new Harmony(GUID + ".harmony");

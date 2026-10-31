@@ -122,7 +122,7 @@ namespace DuneAiProbe
                 if (map == null || map.Count == 0) return null;
 
                 var sb = new System.Text.StringBuilder();
-                int rows = 0;
+                int rows = 0, withTargets = 0;
                 foreach (var kv in map)
                 {
                     if (rows++ >= 12) { sb.Append("- …\n"); break; }
@@ -138,13 +138,19 @@ namespace DuneAiProbe
                     for (int i = 0; i < list.Count && parts.Count < 12; i++)
                     {
                         string one = Describe(list[i], match);
-                        if (!string.IsNullOrEmpty(one)) parts.Add(one);
+                        if (!string.IsNullOrEmpty(one))
+                        {
+                            if (one.StartsWith("可选 ", StringComparison.Ordinal)) withTargets++;
+                            parts.Add(one);
+                        }
                     }
                     sb.Append("：").Append(parts.Count == 0 ? "（只能由按钮决定）" : string.Join("；", parts.ToArray()))
                       .Append('\n');
                 }
 
                 if (sb.Length == 0) return null;
+                // 一行诊断：withTargets == 0 就说明 ValidTargets 还是没取到
+                log.LogInfo("[TARGETS] detail rows=" + rows + " withTargets=" + withTargets);
                 return "【目标明细】\n" + sb;
             }
             catch (Exception e)
