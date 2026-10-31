@@ -417,6 +417,22 @@ def _cards_by_id():
     return _CARD_CACHE
 
 
+BASE_GARRISON = 3     # 标准局开局兵营 3 支部队；史诗模式才是 5（由 IsEpicGamemode 控制）
+
+
+def garrison_delta(garrison, bonus_garrison):
+    """把「目标兵力」换算成 BonusStartingGarrison。
+
+    实测（2026-10-31）：StartingGarrison=5 在单人标准局被忽略，开局仍是 3 支；
+    而官方 Campaign301/302 用 BonusStartingGarrison=-3 把兵营清零，
+    说明真正生效的杠杆是 Bonus（叠加值），不是 Starting（绝对值）。
+    """
+    d = int(bonus_garrison or 0)
+    if garrison:
+        d += int(garrison) - BASE_GARRISON
+    return d
+
+
 def name_of(guid):
     """GUID -> 中文卡名；找不到就回退成短 ID。"""
     c = _cards_by_id().get(guid)
@@ -631,6 +647,7 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
     doc = load_base()
     players = []
     loadouts = []
+    gbonus = garrison_delta(garrison, bonus_garrison)
     for i, fk in enumerate(assign):
         deck, res, intrigue, removed, swapped = faction_loadout(mode, fk, sets)
         if blow_wall:
@@ -662,13 +679,13 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
             techs.extend(extra_techs)
         players.append(make_player(i, i == 0, deck, intrigue, res, techs,
                                    agents=agents, swordmaster=swordmaster, seat=seats[i],
-                                   garrison=(garrison or 0), bonus_garrison=bonus_garrison,
+                                   garrison=0, bonus_garrison=gbonus,
                                    maker_hooks=maker_hooks))
         loadouts.append({"faction": fk, "deck": deck, "resources": res,
                          "intrigue": intrigue, "removed": removed, "swapped": swapped,
                          "techs": techs, "mod_log": mod_log,
                          "agents": agents, "swordmaster": swordmaster,
-                         "garrison": garrison or 0, "bonus_garrison": bonus_garrison,
+                         "garrison": garrison or 0, "bonus_garrison": gbonus,
                          "maker_hooks": maker_hooks,
                          "seat": seats[i]})
 
@@ -727,6 +744,8 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
         stem += "_hook"
     if garrison:
         stem += f"_g{garrison}"
+    elif bonus_garrison:
+        stem += f"_gb{bonus_garrison:+d}".replace("+", "p")
     if blow_wall:
         stem += "_wall"
     out = os.path.join(OUT_DIR, f"{stem}_{BUNDLE}")
@@ -829,8 +848,8 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
             if lo.get("maker_hooks"):
                 print("           开局持有：造物主钩杖")
             if lo.get("garrison") or lo.get("bonus_garrison"):
-                print(f"           兵营：StartingGarrison={lo.get('garrison', 0)}"
-                      f"，Bonus={lo.get('bonus_garrison', 0)}")
+                print(f"           兵营：目标 {BASE_GARRISON + lo['bonus_garrison']} 支"
+                      f"（基础 {BASE_GARRISON} + Bonus {lo['bonus_garrison']:+d}）")
             for act, a, b in lo.get("mod_log", []):
                 if act == "替换":
                     print(f"           模组替换：{name_of(a)} → {name_of(b)}")
@@ -853,6 +872,7 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
                      "agents": lo["agents"], "swordmaster": lo["swordmaster"],
                      "workers": effective_workers(lo["agents"], lo["swordmaster"]),
                      "garrison": lo.get("garrison", 0),
+                     "garrison_target": BASE_GARRISON + lo.get("bonus_garrison", 0),
                      "maker_hooks": lo.get("maker_hooks", False),
                      "seat": lo["seat"]}
                     for i, lo in enumerate(loadouts)],
