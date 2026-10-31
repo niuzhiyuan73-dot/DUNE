@@ -128,15 +128,27 @@ namespace DuneAiProbe
             return m.Value;
         }
 
+        /// FNV-1a，进程内稳定即可（不用 string.GetHashCode，它跨进程随机化）
+        private static string StableHash(string s)
+        {
+            uint h = 2166136261u;
+            foreach (char c in s)
+            {
+                h ^= c;
+                h *= 16777619u;
+            }
+            return h.ToString("x8");
+        }
+
         /// 在游戏线程里调用：pending 必须是已经转成托管字符串的文本。
         public static void Observe(string playerName, int counter, string pending)
         {
             if (!Enabled || string.IsNullOrEmpty(pending)) return;
 
-            string dedupeKey = (playerName ?? "?") + "|" + counter;
+            string dedupeKey = (playerName ?? "?") + "|" + StableHash(Humanize(pending));
             lock (_lock)
             {
-                if (!_seen.Add(dedupeKey)) return;   // 同一个玩家的同一次选择不重复问
+                if (!_seen.Add(dedupeKey)) return;   // 同一组选项不重复问（counter 会变，内容不会）
                 if (_sent >= _max) return;
                 _sent++;
             }

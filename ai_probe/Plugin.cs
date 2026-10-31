@@ -200,26 +200,31 @@ namespace DuneAiProbe
                 {
                     int counter = -1;
                     string pending = null;
+                    PlayerEntity asker = null;
                     try
                     {
                         counter = __instance.GetLatestSelectionCounter();
-                        // 只取"这个 AI 玩家自己的"待选，避免把人类玩家的选择也发过去
-                        if (p != null)
+                        // 关键：正在被问的是 GetPlayerEntityForCounter(counter)，
+                        // 不是 LatestRespondedPlayer（那是刚回答完的人，常常是人类）
+                        asker = __instance.GetPlayerEntityForCounter(counter);
+                        if (asker != null)
                         {
-                            var ps = __instance.GetPlayerPendingResponse(p, counter);
+                            var ps = __instance.GetPlayerPendingResponse(asker, counter);
                             if (ps != null) pending = ps.ToString();
                         }
                     }
-                    catch (Exception e) { L.LogInfo("[COACH] player pending: " + e.Message); }
+                    catch (Exception e) { L.LogInfo("[COACH] asker pending: " + e.Message); }
 
                     if (string.IsNullOrEmpty(pending))
                     {
-                        pending = __instance.DumpPendingResponses();
+                        // 取不到就整份 dump，但至少标注一下，别当成单人的选择
+                        pending = "[未取到单人待选，以下为全部待处理选择]\n" + __instance.DumpPendingResponses();
+                        asker = null;
                         counter = -1;
                     }
 
                     string name = null;
-                    try { name = p != null ? p.PlayerName : null; } catch { }
+                    try { name = asker != null ? asker.PlayerName : null; } catch { }
                     if (!string.IsNullOrEmpty(pending)) Coach.Observe(name, counter, pending);
                 }
                 catch (Exception e) { L.LogWarning("[COACH] dump: " + e.Message); }

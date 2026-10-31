@@ -1,0 +1,782 @@
+================================================================
+TYPE Canis.Match
+  BASE Il2CppSystem.Object
+  PROP Canis.messageRouters.MainMessageRouter _MessageRouter_k__BackingField
+  PROP Il2CppSystem.Collections.Generic.Dictionary<String, Canis.hasExecutionStack.IHasExecutionStack> hasExecutionStacks
+  PROP Boolean MatchDisposed
+  PROP Il2CppSystem.Object matchWriteLockObject
+  PROP Boolean Initialized
+  PROP Boolean EmittedSerializedGameState
+  PROP Boolean logging
+  PROP Canis.CanisRandom _Random_k__BackingField
+  PROP Il2CppSystem.Random _SelectionRandom_k__BackingField
+  PROP Il2CppSystem.Action<Canis.utils.ids.AccountID, Canis.json.events.DWDEvent> messageDispatcher
+  PROP Canis.utils.ids.GameID _GameID_k__BackingField
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.AccountID> _HumanAccountIDs_k__BackingField
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.AccountID> _AIAccountIDs_k__BackingField
+  PROP Canis.utils.ids.AccountID _ActiveAccountID_k__BackingField
+  PROP Canis.MatchInitData _matchInitData_k__BackingField
+  PROP Canis.entities.Entity Playmat
+  PROP Il2CppSystem.Collections.Generic.Dictionary<String, String> GameOptions
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Canis.entities.Entity> Entities
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Il2CppSystem.Collections.Generic.List<Canis.utils.ids.EntityID>> ownedByPendingPlayer
+  PROP Canis.events.EventReactor _EventReactor_k__BackingField
+  PROP Canis.entities.TransientData transientData
+  PROP Canis.CleanupGame<DBGGameResults> CleanupGame
+  PROP Canis.actions.Action ScenarioAction
+  PROP Canis.gameLogs.GameLogManager _GameLogManager_k__BackingField
+  PROP Boolean startedGameCleanup
+  PROP Boolean GameCleanedUp
+  PROP Int64 startTime
+  PROP Boolean _UseTurnTimers_k__BackingField
+  PROP Boolean forceGameOver
+  PROP Boolean reconnectingPlayer
+  PROP Il2CppSystem.Collections.Generic.Queue<Canis.json.events.DWDEvent> reconnectMessageQueue
+  PROP Il2CppSystem.Collections.Generic.List<Canis.entities.PlayerEntity> _players_k__BackingField
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Canis.entities.PlayerEntity> _playersMap_k__BackingField
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Il2CppSystem.Collections.Generic.List<Canis.entities.PlayerEntity>> _opponentCache_k__BackingField
+  PROP Canis.SaveData SaveData
+  PROP Il2CppSystem.Action<Canis.SaveData> WriteSaveData
+  PROP Il2CppSystem.Func<Canis.SaveData, Il2CppSystem.Threading.Tasks.Task> WriteNewSaveData
+  PROP Il2CppSystem.Func<Canis.messages.SerializedGameState, Canis.utils.ids.AccountID, Il2CppSystem.Threading.Tasks.Task> WritePlayerResignedState
+  PROP Il2CppSystem.Func<Canis.SaveData, Canis.utils.ids.AccountID, Il2CppSystem.Collections.Generic.IEnumerable<Canis.utils.ids.AccountID>, Il2CppSystem.Threading.Tasks.Task> WriteSimultaneousSaveData
+  PROP Il2CppSystem.Func<String, Canis.utils.ids.AccountID, Il2CppSystem.Threading.Tasks.Task> PlayerNotifier
+  PROP Il2CppSystem.Func<Canis.utils.ids.AccountID, Il2CppSystem.Threading.Tasks.Task> RemoveIdlePlayer
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Networking.selection.messages.SelectionMessage> LastSelectionMessageV2
+  PROP Canis.utils.ids.TimerID TimerID
+  PROP String TimerType
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.AccountID> disconnectedPlayers
+  PROP Canis.actions.IMessageActionFactory _MessageActionFactory_k__BackingField
+  PROP Networking.selection.messages.SelectionMessage LastSelectionMessage
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Networking.selection.messages.SelectionMessage> _activeSelectionMessages
+  PROP Il2CppSystem.Collections.Generic.Queue<String> PreviousAISelectionRequests
+  PROP Il2CppSystem.Collections.Generic.Queue<String> PreviousAISelectionResponses
+  PROP Il2CppSystem.Collections.Generic.List<Canis.TimerInfo> _activeTimers
+  PROP Canis.messageRouters.MainMessageRouter MessageRouter
+  PROP canis.archetypes.Archetypes SimpleArchetypes
+  PROP Canis.CanisRandom Random
+  PROP Il2CppSystem.Random SelectionRandom
+  PROP Canis.utils.ids.GameID GameID
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.AccountID> HumanAccountIDs
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.AccountID> AIAccountIDs
+  PROP Canis.utils.ids.AccountID ActiveAccountID
+  PROP Canis.MatchInitData matchInitData
+  PROP Canis.attributes.IEntity Canis.entities.IHasEntities.Playmat
+  PROP Canis.events.EventReactor EventReactor
+  PROP Int32 RunActionWithTargetsVersion
+  PROP Canis.entities.ActiveAbility ActiveAbility
+  PROP Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.ActiveAbility> AbilityStack
+  PROP Canis.entities.Entity LogStack
+  PROP Canis.gameLogs.GameLogManager GameLogManager
+  PROP Il2CppSystem.Collections.Generic.IEnumerable<Canis.gameLogs.SerializedGameLog> StoredGameLogs
+  PROP Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.data.DBGSequence> ActiveSequences
+  PROP Boolean IsRestart
+  PROP Boolean UseTurnTimers
+  PROP Boolean IsReconnecting
+  PROP Il2CppSystem.Collections.Generic.List<Canis.json.events.DWDEvent> ReconnectMessageQueue
+  PROP Boolean SendNumChildrenAttributeModified
+  PROP Canis.utils.ids.GameID AnalyticsGameID
+  PROP Il2CppSystem.Collections.Generic.List<Canis.entities.PlayerEntity> players
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Canis.entities.PlayerEntity> playersMap
+  PROP Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.entities.PlayerEntity> BasicPlayers
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Il2CppSystem.Collections.Generic.List<Canis.entities.PlayerEntity>> opponentCache
+  PROP String MatchType
+  PROP Boolean IsTutorial
+  PROP Boolean IsPassAndPlay
+  PROP Boolean IsSimultaneousSolo
+  PROP Boolean IsPBM
+  PROP Boolean IsSolo
+  PROP Boolean IsFriend
+  PROP Boolean IsLive
+  PROP Boolean IsCasual
+  PROP Boolean IsOnline
+  PROP Boolean IsCampaign
+  PROP Boolean IsDailyChallenge
+  PROP Boolean IsSkirmish
+  PROP Boolean IsRanked
+  PROP Boolean IsEvent
+  PROP Canis.utils.ids.EventID GetEventID
+  PROP Canis.utils.ids.RoundID GetRoundID
+  PROP Boolean ShouldIncludeAccountIDOnMessage
+  PROP Boolean IsAIOnly
+  PROP Boolean IsOptimization
+  PROP Boolean SkipLiveReplay
+  PROP Il2CppSystem.Collections.Generic.IEnumerable<String> TimerMessages
+  PROP Canis.events.SerializedEventReactor SerializedEventReactor
+  PROP Int32 GetTurnForSaveData
+  PROP Il2CppSystem.Collections.Generic.List<Canis.messages.AccountIDUsernameMetadata> PlayerNameData
+  PROP Boolean SystemicUndoEnabled
+  PROP Boolean AILogging
+  PROP Canis.actions.IMessageActionFactory MessageActionFactory
+  PROP Int32 NumberOfAISelectionsToStore
+  PROP Canis.data.TimerModes TimerMode
+  PROP Boolean UseTimers
+  PROP Il2CppSystem.Collections.Generic.IReadOnlyCollection<Canis.TimerInfo> ActiveTimers
+  METHOD [Static] Void .cctor()
+  METHOD Canis.messageRouters.MainMessageRouter get_MessageRouter()
+  METHOD Void set_MessageRouter(Canis.messageRouters.MainMessageRouter value)
+  METHOD Canis.hasExecutionStack.IHasExecutionStack GetHasExecutionStack(String name)
+  METHOD canis.archetypes.Archetypes get_SimpleArchetypes()
+  METHOD Il2CppSystem.Object GetArchetypesLock()
+  METHOD canis.archetypes.Archetype GetArchetype(Canis.utils.ids.ArchetypeID id)
+  METHOD Canis.CanisRandom get_Random()
+  METHOD Void set_Random(Canis.CanisRandom value)
+  METHOD Il2CppSystem.Random get_SelectionRandom()
+  METHOD Void set_SelectionRandom(Il2CppSystem.Random value)
+  METHOD Canis.utils.ids.GameID get_GameID()
+  METHOD Void set_GameID(Canis.utils.ids.GameID value)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.AccountID> get_HumanAccountIDs()
+  METHOD Void set_HumanAccountIDs(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.AccountID> value)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.AccountID> get_AIAccountIDs()
+  METHOD Void set_AIAccountIDs(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.AccountID> value)
+  METHOD Canis.utils.ids.AccountID get_ActiveAccountID()
+  METHOD Void set_ActiveAccountID(Canis.utils.ids.AccountID value)
+  METHOD Canis.MatchInitData get_matchInitData()
+  METHOD Void set_matchInitData(Canis.MatchInitData value)
+  METHOD Canis.attributes.IEntity Canis_entities_IHasEntities_get_Playmat()
+  METHOD Canis.events.EventReactor get_EventReactor()
+  METHOD Void set_EventReactor(Canis.events.EventReactor value)
+  METHOD Int32 get_RunActionWithTargetsVersion()
+  METHOD Canis.entities.ActiveAbility get_ActiveAbility()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.ActiveAbility> get_AbilityStack()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> ActionStack()
+  METHOD Canis.entities.Entity get_LogStack()
+  METHOD Canis.gameLogs.GameLogManager get_GameLogManager()
+  METHOD Void set_GameLogManager(Canis.gameLogs.GameLogManager value)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.gameLogs.SerializedGameLog> get_StoredGameLogs()
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.data.DBGSequence> get_ActiveSequences()
+  METHOD Boolean ShouldStoreGame()
+  METHOD Boolean get_IsRestart()
+  METHOD String GetGameType()
+  METHOD Canis.actions.Action GenResumeAction(Canis.Match match)
+  METHOD Canis.actions.Action PassToPlayerAction(Canis.entities.PlayerEntity player, Boolean forced)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<DBGGameResultsEntry> OrderResults(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<DBGGameResultsEntry> results)
+  METHOD Void LogGameOverAnalytics(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<DBGGameResultsEntry> results)
+  METHOD Void LogAnalyticsResign(Boolean wasTimeout)
+  METHOD Canis.data.IPlayerType GetPlayerType(Canis.entities.PlayerEntity player)
+  METHOD Canis.actions.Action GetGameResults()
+  METHOD DBGGameResults GetGameResultsMessage()
+  METHOD Void HandleResignGame()
+  METHOD Void HandleIdleResignFromGame(Canis.utils.ids.AccountID accountID)
+  METHOD Void SetCleanupGame(Canis.CleanupGame<DBGGameResults> cleanup)
+  METHOD Void GameOverCleanup(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.AccountID> playerIDs, DBGGameResults gameResults)
+  METHOD Canis.actions.Action GetPreAIDecisionAction(Networking.selection.messages.SelectionMessage selection)
+  METHOD Canis.actions.Action PreProcessPlayerChoice(Networking.selection.messages.SelectionMessage selection)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> PreProcessPlayerChoiceWithPlayer(Networking.selection.messages.SelectionMessage selection, Canis.entities.PlayerEntity player)
+  METHOD Boolean get_UseTurnTimers()
+  METHOD Void set_UseTurnTimers(Boolean value)
+  METHOD Void SetReconnectingPlayer(Boolean reconnecting)
+  METHOD Boolean get_IsReconnecting()
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.json.events.DWDEvent> get_ReconnectMessageQueue()
+  METHOD Boolean get_SendNumChildrenAttributeModified()
+  METHOD Canis.utils.ids.GameID get_AnalyticsGameID()
+  METHOD Void set_AnalyticsGameID(Canis.utils.ids.GameID value)
+  METHOD Void InitDSL()
+  METHOD Void Configure(Canis.MatchInitData mid)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.entities.PlayerEntity> get_players()
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Canis.entities.PlayerEntity> get_playersMap()
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.entities.PlayerEntity> get_BasicPlayers()
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Il2CppSystem.Collections.Generic.List<Canis.entities.PlayerEntity>> get_opponentCache()
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.entities.PlayerEntity> OpponentsOf(Canis.entities.PlayerEntity player)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.PlayerEntity> HumanPlayers()
+  METHOD Canis.entities.PlayerEntity GetPlayerEntity(Canis.utils.ids.AccountID accountID)
+  METHOD Canis.entities.Entity CreateEntity(Canis.messages.SerializedEntity se, Canis.Match m, Canis.entities.Entity parent)
+  METHOD M0 GetPlayerByIndex(Int32 index)
+  METHOD Int32 GetPlayerIndex(M0 player)
+  METHOD String get_MatchType()
+  METHOD Boolean get_IsTutorial()
+  METHOD Boolean get_IsPassAndPlay()
+  METHOD Boolean get_IsSimultaneousSolo()
+  METHOD Boolean get_IsPBM()
+  METHOD Boolean get_IsSolo()
+  METHOD Boolean get_IsFriend()
+  METHOD Boolean get_IsLive()
+  METHOD Boolean get_IsCasual()
+  METHOD Boolean get_IsOnline()
+  METHOD Boolean get_IsCampaign()
+  METHOD Boolean get_IsDailyChallenge()
+  METHOD Boolean get_IsSkirmish()
+  METHOD Boolean get_IsRanked()
+  METHOD Boolean get_IsEvent()
+  METHOD Canis.utils.ids.EventID get_GetEventID()
+  METHOD Canis.utils.ids.RoundID get_GetRoundID()
+  METHOD Boolean get_ShouldIncludeAccountIDOnMessage()
+  METHOD Boolean get_IsAIOnly()
+  METHOD Boolean get_IsOptimization()
+  METHOD Boolean get_SkipLiveReplay()
+  METHOD Boolean IsFirstSelectionTurn(Int32 turnNumber)
+  METHOD Canis.messageRouters.MessageRouter GenTimerRouter(Canis.Match match)
+  METHOD Boolean ShouldSaveExecutionStack(Canis.MatchInitData mid)
+  METHOD Void .ctor()
+  METHOD Canis.entities.Entity GenPlaymat(Canis.Match match)
+  METHOD Canis.entities.Entity GenPlaymat(Canis.messages.SerializedEntity entities, Canis.Match match)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<String> get_TimerMessages()
+  METHOD Void Start()
+  METHOD Il2CppSystem.Threading.Tasks.Task StartAIvsAI()
+  METHOD Canis.actions.Action StartNewMatch()
+  METHOD Canis.actions.Action DeserializeMatch()
+  METHOD Void InitializeNewMatch()
+  METHOD Void ReinitializeMatch()
+  METHOD Void SetPlayerTurnOrder(Il2CppSystem.Collections.Generic.List<Canis.entities.PlayerEntity> playerAccumulator)
+  METHOD Void ClearPlayers()
+  METHOD Void SetupMatchInitData()
+  METHOD Void CreatePlayers()
+  METHOD Canis.entities.PlayerEntity MakePlayer(Canis.PlayerMatchInitData playerInitData)
+  METHOD Void InitializePlayers()
+  METHOD Void PlayerTutorialInit(Boolean isResume)
+  METHOD Void SetScenarioAction(Boolean isResume)
+  METHOD Void CacheAccountIDs()
+  METHOD Void SetAnalyticsGameData()
+  METHOD Void LogAnalyticsGameStart()
+  METHOD Void CleanupGameFailure()
+  METHOD Void AddPlayer(Canis.entities.PlayerEntity player)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> GetEntityOption(Canis.utils.ids.EntityID id)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<M0> GetEntityOption(Canis.utils.ids.EntityID id)
+  METHOD Boolean TryGetEntity(Canis.utils.ids.EntityID id, ref Canis.entities.Entity entity)
+  METHOD Boolean TryGetEntity(Canis.utils.ids.EntityID id, ref M0 entity)
+  METHOD Canis.entities.Entity GetEntity(Canis.utils.ids.EntityID id)
+  METHOD M0 GetEntity(Canis.utils.ids.EntityID id)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.entities.Entity> GetEntities(Il2CppSystem.Collections.Generic.IEnumerable<Canis.utils.ids.EntityID> ids)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.entities.Entity> GetEntities(Il2CppSystem.Collections.Generic.IEnumerable<Networking.selection.targetresponse.TargetResponse> trs)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> LookupEntities(Il2CppSystem.Collections.Generic.IEnumerable<Canis.utils.ids.EntityID> entityIDs)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<M0> LookupEntities(Il2CppSystem.Collections.Generic.IEnumerable<Canis.utils.ids.EntityID> entityIDs)
+  METHOD Void AddEntityForPendingPlayer(Canis.utils.ids.AccountID owner, Canis.entities.Entity entity)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> ClaimOwnedEntitiesForPending(Canis.utils.ids.AccountID owner)
+  METHOD Void SaveInitialState(Canis.utils.ids.AccountID firstPlayer, Canis.messages.SerializedGameState startingGameState, Il2CppSystem.Collections.Generic.List<Canis.PlayerInfoSaveData> orderedPlayers)
+  METHOD Canis.SaveData MakeNewSaveData(Canis.messages.SerializedGameState sgs, Il2CppSystem.Collections.Generic.List<Canis.PlayerInfoSaveData> orderedPlayers)
+  METHOD Canis.events.SerializedEventReactor get_SerializedEventReactor()
+  METHOD Void RestoreSerializedEventReactor()
+  METHOD Canis.actions.Action MakeRunScriptEventResponse(Canis.entities.AbilityInstance abilityInstance, Canis.events.ScriptEvent scriptEvent)
+  METHOD Void SaveSimultaneousPlayers(Canis.utils.ids.AccountID completedTurnPlayer, Il2CppSystem.Collections.Generic.IEnumerable<Canis.utils.ids.AccountID> waitingForPlayers, Canis.messages.SerializedGameState gameState, Int32 turn)
+  METHOD Void SendNotificationToPlayer(Canis.utils.ids.AccountID playerToNotify, String message)
+  METHOD Void ClearDisplayActionsForPlayer(Canis.utils.ids.AccountID player, Canis.messages.SerializedGameState gameState)
+  METHOD Int32 get_GetTurnForSaveData()
+  METHOD Void PostClearDisplayActions(Canis.entities.PlayerEntity player, Canis.PlayerSaveData playerState, Il2CppSystem.Collections.Generic.Dictionary<Canis.entities.PlayerEntity, Il2CppSystem.Collections.Generic.List<Canis.data.PendingSelection>> allPendingSelections)
+  METHOD Void SaveOnPause(Canis.entities.PlayerEntity latestRespondedPlayer, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.entities.PlayerEntity> previousSelectingPlayers, Il2CppSystem.Collections.Generic.IEnumerable<Il2CppSystem.ValueTuple<Canis.entities.PlayerEntity, Il2CppSystem.Collections.Generic.IReadOnlyCollection<Canis.data.PendingSelection>>> pendingSelections)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.PlayerEntity> ClearDisplayActionsOnSave(Canis.entities.PlayerEntity lastRespondingPlayer, Il2CppSystem.Collections.Generic.Dictionary<Canis.entities.PlayerEntity, Il2CppSystem.Collections.Generic.List<Canis.data.PendingSelection>> allPendingSelections)
+  METHOD Boolean IsInSelectionLoop()
+  METHOD Boolean ShouldResetSelectionCount(Canis.hasExecutionStack.IHasExecutionStack hasExecutionStack)
+  METHOD Void TryRun(String executionStackName, Canis.actions.Action action, Boolean allowSaves)
+  METHOD Void Run(String executionStackName, Canis.actions.Action action, Boolean allowSaves)
+  METHOD Void Write(Il2CppSystem.Object message, Canis.utils.ids.AccountID accountID)
+  METHOD Void LogGameCrashToAnalytics(Il2CppSystem.Exception e)
+  METHOD Void EndGameImmediately()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> SetNonPromptText(Canis.utils.localization.LocalizableTextVariables nonPromptText, Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.PlayerEntity> nonSelectingPlayers)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> ClearNonPromptText()
+  METHOD Void Resign()
+  METHOD Void OnPlayerDisconnected(Canis.utils.ids.AccountID accountID)
+  METHOD Boolean validForDisplayAction(Canis.json.events.DWDEvent message, Canis.utils.ids.AccountID accountID)
+  METHOD Void DispatchMessage(Canis.utils.ids.AccountID accountID, Canis.json.events.DWDEvent message, Boolean shouldStoreDisplayAction)
+  METHOD Void SetMessageDispatcher(Il2CppSystem.Action<Canis.utils.ids.AccountID, Canis.json.events.DWDEvent> dispatcher)
+  METHOD Void SetWriteSaveData(Il2CppSystem.Action<Canis.SaveData> writeSaveData)
+  METHOD Void SetWriteSimultaneousSaveData(Il2CppSystem.Func<Canis.SaveData, Canis.utils.ids.AccountID, Il2CppSystem.Collections.Generic.IEnumerable<Canis.utils.ids.AccountID>, Il2CppSystem.Threading.Tasks.Task> writeSimultaneousSaveData)
+  METHOD Void SetWritePlayerResignedState(Il2CppSystem.Func<Canis.messages.SerializedGameState, Canis.utils.ids.AccountID, Il2CppSystem.Threading.Tasks.Task> writePlayerResignedData)
+  METHOD Void SetWriteNewSaveData(Il2CppSystem.Func<Canis.SaveData, Il2CppSystem.Threading.Tasks.Task> saveData)
+  METHOD Void SetSaveData(Canis.SaveData data)
+  METHOD Void SetNotifier(Il2CppSystem.Func<String, Canis.utils.ids.AccountID, Il2CppSystem.Threading.Tasks.Task> notifier)
+  METHOD Void SetRemoveIdlePlayer(Il2CppSystem.Func<Canis.utils.ids.AccountID, Il2CppSystem.Threading.Tasks.Task> removeIdlePlayer)
+  METHOD Int32 GetNextSelectionCounter()
+  METHOD Boolean HasPendingResponse(Int32 selectionCounter)
+  METHOD Boolean IsScenario(String scenario)
+  METHOD String GetScenarioName()
+  METHOD Canis.utils.localization.LocalizableText GetGameModeDisplayName()
+  METHOD Boolean IsGameOver()
+  METHOD Boolean IsMatchOver()
+  METHOD [Static] Il2CppSystem.Collections.Generic.IEnumerable<Il2CppSystem.ValueTuple<String, String>> GetAnalyticsName(String key, Canis.entities.Entity entity)
+  METHOD Void LogToAnalytics(String eventName, Il2CppSystem.Collections.Generic.Dictionary<String, Il2CppSystem.Object> dict)
+  METHOD [Static] Il2CppSystem.Collections.Generic.Dictionary<String, Il2CppSystem.Object> ExtractEntityDataForAnalytics(Il2CppSystem.Collections.Generic.Dictionary<String, Il2CppSystem.Object> dict)
+  METHOD Void AddRequiredAnalyticsFields(Il2CppSystem.Collections.Generic.Dictionary<String, Il2CppSystem.Object> dict)
+  METHOD Void AddDeviceIDForAnalyticsIfOfflineMatch(Il2CppSystem.Collections.Generic.Dictionary<String, Il2CppSystem.Object> dict)
+  METHOD String EntityIDDebugInfo(Canis.utils.ids.EntityID entityID)
+  METHOD String TargetInfoDebugInfo(Networking.selection.targetinformation.TargetInformation targetInfo)
+  METHOD String SelectionDebugInfo(Networking.selection.messages.SelectionMessage selection)
+  METHOD Canis.entities.PlayerEntity CurrentPlayer()
+  METHOD Canis.entities.PlayerEntity CurrentTurnPlayer()
+  METHOD Canis.entities.PlayerEntity SelectingPlayer()
+  METHOD Void AddClientInfoForAnalyticsIfOfflineMatch(Il2CppSystem.Collections.Generic.Dictionary<String, Il2CppSystem.Object> dict)
+  METHOD Void AddEventInfoForAnalytics(Il2CppSystem.Collections.Generic.Dictionary<String, Il2CppSystem.Object> dict)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.messages.AccountIDUsernameMetadata> get_PlayerNameData()
+  METHOD Canis.context.Context DefaultSelectionContext()
+  METHOD Canis.DSL.ScriptBuilders.ScriptBuilder GetBuilderForID(Canis.DSL.ScriptBuilderID builderID)
+  METHOD String GetScriptNameForID(Canis.DSL.ScriptBuilderID builderID)
+  METHOD Canis.entities.ActiveAbility PushNewAbility(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Il2CppSystem.Object> parameters)
+  METHOD Canis.actions.Action PopAbility(Canis.entities.ActiveAbility ability)
+  METHOD Canis.gameLogs.SerializedGameLog GetStoredLog(Int32 id)
+  METHOD Canis.gameLogs.SerializedGameLog StoreGameLog(Canis.gameLogs.GameLogBuilder logBuilder)
+  METHOD Boolean StoreGameLog(Canis.gameLogs.SerializedGameLog log)
+  METHOD Canis.gameLogs.GameLogBuilder MakeGameLogBuilder(String logToken)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.ITriggeredAbility> GetInstalledTriggers(Canis.events.Event evt)
+  METHOD Canis.entities.Entity GetUndoEntity()
+  METHOD Canis.entities.Entity GetRedoEntity()
+  METHOD Boolean GameSpecificUndoIsAvailable(Canis.entities.PlayerEntity selectingPlayer)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> GameSpecificUndoBehavior(Canis.entities.PlayerEntity undoPlayer, Canis.entities.UndoNode undoNode)
+  METHOD Canis.actions.Action AddUndoNode(Canis.entities.UndoNode undoNode, Canis.entities.UndoNode parentUndoNode)
+  METHOD Canis.actions.Action RemoveUndoNode(Canis.entities.UndoNode undoNode)
+  METHOD Boolean get_SystemicUndoEnabled()
+  METHOD Canis.entities.Entity GetUndoStack()
+  METHOD Canis.actions.Action RunUndoAbility()
+  METHOD Void ClearUndo()
+  METHOD Void CreateAutomaticSelectionUndo(Canis.entities.PlayerEntity selectingPlayer, Canis.data.PendingSelection selection)
+  METHOD Void AddUndoEffect(Canis.undo.UndoableEffect effect)
+  METHOD Void AddUndoEffect(Canis.actions.serialized.SerializedAction undoAction)
+  METHOD String GetUndoFX(String fxName)
+  METHOD Canis.actions.Action PreDestroyOnUndo(Canis.entities.Entity entity)
+  METHOD String GetUndoSequence(String name)
+  METHOD Void SendUndoAnalytics(Canis.entities.PlayerEntity player)
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<String> GameOverAchievementsForPlayer(Canis.entities.PlayerEntity player)
+  METHOD Void AddTransientData(TransientDataKey<M0> key, M0 data)
+  METHOD Boolean TryGetTransientData(TransientDataKey<M0> key, ref M0 data)
+  METHOD Void RemoveTransientData(TransientDataKey<M0> key)
+  METHOD M0 GetOrAddTransientData(TransientDataKey<M0> key, Il2CppSystem.Func<M0> dataFactory)
+  METHOD Canis.actions.Action RunActionWithTargets(Canis.actions.continuations.ActionAcrossTargets actionAcrossTargets, Canis.actions.continuations.ExecuteStack stack)
+  METHOD Boolean TryGetIEntity(Canis.utils.ids.EntityID id, ref Canis.attributes.IEntity entity)
+  METHOD Boolean TryGetPlayer(Canis.utils.ids.AccountID id, ref Canis.attributes.IEntity player)
+  METHOD Void ShowErrorPopup(String message, Int32 timeoutSeconds)
+  METHOD Canis.actions.Action GenInitialAction(Canis.Match match)
+  METHOD DBGGameResults getGameResults(Boolean includeSaveData)
+  METHOD Boolean IsInPlay(Canis.entities.Entity entity)
+  METHOD String GetAITypeForPlayer(Canis.entities.PlayerEntity playerEntity)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> GetCompatActions()
+  METHOD [Static] Boolean get_AILogging()
+  METHOD [Static] Void set_AILogging(Boolean value)
+  METHOD Void AILog(Canis.entities.PlayerEntity player, String text, String color)
+  METHOD Il2CppSystem.Nullable<Int32> AIDecisionDelayForSelection(Networking.selection.messages.SelectionMessage selectionMessage)
+  METHOD Canis.entities.ai.AIProfileAbs MakeAIProfile(Canis.entities.PlayerEntity player)
+  METHOD Boolean TryGetStrategy(Canis.entities.PlayerEntity player, ref M0 result)
+  METHOD String GetAIInformationString(Canis.entities.PlayerEntity player)
+  METHOD Double GetSelectionNoiseMin(Canis.entities.PlayerEntity playerEntity)
+  METHOD Void FinishReconnect(Canis.utils.ids.AccountID accountID)
+  METHOD Boolean ShouldNotifyPlayer(Canis.utils.ids.AccountID playerID)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<String, String> GetAdditionalPlayerMetadata(Canis.entities.PlayerEntity playerEntity)
+  METHOD Void UpdatePlayerData(Canis.messages.AccountIDUsernameMetadata playerData)
+  METHOD Void SetPlayerDataForResignFromGame(Canis.utils.ids.AccountID resigningPlayerID)
+  METHOD Void HandleResignGame(Canis.utils.ids.AccountID resigningPlayerID)
+  METHOD Il2CppSystem.Threading.Tasks.Task HandleResignGameAsync(Canis.utils.ids.AccountID resigningPlayerID)
+  METHOD Void SetPlayerResignedState(Canis.messages.SerializedGameState gameState, Canis.utils.ids.AccountID resigningPlayerID)
+  METHOD Boolean HasResigned(Canis.utils.ids.AccountID accountID)
+  METHOD Canis.actions.IMessageActionFactory get_MessageActionFactory()
+  METHOD Void SetActiveSelectionOfPlayer(Canis.utils.ids.AccountID accountID, Networking.selection.messages.SelectionMessage sm)
+  METHOD Void RemoveActiveSelectionOfPlayer(Canis.utils.ids.AccountID accountID)
+  METHOD Void HandleIdleTurn(Canis.utils.ids.AccountID accountID)
+  METHOD Boolean ShouldSaveOnPause(String executionStackName)
+  METHOD Boolean AllowMultiSelectionCounter(Canis.entities.PlayerEntity selectingPlayer, Int32 counter)
+  METHOD Boolean AnyPlayerIsSelecting()
+  METHOD Boolean PlayerIsSelecting(Canis.utils.ids.AccountID accountID)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.utils.ids.AccountID> PlayerIDsMakingSelections()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Networking.selection.messages.SelectionMessage> ActiveSelectionsOfPlayer(Canis.utils.ids.AccountID accountID)
+  METHOD Canis.utils.ids.AccountID PlayerIDForSelection(Networking.selection.messages.SelectionMessage evt)
+  METHOD Il2CppSystem.Nullable<Il2CppSystem.Collections.Generic.KeyValuePair<String, String>> CalcifyTarget(Il2CppSystem.Object unknown)
+  METHOD Il2CppSystem.Object ReifyTarget(String hint, String serialized)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute<Il2CppSystem.Nullable<Int32>>> MakeObfuscatedNumChildren(Canis.entities.Entity parent, Canis.utils.ids.AccountID perspective, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.entities.Entity> removedEntities)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute<Il2CppSystem.Nullable<Int32>>> MakeObfuscatedNumChildren(Canis.messages.SerializedEntity parent, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.messages.SerializedEntity> removedEntities)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute> MakeObfuscatedMovePublicData(Canis.entities.Entity movingEntity, Canis.utils.ids.EntityID sourceID, Canis.utils.ids.EntityID destinationID)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute> MakeObfuscatedMovePublicData(Canis.messages.SerializedEntity movingEntity, Canis.utils.ids.EntityID sourceID, Canis.utils.ids.EntityID destinationID)
+  METHOD Int32 get_NumberOfAISelectionsToStore()
+  METHOD Void StoreAISelectionRequestForLog(String selection)
+  METHOD Void StoreAISelectionResponsesForLog(String selection)
+  METHOD String GetPreviousAISelections()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> PrePendSelection(Il2CppSystem.Collections.Generic.List<Il2CppSystem.ValueTuple<Canis.entities.PlayerEntity, Canis.data.PendingSelection>> pendingSelections)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> UpdateOtherPrePendSelection(Il2CppSystem.Collections.Generic.List<Il2CppSystem.ValueTuple<Canis.entities.PlayerEntity, Canis.data.PendingSelection>> pendingSelections)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> UpdateSkirmishObjectives()
+  METHOD Canis.data.TimerModes get_TimerMode()
+  METHOD Int32 TimerLength(Canis.entities.PlayerEntity player)
+  METHOD Boolean get_UseTimers()
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyCollection<Canis.TimerInfo> get_ActiveTimers()
+  METHOD Void TrackTimer(Canis.utils.ids.TimerID timerID, String timerType, Canis.utils.ids.AccountID forAccount, Networking.selection.messages.SelectionMessage forSelection)
+  METHOD Void TrackTimer(Canis.utils.ids.TimerID timerID, String timerType, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Il2CppSystem.ValueTuple<Canis.utils.ids.AccountID, Networking.selection.messages.SelectionMessage>> forAccountSelections)
+  METHOD Void UntrackTimer(Canis.utils.ids.TimerID timerID)
+  METHOD Void CancelTimersForCounter(Canis.utils.ids.AccountID accountID, Int32 selectionCounter)
+  METHOD Boolean TimerIsActive(Canis.utils.ids.TimerID timerID)
+  METHOD Void TimeoutDisconnectedPlayer(Canis.utils.ids.AccountID accountID)
+  METHOD Boolean ShouldSetTimerForSelection(Canis.entities.PlayerEntity player, Networking.selection.messages.SelectionMessage message)
+  METHOD Int32 GetTimerForSelection(Canis.entities.PlayerEntity player, Networking.selection.messages.SelectionMessage message)
+  METHOD Single GetTimerPaddingForSelection(Canis.entities.PlayerEntity player, Networking.selection.messages.SelectionMessage message)
+  METHOD Int32 GetTotalTimerTime(Canis.entities.PlayerEntity player, Networking.selection.messages.SelectionMessage message)
+  METHOD Canis.data.IPlayerType _LogGameOverAnalytics_b__82_0(DBGGameResultsEntry player)
+  METHOD Canis.MatchInitData _Configure_b__115_0(Canis.MatchInitData smid, Int32 id)
+  METHOD Void _StartAIvsAI_b__194_0()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> _GetEntities_b__219_0(Networking.selection.targetresponse.TargetResponse tr)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> _ClaimOwnedEntitiesForPending_b__223_0(Canis.utils.ids.EntityID id)
+  METHOD String _TargetInfoDebugInfo_b__272_0(Il2CppSystem.Collections.Generic.KeyValuePair<Canis.utils.ids.EntityID, Int32> kvp)
+  METHOD String _TargetInfoDebugInfo_b__272_1(Il2CppSystem.Collections.Generic.KeyValuePair<Int32, Networking.selection.targetinformation.TargetInformation> kvp)
+  METHOD String _SelectionDebugInfo_b__273_0(Il2CppSystem.Collections.Generic.KeyValuePair<Canis.utils.ids.EntityID, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetinformation.TargetInformation>> kvp)
+  METHOD Canis.messages.AccountIDUsernameMetadata _get_PlayerNameData_b__280_0(Canis.entities.PlayerEntity p)
+  METHOD Canis.entities.ActiveAbility PushNewAbility(Il2CppSystem.Object[] parameters)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute<Il2CppSystem.Nullable<Int32>>> MakeObfuscatedNumChildren(Canis.entities.Entity parent, Canis.utils.ids.AccountID perspective, Canis.entities.Entity[] removedEntities)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute<Il2CppSystem.Nullable<Int32>>> MakeObfuscatedNumChildren(Canis.messages.SerializedEntity parent, Canis.messages.SerializedEntity[] removedEntities)
+  METHOD Void TrackTimer(Canis.utils.ids.TimerID timerID, String timerType, Il2CppSystem.ValueTuple<Canis.utils.ids.AccountID, Networking.selection.messages.SelectionMessage>[] forAccountSelections)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.messageRouters.MainMessageRouter get__MessageRouter_k__BackingField()
+  METHOD Void set__MessageRouter_k__BackingField(Canis.messageRouters.MainMessageRouter)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<String, Canis.hasExecutionStack.IHasExecutionStack> get_hasExecutionStacks()
+  METHOD Void set_hasExecutionStacks(Il2CppSystem.Collections.Generic.Dictionary<String, Canis.hasExecutionStack.IHasExecutionStack>)
+  METHOD Boolean get_MatchDisposed()
+  METHOD Void set_MatchDisposed(Boolean)
+  METHOD Il2CppSystem.Object get_matchWriteLockObject()
+  METHOD Void set_matchWriteLockObject(Il2CppSystem.Object)
+  METHOD Boolean get_Initialized()
+  METHOD Void set_Initialized(Boolean)
+  METHOD Boolean get_EmittedSerializedGameState()
+  METHOD Void set_EmittedSerializedGameState(Boolean)
+  METHOD Boolean get_logging()
+  METHOD Void set_logging(Boolean)
+  METHOD Canis.CanisRandom get__Random_k__BackingField()
+  METHOD Void set__Random_k__BackingField(Canis.CanisRandom)
+  METHOD Il2CppSystem.Random get__SelectionRandom_k__BackingField()
+  METHOD Void set__SelectionRandom_k__BackingField(Il2CppSystem.Random)
+  METHOD Il2CppSystem.Action<Canis.utils.ids.AccountID, Canis.json.events.DWDEvent> get_messageDispatcher()
+  METHOD Void set_messageDispatcher(Il2CppSystem.Action<Canis.utils.ids.AccountID, Canis.json.events.DWDEvent>)
+  METHOD Canis.utils.ids.GameID get__GameID_k__BackingField()
+  METHOD Void set__GameID_k__BackingField(Canis.utils.ids.GameID)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.AccountID> get__HumanAccountIDs_k__BackingField()
+  METHOD Void set__HumanAccountIDs_k__BackingField(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.AccountID>)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.AccountID> get__AIAccountIDs_k__BackingField()
+  METHOD Void set__AIAccountIDs_k__BackingField(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.AccountID>)
+  METHOD Canis.utils.ids.AccountID get__ActiveAccountID_k__BackingField()
+  METHOD Void set__ActiveAccountID_k__BackingField(Canis.utils.ids.AccountID)
+  METHOD Canis.MatchInitData get__matchInitData_k__BackingField()
+  METHOD Void set__matchInitData_k__BackingField(Canis.MatchInitData)
+  METHOD Canis.entities.Entity get_Playmat()
+  METHOD Void set_Playmat(Canis.entities.Entity)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<String, String> get_GameOptions()
+  METHOD Void set_GameOptions(Il2CppSystem.Collections.Generic.Dictionary<String, String>)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Canis.entities.Entity> get_Entities()
+  METHOD Void set_Entities(Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Canis.entities.Entity>)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Il2CppSystem.Collections.Generic.List<Canis.utils.ids.EntityID>> get_ownedByPendingPlayer()
+  METHOD Void set_ownedByPendingPlayer(Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Il2CppSystem.Collections.Generic.List<Canis.utils.ids.EntityID>>)
+  METHOD Canis.events.EventReactor get__EventReactor_k__BackingField()
+  METHOD Void set__EventReactor_k__BackingField(Canis.events.EventReactor)
+  METHOD Canis.entities.TransientData get_transientData()
+  METHOD Void set_transientData(Canis.entities.TransientData)
+  METHOD Canis.CleanupGame<DBGGameResults> get_CleanupGame()
+  METHOD Void set_CleanupGame(Canis.CleanupGame<DBGGameResults>)
+  METHOD Canis.actions.Action get_ScenarioAction()
+  METHOD Void set_ScenarioAction(Canis.actions.Action)
+  METHOD Canis.gameLogs.GameLogManager get__GameLogManager_k__BackingField()
+  METHOD Void set__GameLogManager_k__BackingField(Canis.gameLogs.GameLogManager)
+  METHOD Boolean get_startedGameCleanup()
+  METHOD Void set_startedGameCleanup(Boolean)
+  METHOD Boolean get_GameCleanedUp()
+  METHOD Void set_GameCleanedUp(Boolean)
+  METHOD Int64 get_startTime()
+  METHOD Void set_startTime(Int64)
+  METHOD Boolean get__UseTurnTimers_k__BackingField()
+  METHOD Void set__UseTurnTimers_k__BackingField(Boolean)
+  METHOD Boolean get_forceGameOver()
+  METHOD Void set_forceGameOver(Boolean)
+  METHOD Boolean get_reconnectingPlayer()
+  METHOD Void set_reconnectingPlayer(Boolean)
+  METHOD Il2CppSystem.Collections.Generic.Queue<Canis.json.events.DWDEvent> get_reconnectMessageQueue()
+  METHOD Void set_reconnectMessageQueue(Il2CppSystem.Collections.Generic.Queue<Canis.json.events.DWDEvent>)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.entities.PlayerEntity> get__players_k__BackingField()
+  METHOD Void set__players_k__BackingField(Il2CppSystem.Collections.Generic.List<Canis.entities.PlayerEntity>)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Canis.entities.PlayerEntity> get__playersMap_k__BackingField()
+  METHOD Void set__playersMap_k__BackingField(Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Canis.entities.PlayerEntity>)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Il2CppSystem.Collections.Generic.List<Canis.entities.PlayerEntity>> get__opponentCache_k__BackingField()
+  METHOD Void set__opponentCache_k__BackingField(Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Il2CppSystem.Collections.Generic.List<Canis.entities.PlayerEntity>>)
+  METHOD Canis.SaveData get_SaveData()
+  METHOD Void set_SaveData(Canis.SaveData)
+  METHOD Il2CppSystem.Action<Canis.SaveData> get_WriteSaveData()
+  METHOD Void set_WriteSaveData(Il2CppSystem.Action<Canis.SaveData>)
+  METHOD Il2CppSystem.Func<Canis.SaveData, Il2CppSystem.Threading.Tasks.Task> get_WriteNewSaveData()
+  METHOD Void set_WriteNewSaveData(Il2CppSystem.Func<Canis.SaveData, Il2CppSystem.Threading.Tasks.Task>)
+  METHOD Il2CppSystem.Func<Canis.messages.SerializedGameState, Canis.utils.ids.AccountID, Il2CppSystem.Threading.Tasks.Task> get_WritePlayerResignedState()
+  METHOD Void set_WritePlayerResignedState(Il2CppSystem.Func<Canis.messages.SerializedGameState, Canis.utils.ids.AccountID, Il2CppSystem.Threading.Tasks.Task>)
+  METHOD Il2CppSystem.Func<Canis.SaveData, Canis.utils.ids.AccountID, Il2CppSystem.Collections.Generic.IEnumerable<Canis.utils.ids.AccountID>, Il2CppSystem.Threading.Tasks.Task> get_WriteSimultaneousSaveData()
+  METHOD Void set_WriteSimultaneousSaveData(Il2CppSystem.Func<Canis.SaveData, Canis.utils.ids.AccountID, Il2CppSystem.Collections.Generic.IEnumerable<Canis.utils.ids.AccountID>, Il2CppSystem.Threading.Tasks.Task>)
+  METHOD Il2CppSystem.Func<String, Canis.utils.ids.AccountID, Il2CppSystem.Threading.Tasks.Task> get_PlayerNotifier()
+  METHOD Void set_PlayerNotifier(Il2CppSystem.Func<String, Canis.utils.ids.AccountID, Il2CppSystem.Threading.Tasks.Task>)
+  METHOD Il2CppSystem.Func<Canis.utils.ids.AccountID, Il2CppSystem.Threading.Tasks.Task> get_RemoveIdlePlayer()
+  METHOD Void set_RemoveIdlePlayer(Il2CppSystem.Func<Canis.utils.ids.AccountID, Il2CppSystem.Threading.Tasks.Task>)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Networking.selection.messages.SelectionMessage> get_LastSelectionMessageV2()
+  METHOD Void set_LastSelectionMessageV2(Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Networking.selection.messages.SelectionMessage>)
+  METHOD Canis.utils.ids.TimerID get_TimerID()
+  METHOD Void set_TimerID(Canis.utils.ids.TimerID)
+  METHOD String get_TimerType()
+  METHOD Void set_TimerType(String)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.AccountID> get_disconnectedPlayers()
+  METHOD Void set_disconnectedPlayers(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.AccountID>)
+  METHOD Canis.actions.IMessageActionFactory get__MessageActionFactory_k__BackingField()
+  METHOD Void set__MessageActionFactory_k__BackingField(Canis.actions.IMessageActionFactory)
+  METHOD Networking.selection.messages.SelectionMessage get_LastSelectionMessage()
+  METHOD Void set_LastSelectionMessage(Networking.selection.messages.SelectionMessage)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Networking.selection.messages.SelectionMessage> get__activeSelectionMessages()
+  METHOD Void set__activeSelectionMessages(Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.AccountID, Networking.selection.messages.SelectionMessage>)
+  METHOD Il2CppSystem.Collections.Generic.Queue<String> get_PreviousAISelectionRequests()
+  METHOD Void set_PreviousAISelectionRequests(Il2CppSystem.Collections.Generic.Queue<String>)
+  METHOD Il2CppSystem.Collections.Generic.Queue<String> get_PreviousAISelectionResponses()
+  METHOD Void set_PreviousAISelectionResponses(Il2CppSystem.Collections.Generic.Queue<String>)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.TimerInfo> get__activeTimers()
+  METHOD Void set__activeTimers(Il2CppSystem.Collections.Generic.List<Canis.TimerInfo>)
+
+================================================================
+TYPE Canis.Match`1
+  BASE Canis.Match
+  PROP Il2CppSystem.Collections.Generic.List<T0> _Players_k__BackingField
+  PROP Il2CppSystem.Collections.Generic.List<T0> Players
+  PROP Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.entities.PlayerEntity> BasicPlayers
+  PROP Il2CppSystem.Collections.Generic.IEnumerable<T0> PlayersEnumerable
+  METHOD [Static] Void .cctor()
+  METHOD Il2CppSystem.Collections.Generic.List<T0> get_Players()
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.entities.PlayerEntity> get_BasicPlayers()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<T0> get_PlayersEnumerable()
+  METHOD Void AddPlayer(Canis.entities.PlayerEntity player)
+  METHOD Void ClearPlayers()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.List<T0> get__Players_k__BackingField()
+  METHOD Void set__Players_k__BackingField(Il2CppSystem.Collections.Generic.List<T0>)
+
+================================================================
+TYPE Canis.MatchExtensions
+  BASE Il2CppSystem.Object
+  METHOD [Static] Void .cctor()
+  METHOD [Static] Canis.entities.Entity CreateUndoStack(Canis.Match match)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.MatchInitData`1
+  BASE Canis.MatchInitData
+  PROP Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.PlayerMatchInitData> players
+  PROP Il2CppSystem.Collections.Generic.List<T0> InternalPlayersList
+  METHOD [Static] Void .cctor()
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.PlayerMatchInitData> get_players()
+  METHOD Il2CppSystem.Collections.Generic.List<T0> get_InternalPlayersList()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Canis.utils.ids.GameID gid)
+  METHOD Void .ctor(Canis.MatchInitData other)
+  METHOD Void AddPlayer(String input, String username, Canis.utils.ids.AccountID accountID)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.MatchInitData
+  BASE Il2CppSystem.Object
+  PROP String schema
+  PROP Canis.utils.ids.GameID gameID
+  PROP Canis.utils.ids.AccountID currentTurnPlayer
+  PROP Il2CppSystem.Collections.Generic.Dictionary<String, String> options
+  PROP Canis.messages.SerializedGameState gameState
+  PROP Int64 createdAt
+  PROP Canis.SaveData saveData
+  PROP String scenarioName
+  PROP String gameType
+  PROP Canis.data.matchinitdata.ClientMatchConfigData clientMatchOptions
+  PROP String difficulty
+  PROP String category
+  PROP String description
+  PROP String flavorText
+  PROP Il2CppSystem.Collections.Generic.List<Int32> SkirmishRuleMods
+  PROP Il2CppSystem.Collections.Generic.List<Int32> SkirmishScoringMethods
+  PROP Il2CppSystem.Collections.Generic.List<String> requireOwnership
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray validAvatars
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray validColors
+  PROP Boolean Ranked
+  PROP Boolean forceGameOver
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.ArchetypeID> GlobalAbilityArchetypes
+  PROP Int32 randomSeed
+  PROP String deviceUniqueIdentifier
+  PROP Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.PlayerMatchInitData> players
+  METHOD [Static] Void .cctor()
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.PlayerMatchInitData> get_players()
+  METHOD Void AddPlayer(String input, String username, Canis.utils.ids.AccountID accountID)
+  METHOD Void .ctor()
+  METHOD Void .ctor(Canis.utils.ids.GameID gid)
+  METHOD Void .ctor(Canis.MatchInitData other)
+  METHOD Void AddOption(String key, String val)
+  METHOD String ValueForOption(String key, String defaultValue)
+  METHOD Canis.MatchInitData Clone()
+  METHOD Canis.PlayerMatchInitData AddEmptyPlayer()
+  METHOD Void AddPlayer(Canis.PlayerMatchInitData p)
+  METHOD Void RemovePlayers(Il2CppSystem.Predicate<Canis.PlayerMatchInitData> predicate)
+  METHOD Void ClearPlayers()
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.AccountID> GetHumanAccountIDs()
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.AccountID> GetAIAccountIDs()
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.AccountID> getAccountIDs(Boolean isHuman)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD String get_schema()
+  METHOD Void set_schema(String)
+  METHOD Canis.utils.ids.GameID get_gameID()
+  METHOD Void set_gameID(Canis.utils.ids.GameID)
+  METHOD Canis.utils.ids.AccountID get_currentTurnPlayer()
+  METHOD Void set_currentTurnPlayer(Canis.utils.ids.AccountID)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<String, String> get_options()
+  METHOD Void set_options(Il2CppSystem.Collections.Generic.Dictionary<String, String>)
+  METHOD Canis.messages.SerializedGameState get_gameState()
+  METHOD Void set_gameState(Canis.messages.SerializedGameState)
+  METHOD Int64 get_createdAt()
+  METHOD Void set_createdAt(Int64)
+  METHOD Canis.SaveData get_saveData()
+  METHOD Void set_saveData(Canis.SaveData)
+  METHOD String get_scenarioName()
+  METHOD Void set_scenarioName(String)
+  METHOD String get_gameType()
+  METHOD Void set_gameType(String)
+  METHOD Canis.data.matchinitdata.ClientMatchConfigData get_clientMatchOptions()
+  METHOD Void set_clientMatchOptions(Canis.data.matchinitdata.ClientMatchConfigData)
+  METHOD String get_difficulty()
+  METHOD Void set_difficulty(String)
+  METHOD String get_category()
+  METHOD Void set_category(String)
+  METHOD String get_description()
+  METHOD Void set_description(String)
+  METHOD String get_flavorText()
+  METHOD Void set_flavorText(String)
+  METHOD Il2CppSystem.Collections.Generic.List<Int32> get_SkirmishRuleMods()
+  METHOD Void set_SkirmishRuleMods(Il2CppSystem.Collections.Generic.List<Int32>)
+  METHOD Il2CppSystem.Collections.Generic.List<Int32> get_SkirmishScoringMethods()
+  METHOD Void set_SkirmishScoringMethods(Il2CppSystem.Collections.Generic.List<Int32>)
+  METHOD Il2CppSystem.Collections.Generic.List<String> get_requireOwnership()
+  METHOD Void set_requireOwnership(Il2CppSystem.Collections.Generic.List<String>)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray get_validAvatars()
+  METHOD Void set_validAvatars(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray get_validColors()
+  METHOD Void set_validColors(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray)
+  METHOD Boolean get_Ranked()
+  METHOD Void set_Ranked(Boolean)
+  METHOD Boolean get_forceGameOver()
+  METHOD Void set_forceGameOver(Boolean)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.ArchetypeID> get_GlobalAbilityArchetypes()
+  METHOD Void set_GlobalAbilityArchetypes(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.ArchetypeID>)
+  METHOD Int32 get_randomSeed()
+  METHOD Void set_randomSeed(Int32)
+  METHOD String get_deviceUniqueIdentifier()
+  METHOD Void set_deviceUniqueIdentifier(String)
+
+================================================================
+TYPE Canis.MatchOnlineUtils
+  BASE Il2CppSystem.Object
+  METHOD [Static] Void .cctor()
+  METHOD [Static] Il2CppSystem.Collections.Generic.List<Canis.messages.AccountIDUsernameMetadata> PlayerNameData(M0 match)
+  METHOD [Static] Il2CppSystem.Collections.Generic.List<Canis.messages.AccountIDUsernameMetadata> PlayerNameData(M0 match)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.matchThread.ExecutionStackException
+  BASE Il2CppSystem.Exception
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor(Il2CppSystem.Exception e)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.matchThread.MatchPauseTypes
+  BASE System.Enum
+  FIELD Int32 value__   [Public, SpecialName, RTSpecialName, HasDefault]
+  FIELD Canis.matchThread.MatchPauseTypes WaitingForHumanInput   [Public, Static, Literal, HasDefault]   = 0
+  FIELD Canis.matchThread.MatchPauseTypes WaitingForAIInput   [Public, Static, Literal, HasDefault]   = 1
+  FIELD Canis.matchThread.MatchPauseTypes MatchOver   [Public, Static, Literal, HasDefault]   = 2
+  FIELD Canis.matchThread.MatchPauseTypes Error   [Public, Static, Literal, HasDefault]   = 3
+  FIELD Canis.matchThread.MatchPauseTypes NonMainStack   [Public, Static, Literal, HasDefault]   = 4
+
+================================================================
+TYPE Canis.match.IHasTransientData
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  METHOD [Static] Void .cctor()
+  METHOD Void AddTransientData(TransientDataKey<M0> key, M0 data)
+  METHOD Boolean TryGetTransientData(TransientDataKey<M0> key, ref M0 data)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.match.ICanSetCleanupGame`2
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  METHOD [Static] Void .cctor()
+  METHOD Void SetCleanupGame(Il2CppSystem.Func<Il2CppSystem.Collections.Generic.List<Canis.utils.ids.AccountID>, T0, Il2CppSystem.Threading.Tasks.Task> cleanup)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.match.IGameResults`1
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppArrayBase<T0> entries
+  METHOD [Static] Void .cctor()
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppArrayBase<T0> get_entries()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.match.IGameResultsEntry
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  PROP String key
+  METHOD [Static] Void .cctor()
+  METHOD String get_key()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.match.IHasPassAndPlay`1
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  METHOD [Static] Void .cctor()
+  METHOD Canis.actions.Action passToPlayerAction(T0 player)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.match.IHasPlayers
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.match.IHasPlayers`1
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  PROP Il2CppSystem.Collections.Generic.IEnumerable<T0> PlayersEnumerable
+  METHOD [Static] Void .cctor()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<T0> get_PlayersEnumerable()
+  METHOD Boolean ShouldNotifyPlayer(Canis.utils.ids.AccountID playerID)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.match.IHasScore
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  PROP Il2CppSystem.Nullable<Int32> Score
+  METHOD [Static] Void .cctor()
+  METHOD Il2CppSystem.Nullable<Int32> get_Score()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.match.IHasSkirmishEntry
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  METHOD [Static] Void .cctor()
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Int32> GetSkirmishRuleMods()
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.skirmishScripts.SkirmishScoreItem> GetSkirmishScore()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.match.IHasTriggeredAbilities
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  METHOD [Static] Void .cctor()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.ITriggeredAbility> GetInstalledTriggers(Canis.events.Event evt)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.match.IMakesMatchHistory
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  METHOD [Static] Void .cctor()
+  METHOD canis.Networking.game.messages.MatchHistoryEntry MakeMatchHistory(String client)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.match.IMakesPlayerMatchHistory
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  PROP Boolean ResignedFromGame
+  METHOD [Static] Void .cctor()
+  METHOD Boolean get_ResignedFromGame()
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<String, Int32> MakeMatchHistoryPlayerStats(DBGGameResults results)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.match.MakesMatchHistoryExtensions
+  BASE Il2CppSystem.Object
+  METHOD [Static] Void .cctor()
+  METHOD [Static] canis.Networking.game.messages.MatchHistoryEntry MakeMatchHistory(DBGGameResults results, String client, String matchType, Il2CppSystem.Func<DBGGameResults, Il2CppSystem.Collections.Generic.Dictionary<String, String>> makeFilters, Il2CppSystem.Collections.Generic.Dictionary<String, String> gameProperties, Boolean createAIPlayerData, Canis.utils.ids.AccountID overrideWinnerAccountID, Il2CppSystem.Func<DBGGameResults, Boolean> shouldIgnoreMatchHistory, Il2CppSystem.Func<DBGGameResults, Boolean> shouldIgnorePlayerStats)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.match.MakesPlayerMatchHistoryExtensions
+  BASE Il2CppSystem.Object
+  METHOD [Static] Void .cctor()
+  METHOD [Static] Boolean ResignedFromGame(DBGGameResultsEntry playerResult)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.match.IMatchCanEnd
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  METHOD [Static] Void .cctor()
+  METHOD Boolean IsGameOver()
+  METHOD Void .ctor(IntPtr pointer)
+
