@@ -108,8 +108,11 @@ MODS = {
     },
     "lasttime": {
         "label": "最后的时代",
-        "note": "每人开局解锁 3 个工人（特工），并自带剑术大师",
-        "agents": 3,
+        # 实测语义（重要）：剑术大师自身会再解锁 1 个工人，实际可用特工数
+        # = StartingAgents + (1 if StartingSwordmaster else 0)。
+        # 所以「开局 3 个工人」必须写成 2 + 剑术大师；写 3 会变成 4 次行动。
+        "note": "开局 3 个工人：起始特工 2 + 自带剑术大师（剑术大师本身再解锁 1 个）",
+        "agents": 2,
         "swordmaster": True,
         "techs": [],
         "replace": [],
@@ -431,6 +434,16 @@ def faction_loadout(mode, faction_key, sets):
     return deck, res, intrigue, removed, swapped
 
 
+def effective_workers(agents, swordmaster):
+    """实际可用特工数。
+
+    游戏里 StartingAgents 是「起始特工数」，剑术大师（StartingSwordmaster）
+    会在其之上再解锁 1 个。因此 3 个工人 = agents 2 + swordmaster True。
+    早期版本写成 agents 3 + swordmaster True，导致实际能行动 4 次。
+    """
+    return agents + (1 if swordmaster else 0)
+
+
 def make_player(idx, human, deck, intrigue, res, techs=None, agents=2, swordmaster=False):
     return {
         "StartingDeck": list(deck),
@@ -634,6 +647,10 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
             assert wp["StartingTechTiles"] == lo["techs"], f"玩家{i}起始科技回读不符"
             assert wp["StartingAgents"] == lo["agents"], f"玩家{i}工人数回读不符"
             assert o2["StartingSwordmaster"] == lo["swordmaster"], f"玩家{i}剑术大师回读不符"
+            # 实际可用特工 = StartingAgents + 剑术大师。这是本 bug 的回归防线：
+            # 「3 个工人」必须是 2 + 剑术大师，而不是 3 + 剑术大师。
+            assert effective_workers(wp["StartingAgents"], o2["StartingSwordmaster"]) == \
+                effective_workers(lo["agents"], lo["swordmaster"]), f"玩家{i}实际工人数不符"
         break
 
     title = m["label"] + (f"（你 = {FACTIONS[faction_key]['label']}）" if m["use_faction"] else "")
@@ -659,7 +676,8 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
         r = lo["resources"]
         water = r["water"] + r.get("bonus_water", 0)
         extra = f" 密卡×{len(lo['intrigue'])}" if lo["intrigue"] else ""
-        workers = f" | 工人 {lo['agents']}" if lo["agents"] != 2 else ""
+        workers = (f" | 工人 {effective_workers(lo['agents'], lo['swordmaster'])}"
+                   if lo["agents"] != 2 or lo["swordmaster"] else "")
         print(f"     {who}{label:5s} 牌组 {len(lo['deck']):2d} 张 | 水 {water} "
               f"钱 {r['solari']} 香 {r['spice']}{workers}{extra}")
         if i == 0:
@@ -680,8 +698,10 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
                 bonus = sum(MODS[mk].get("solari", 0) for mk in mods)
                 print(f"           模组资源：+{bonus} 太阳币")
             if lo.get("agents", 2) != 2 or lo.get("swordmaster"):
-                print(f"           起始工人：{lo['agents']} 个"
-                      + ("（自带剑术大师）" if lo["swordmaster"] else ""))
+                eff = effective_workers(lo["agents"], lo["swordmaster"])
+                print(f"           起始工人：{eff} 个"
+                      f"（StartingAgents {lo['agents']}"
+                      + (" + 剑术大师 1）" if lo["swordmaster"] else "）"))
             for act, a, b in lo.get("mod_log", []):
                 if act == "替换":
                     print(f"           模组替换：{name_of(a)} → {name_of(b)}")
@@ -699,7 +719,8 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
                      "faction_label": FACTIONS[lo["faction"]]["label"] if lo["faction"] else None,
                      "deck": lo["deck"], "resources": lo["resources"],
                      "intrigue": lo["intrigue"], "techs": lo["techs"],
-                     "agents": lo["agents"], "swordmaster": lo["swordmaster"]}
+                     "agents": lo["agents"], "swordmaster": lo["swordmaster"],
+                     "workers": effective_workers(lo["agents"], lo["swordmaster"])}
                     for i, lo in enumerate(loadouts)],
         "bundle": os.path.basename(out),
     }
