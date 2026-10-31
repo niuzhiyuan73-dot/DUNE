@@ -160,29 +160,10 @@ namespace DuneAiProbe
             string typeName = null;
             try { typeName = ti.GetType().Name; } catch { }
 
-            // 带 ValidTargets 的实体类目标：把 ID 列表换成名字
-            try
-            {
-                var pi = ti.GetType().GetProperty("ValidTargets");
-                if (pi != null)
-                {
-                    object raw = pi.GetValue(ti);
-                    var arr = raw as System.Collections.IEnumerable;
-                    if (arr != null)
-                    {
-                        var names = new List<string>();
-                        foreach (object o in arr)
-                        {
-                            if (names.Count >= 10) { names.Add("…"); break; }
-                            string s = null;
-                            try { if (o != null) s = Replace(o.ToString(), match); } catch { }
-                            if (!string.IsNullOrEmpty(s)) names.Add(s);
-                        }
-                        if (names.Count > 0) return "可选 " + string.Join("/", names.ToArray());
-                    }
-                }
-            }
-            catch { }
+            // TargetMap 里的元素声明类型是基类 TargetInformation，GetType() 只会返回基类，
+            // 反射 therefore 找不到 ValidTargets。IL2CPP 的真实类型要靠 TryCast 问原生侧。
+            string byTargets = ValidTargetsOf(ti, match);
+            if (byTargets != null) return byTargets;
 
             // 其余类型：ToString 已经带了 Choices / 提示，用它的结果
             try
@@ -190,7 +171,51 @@ namespace DuneAiProbe
                 string s = ti.ToString();
                 if (string.IsNullOrEmpty(s)) return null;
                 if (typeName != null && s.StartsWith("[" + typeName + "]")) s = s.Substring(typeName.Length + 2).Trim();
+                // 基类没有重写 ToString 时会打出完整类型名，对模型是噪声
+                if (s.StartsWith("Networking.selection.targetinformation.")) return null;
                 return string.IsNullOrEmpty(s) ? null : s;
+            }
+            catch { return null; }
+        }
+
+        /// <summary>
+        /// 两种带 ValidTargets 的目标类型，走 TryCast 拿到真正的派生类型包装器后反射取列表。
+        /// 取不到（类型不符 / 列表为空）返回 null，交给调用方退回 ToString。
+        /// </summary>
+        private static string ValidTargetsOf(object ti, Canis.Match match)
+        {
+            object cast = null;
+            try
+            {
+                var obj = ti as Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase;
+                if (obj == null) return null;
+                try { cast = obj.TryCast<Networking.selection.targetinformation.EntityListTargetInformation>(); }
+                catch { }
+                if (cast == null)
+                {
+                    try { cast = obj.TryCast<Networking.selection.targetinformation.EntityGroupingTargetInformation>(); }
+                    catch { }
+                }
+            }
+            catch { }
+            if (cast == null) return null;
+
+            try
+            {
+                var pi = cast.GetType().GetProperty("ValidTargets");
+                if (pi == null) return null;
+                var arr = pi.GetValue(cast) as System.Collections.IEnumerable;
+                if (arr == null) return null;
+
+                var names = new List<string>();
+                foreach (object o in arr)
+                {
+                    if (names.Count >= 10) { names.Add("…"); break; }
+                    string s = null;
+                    try { if (o != null) s = Replace(o.ToString(), match); } catch { }
+                    if (!string.IsNullOrEmpty(s)) names.Add(s);
+                }
+                return names.Count == 0 ? null : "可选 " + string.Join("/", names.ToArray());
             }
             catch { return null; }
         }

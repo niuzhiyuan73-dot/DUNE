@@ -150,21 +150,43 @@ namespace DuneAiProbe
             return h.ToString("x8");
         }
 
+        private static readonly Regex CounterRe = new Regex(@"Counter \d+", RegexOptions.Compiled);
+        private static readonly Regex SourceRe = new Regex(@"SourceID [^,)>]+", RegexOptions.Compiled);
+        private static readonly Regex ShortIdRe = new Regex(@"\(?[0-9a-f]{8}\)?", RegexOptions.Compiled);
+        private static readonly Regex StampRe = new Regex(@" at \d+", RegexOptions.Compiled);
+        private static readonly Regex WsRe = new Regex(@"\s+", RegexOptions.Compiled);
+
+        /// 去重签名：把 counter / 实体实例短 ID / 时间戳都抹掉。
+        /// 同一份待选列表在一局里会被问好几次（counter 与实例 ID 每次都不同），
+        /// 只按原文哈希去重拦不住，实测 30 条里有 7 条是这种重复。
+        private static string Signature(string pending)
+        {
+            string s = CounterRe.Replace(pending, "Counter #");
+            s = SourceRe.Replace(s, "SourceID X");
+            s = ShortIdRe.Replace(s, "");
+            s = StampRe.Replace(s, "");
+            s = WsRe.Replace(s, " ");
+            return s;
+        }
+
         /// 在游戏线程里调用：pending 必须是已经转成托管字符串的文本。
         public static void Observe(string playerName, int counter, string stateBlock, string pending)
         {
             if (!Enabled || string.IsNullOrEmpty(pending)) return;
 
-            string dedupeKey = (playerName ?? "?") + "|" + StableHash(Humanize(pending));
+            string human = Humanize(pending);
+            // 棋盘状态也算进去：同样的选项、不同的局势，答案可能不同
+            string dedupeKey = (playerName ?? "?") + "|" + StableHash(Signature(human) + "|" + (stateBlock ?? ""));
             lock (_lock)
             {
-                if (!_seen.Add(dedupeKey)) return;   // 同一组选项不重复问（counter 会变，内容不会）
+                if (!_seen.Add(dedupeKey)) return;   // 同一组选项不重复问
                 if (_sent >= _max) return;
                 _sent++;
             }
             int seq = _sent;
 
-            pending = Humanize(pending);
+            pending = human;
+
             if (pending.Length > 9000) pending = pending.Substring(0, 9000) + " …(截断)";
             _log.LogInfo("[COACH] observe #" + seq + " len=" + pending.Length + " player=" + (playerName ?? "?"));
             string user = "AI 玩家：" + (playerName ?? "?") + "（第 " + counter + " 号选择）\n";
