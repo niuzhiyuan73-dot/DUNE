@@ -95,6 +95,45 @@ TECH = {
     "RestrictedOrdnance": "aae7fdc9-dd0a-498a-8491-dddd6c6d583d",  # 弹药制约（伊克斯）
 }
 
+# 引爆（阴谋牌，崛起）：摧毁屏障山脉 + 从兵营部署至多 4 支部队
+DETONATION = "2b43f621-2bef-40fb-ada8-04bb4fdfce1b"
+
+# ---------------------------------------------------------------- 冲突牌名 → GUID
+# 同名异版默认取基础版；要指定版本用「卡名@集名」，例如 "厄拉奇恩之战@崛起"。
+CONFLICT_NAME = {
+    "厄拉奇恩之战":     "a5b5668a-706c-43dd-a6eb-a6b3abfb6907",   # 基础
+    "迦太格之战":       "b409ad68-69c3-442c-b355-d671ca89ddd3",   # 基础
+    "帝国盆地之战":     "b4c07183-38d9-41df-a833-2ddb5580b00b",   # 基础
+    "远大目标":         "c0f3e883-8540-40d6-a62e-101a69ecba0a",   # 基础
+    "金融霸权":         "ad0d6867-133f-4f22-b8cf-7533837eeb9b",   # 伊克斯
+    "香料加工厂之战":   "f17f8472-8f02-47b0-8e1d-0c20af9de20b",   # 崛起
+    "宣传策略":         "fa49748c-0b90-4f5a-821a-7bf96d241250",   # 崛起
+    "香料运输":         "6f437fac-c60b-4783-aee4-304f8e5869ac",   # 崛起
+    "斗篷与匕首":       "9881835c-47a3-4079-b6fa-745fe340193d",   # 基础
+    "突袭公会银行":     "4f2665a5-ba30-4ead-97da-4ff1132d4ee5",   # 基础
+    "阴谋":             "559caca7-9b1b-4ed5-b86d-d9ebf71fe89d",   # 基础
+    "突袭仓库":         "8b63a1c7-7454-4ca8-9c81-739f1829965f",   # 基础
+    "保卫帝国盆地":     "4b236fb5-9347-4311-908f-96412471f3be",   # 基础
+    "围攻厄拉奇恩":     "34c4273b-8957-4503-a110-af8f81ba7841",   # 基础
+    "围攻迦太格":       "3b65a9c6-7df7-4ee2-92c4-b9266e48d805",   # 基础
+    "拨乱反正":         "87f3b691-9d7b-4d71-8788-e2e1f5d796e8",   # 基础
+    "恶意":             "55719bee-ea48-491c-9df1-0a90133b33c1",   # 基础
+    "商会安保":         "b45ba224-212c-48d3-b2b8-43927b4f9d69",   # 商会
+    "贸易纠纷":         "b603735c-013e-427f-8b5e-be8199412b87",   # 商会
+    "贸易垄断":         "abee3d39-8543-424d-b211-4b48f733202d",   # 伊克斯
+    "保护穴地":         "b155ad05-0c87-4ce7-8f6b-0a16db3c0ff8",   # 崛起
+    "占领香料加工厂":   "4cbbf7e5-c57e-474c-817f-6af4b0ecbd0b",   # 崛起
+    "暗中竞赛":         "75d73897-ec23-4c02-afaa-66c8d02d975a",   # 崛起
+    "忠诚考验":         "8570e6e9-3168-4f04-85c5-9e2e4467782a",   # 崛起
+    "遭遇战":           "042e7cea-971d-475e-a129-3e7e6b5385d8",   # 崛起
+    "厄拉奇恩之战@崛起": "db2b7a79-95a7-4f2d-9a3b-7c8c4ec6aa2c",
+    "帝国盆地之战@崛起": "f22d9777-a59b-4655-aa4c-e2e96c90df73",
+    "保卫帝国盆地@崛起": "56bbe4e4-9125-4587-851c-194570de0c1e",
+    "围攻厄拉奇恩@崛起": "31acac91-5725-415e-95c2-b99965871445",
+    "商会安保@崛起":     "4eba8ebd-f199-4b13-acd2-3807bfd5d13f",
+    "贸易纠纷@崛起":     "96cae890-d20b-4322-b315-15ebc2496e9c",
+}
+
 # ---------------------------------------------------------------- 叠加模组
 # 每个模组只描述「在任意模式之上追加什么」，因此可以和所有模式 / 阵营复合。
 MODS = {
@@ -209,6 +248,13 @@ CONFLICT_T3 = [
 ]
 CONFLICT_PRO = CONFLICT_T2 + CONFLICT_T3      # 5 张二级在前，5 张三级在后
 
+# Extra 专用：只有三张三级冲突（基础版），整局循环使用
+EXTRA_CONFLICT_3 = [
+    "a5b5668a-706c-43dd-a6eb-a6b3abfb6907",   # 厄拉奇恩之战（基础）
+    "b4c07183-38d9-41df-a833-2ddb5580b00b",   # 帝国盆地之战（基础）
+    "b409ad68-69c3-442c-b355-d671ca89ddd3",   # 迦太格之战（基础）
+]
+
 # ---------------------------------------------------------------- 两个模式
 MODES = {
     "marathon": {
@@ -247,11 +293,12 @@ MODES = {
         "water": 1, "spice": 0, "solari": 0,
         "extra_deck": [],
         "use_faction": True,
-        "conflict_deck": CONFLICT_T3_POOL,   # 全部 10 张三级冲突
+        # 只有三张三级冲突（基础版），打完一轮后重洗继续：厄拉奇恩 / 帝国盆地 / 迦太格
+        "conflict_deck": EXTRA_CONFLICT_3,
         "conflict_order": "natural",
-        "conflict_shuffle_repeat": False,
+        "conflict_shuffle_repeat": True,     # 3 张撑不满 14 分，必须循环
         "conflict_repeat_last": 0,
-        "note": "14 分胜利，10 张冲突全部为三级；Pro 加牌之上再各加两张",
+        "note": "14 分胜利，冲突只有 3 张三级（厄拉奇恩 / 帝国盆地 / 迦太格），循环使用",
     },
 }
 
@@ -460,7 +507,7 @@ def effective_workers(agents, swordmaster):
 
 
 def make_player(idx, human, deck, intrigue, res, techs=None, agents=2, swordmaster=False,
-                seat=None):
+                seat=None, garrison=0, bonus_garrison=0, maker_hooks=False):
     # seat 是「座位号」（0 = 先手）。它同时决定 StartingOrder 与 PlayerColor，
     # 早期版本固定写成 idx，导致人类玩家（idx 0）永远是先手。
     seat = idx if seat is None else seat
@@ -481,15 +528,16 @@ def make_player(idx, human, deck, intrigue, res, techs=None, agents=2, swordmast
         "PlayerMatchSoloOptions": {
             "StartingDiscard": [], "StartingDeckOrder": [],
             "Reshuffle1DeckOrder": [], "Reshuffle2DeckOrder": [], "Reshuffle3DeckOrder": [],
-            "BonusStartingGarrison": 0, "ControlLocations": [],
+            "BonusStartingGarrison": bonus_garrison, "ControlLocations": [],
             "BonusStartingVP": 0,
             "StartingSwordmaster": swordmaster,
             "StartingHighCouncil": False,
+            "StartingMakerHooks": maker_hooks,
             "StartingSolari": res["solari"],
             "StartingSpice": res["spice"],
             "StartingWater": res["water"],
             "BonusStartingWater": res.get("bonus_water", 0),
-            "StartingGarrison": 0, "StartingSpecimens": 0,
+            "StartingGarrison": garrison, "StartingSpecimens": 0,
         },
         "name": "",
         "isHuman": human,
@@ -515,8 +563,15 @@ def load_base():
 
 def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
           conflict_order=None, conflict_repeat=None, mods=None, first_order=None,
-          extra_techs=None):
-    m = MODES[mode]
+          extra_techs=None, conflict_same=None, conflict_count=10,
+          garrison=None, bonus_garrison=0, maker_hooks=False, blow_wall=False):
+    m = dict(MODES[mode])
+    if conflict_same:
+        # 实验用：整副冲突牌堆都是同一张（允许重复 ArchetypeID）
+        m["conflict_deck"] = [conflict_same] * max(1, int(conflict_count))
+        m["conflict_order"] = "natural"
+        m["conflict_shuffle_repeat"] = False
+        m["conflict_repeat_last"] = 0
     mods = list(mods or [])
     for mk in mods:
         if mk not in MODS:
@@ -568,12 +623,18 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
                 print(f"     [模组] {MODS[mk]['label']} 需要 {need}，已自动补上")
     if "BaseSet" not in sets:
         sets.insert(0, "BaseSet")
+    if maker_hooks and "Uprising" not in sets:
+        sets.append("Uprising")          # 造物主钩杖属崛起
+    if blow_wall and "Uprising" not in sets:
+        sets.append("Uprising")          # 引爆（摧毁屏障山脉）属崛起
 
     doc = load_base()
     players = []
     loadouts = []
     for i, fk in enumerate(assign):
         deck, res, intrigue, removed, swapped = faction_loadout(mode, fk, sets)
+        if blow_wall:
+            intrigue.append(DETONATION)     # 每人开局一张「引爆」，可自行炸掉屏障山脉
         techs = []
         mod_log = []
         agents = 2
@@ -600,11 +661,15 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
             # 实验用：直接追加科技，允许重复（用于验证「同一玩家两份相同科技」是否被引擎接受）
             techs.extend(extra_techs)
         players.append(make_player(i, i == 0, deck, intrigue, res, techs,
-                                   agents=agents, swordmaster=swordmaster, seat=seats[i]))
+                                   agents=agents, swordmaster=swordmaster, seat=seats[i],
+                                   garrison=(garrison or 0), bonus_garrison=bonus_garrison,
+                                   maker_hooks=maker_hooks))
         loadouts.append({"faction": fk, "deck": deck, "resources": res,
                          "intrigue": intrigue, "removed": removed, "swapped": swapped,
                          "techs": techs, "mod_log": mod_log,
                          "agents": agents, "swordmaster": swordmaster,
+                         "garrison": garrison or 0, "bonus_garrison": bonus_garrison,
+                         "maker_hooks": maker_hooks,
                          "seat": seats[i]})
 
     doc["sets"] = sets
@@ -656,6 +721,14 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
             stem += "_" + MODS[mk]["suffix"]
     if extra_techs:
         stem += "_techx"          # 实验包单独命名，避免覆盖正常预设
+    if conflict_same:
+        stem += "_same"
+    if maker_hooks:
+        stem += "_hook"
+    if garrison:
+        stem += f"_g{garrison}"
+    if blow_wall:
+        stem += "_wall"
     out = os.path.join(OUT_DIR, f"{stem}_{BUNDLE}")
     with open(out, "wb") as f:
         f.write(env.file.save(packer="lz4"))
@@ -753,6 +826,11 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
                 print(f"           起始工人：{eff} 个"
                       f"（StartingAgents {lo['agents']}"
                       + (" + 剑术大师 1）" if lo["swordmaster"] else "）"))
+            if lo.get("maker_hooks"):
+                print("           开局持有：造物主钩杖")
+            if lo.get("garrison") or lo.get("bonus_garrison"):
+                print(f"           兵营：StartingGarrison={lo.get('garrison', 0)}"
+                      f"，Bonus={lo.get('bonus_garrison', 0)}")
             for act, a, b in lo.get("mod_log", []):
                 if act == "替换":
                     print(f"           模组替换：{name_of(a)} → {name_of(b)}")
@@ -774,6 +852,8 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
                      "intrigue": lo["intrigue"], "techs": lo["techs"],
                      "agents": lo["agents"], "swordmaster": lo["swordmaster"],
                      "workers": effective_workers(lo["agents"], lo["swordmaster"]),
+                     "garrison": lo.get("garrison", 0),
+                     "maker_hooks": lo.get("maker_hooks", False),
                      "seat": lo["seat"]}
                     for i, lo in enumerate(loadouts)],
         "bundle": os.path.basename(out),
@@ -829,6 +909,28 @@ if __name__ == "__main__":
         print(f"未知冲突顺序：{conflict_order}（可选：fixed / shuffle / natural）")
         raise SystemExit(1)
     first_arg = take("--first")           # random | human | 1-4（1=你）
+    same_arg = take("--conflict-same")    # 冲突牌名或 GUID：整副牌堆都用这一张
+    cnt_arg = take("--conflict-count")    # 与 --conflict-same 搭配，默认 10
+    conflict_same = None
+    if same_arg:
+        if same_arg in CONFLICT_NAME:
+            conflict_same = CONFLICT_NAME[same_arg]
+        elif len(same_arg) == 36 and same_arg.count("-") == 4:
+            conflict_same = same_arg
+        else:
+            print(f"未知冲突牌：{same_arg}（可选：{', '.join(CONFLICT_NAME)}，或 36 位 GUID）")
+            raise SystemExit(1)
+    conflict_count = int(cnt_arg) if (cnt_arg and cnt_arg.isdigit()) else 10
+    g_arg = take("--garrison")            # 兵营起始部队（绝对值，0 = 用默认）
+    bg_arg = take("--bonus-garrison")     # 兵营额外部队（叠加）
+    garrison = int(g_arg) if (g_arg and g_arg.isdigit()) else None
+    bonus_garrison = int(bg_arg) if (bg_arg and bg_arg.isdigit()) else 0
+    maker_hooks = "--maker-hooks" in args
+    if maker_hooks:
+        args.remove("--maker-hooks")
+    blow_wall = "--blow-wall" in args
+    if blow_wall:
+        args.remove("--blow-wall")
     extra_arg = take("--extra-tech")      # 科技名或 GUID，逗号分隔，允许重复（实验用）
     extra_techs = []
     if extra_arg:
@@ -885,7 +987,10 @@ if __name__ == "__main__":
         for mode, key in todo:
             build(mode, faction_key=key, sets_list=sets_arg, install=install,
                   conflict_order=conflict_order, conflict_repeat=repeat_val, mods=mods,
-                  first_order=first_arg, extra_techs=extra_techs or None)
+                  first_order=first_arg, extra_techs=extra_techs or None,
+                  conflict_same=conflict_same, conflict_count=conflict_count,
+                  garrison=garrison, bonus_garrison=bonus_garrison,
+                  maker_hooks=maker_hooks, blow_wall=blow_wall)
     finally:
         if log_path:
             sys.stdout.flush()

@@ -20,10 +20,10 @@ $Presets = @(
     @{ Key = "pro-bene";         File = "preset_faction_pro_bene_$Name";      Label = "姐妹会     12 分 + 为了全人类，冲突 5 张二级 + 5 张三级" },
     @{ Key = "pro-guild";        File = "preset_faction_pro_guild_$Name";     Label = "宇航工会   12 分 + 公会协约/公会使者，冲突 5 张二级 + 5 张三级" },
     @{ Key = "pro-emperor";      File = "preset_faction_pro_emperor_$Name";   Label = "皇帝       12 分 + 全面进攻，冲突 5 张二级 + 5 张三级" },
-    @{ Key = "extra-fremen";     File = "preset_faction_extra_fremen_$Name";  Label = "弗雷曼     14 分 + 沙虫骑士 / 为勇士唱赞歌，10 张三级冲突" },
-    @{ Key = "extra-bene";       File = "preset_faction_extra_bene_$Name";    Label = "姐妹会     14 分 + 魁萨茨·哈德拉克，10 张三级冲突" },
-    @{ Key = "extra-guild";      File = "preset_faction_extra_guild_$Name";   Label = "宇航工会   14 分 + 公会领航员，10 张三级冲突" },
-    @{ Key = "extra-emperor";    File = "preset_faction_extra_emperor_$Name"; Label = "皇帝       14 分 + 奢靡 / 萨多卡协同作战，10 张三级冲突" }
+    @{ Key = "extra-fremen";     File = "preset_faction_extra_fremen_$Name";  Label = "弗雷曼     14 分 + 沙虫骑士 / 为勇士唱赞歌，3 张三级循环" },
+    @{ Key = "extra-bene";       File = "preset_faction_extra_bene_$Name";    Label = "姐妹会     14 分 + 魁萨茨·哈德拉克，3 张三级循环" },
+    @{ Key = "extra-guild";      File = "preset_faction_extra_guild_$Name";   Label = "宇航工会   14 分 + 公会领航员，3 张三级循环" },
+    @{ Key = "extra-emperor";    File = "preset_faction_extra_emperor_$Name"; Label = "皇帝       14 分 + 奢靡 / 萨多卡协同作战，3 张三级循环" }
 )
 
 $script:Holtz = $false
@@ -60,7 +60,7 @@ function Show-Menu {
     Write-Host "    8) $($Presets[7].Label)"
     Write-Host "    9) $($Presets[8].Label)"
     Write-Host ""
-    Write-Host "  分阵营 Extra（14 分，10 张冲突全为三级）"
+    Write-Host "  分阵营 Extra（14 分，厄拉奇恩 / 帝国盆地 / 迦太格 三张循环）"
     Write-Host "   10) $($Presets[9].Label)"
     Write-Host "   11) $($Presets[10].Label)"
     Write-Host "   12) $($Presets[11].Label)"
