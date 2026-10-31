@@ -37,3 +37,6 @@ dump/llm/last_pending.txt
 # 离线分析工具的编译产物
 tools/*/bin/
 tools/*/obj/
+
+# 抓取中间产物
+dump/tmp/

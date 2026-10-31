@@ -168,12 +168,33 @@ def build():
         if unmatched:
             print("补充表里无法对应到中文名的条目:", ", ".join(unmatched))
 
+    # 第二张补充表：直接按「中文名」索引，用于冲突牌奖励、空间效果、科技、合约等
+    # 非卡牌实体（它们没有英文标题可桥接）。格式：中文名\t文本\t来源
+    kb_extra = os.path.join(ROOT, "mods", "ai", "kb_extra.tsv")
+    kb_added = 0
+    if os.path.exists(kb_extra):
+        for line in open(kb_extra, encoding="utf-8-sig"):
+            line = line.rstrip("\n")
+            if not line.strip() or line.lstrip().startswith("#"):
+                continue
+            parts = line.split("\t")
+            if len(parts) < 2 or not parts[0].strip() or not parts[1].strip():
+                continue
+            key = "name:" + parts[0].strip()
+            if key in pairs:
+                continue
+            text = parts[1].strip()
+            if len(text) > EFFECT_MAX:
+                text = text[:EFFECT_MAX] + "…"
+            pairs[key] = text
+            kb_added += 1
+
     with open(OUT, "w", encoding="utf-8", newline="\n") as f:
         for k in sorted(pairs):
             v = pairs[k].replace("\\", "\\\\").replace("\t", " ").replace("\n", " ")
             f.write("%s\t%s\n" % (k, v))
 
-    print("写出 %d 条效果摘要（人工补充 %d 条）-> %s" % (len(pairs), added, OUT))
+    print("写出 %d 条（卡表 %d / kb %d）-> %s" % (len(pairs), added, kb_added, OUT))
 
 
 if __name__ == "__main__":

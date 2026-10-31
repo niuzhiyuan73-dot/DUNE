@@ -143,6 +143,12 @@ namespace DuneAiProbe
                     {
                         string eff = EffectFor(kid, match);
                         if (!string.IsNullOrEmpty(eff)) { key = key + "〔" + eff + "〕"; withEffect++; }
+                        else
+                        {
+                            // 关键：沉默会被模型误读成"这牌没效果"，标注出来它就知道是数据缺失
+                            key = key + "〔效果待查〕";
+                            _gapCount[key.Split('(')[0].Trim()] = _gapCount.TryGetValue(key.Split('(')[0].Trim(), out int g) ? g + 1 : 1;
+                        }
                     }
                     sb.Append("- ").Append(key);
 
@@ -165,8 +171,9 @@ namespace DuneAiProbe
 
                 if (sb.Length == 0) return null;
                 // 一行诊断：withTargets == 0 就说明 ValidTargets 还是没取到
+                DumpGaps();
                 log.LogInfo("[TARGETS] detail rows=" + rows + " withTargets=" + withTargets
-                            + " withEffect=" + withEffect);
+                            + " withEffect=" + withEffect + " gaps=" + _gapCount.Count);
                 return "【目标明细】\n" + sb;
             }
             catch (Exception e)
@@ -270,6 +277,28 @@ namespace DuneAiProbe
         }
 
         private static bool _elemLogged;
+        private static readonly Dictionary<string, int> _gapCount = new Dictionary<string, int>(StringComparer.Ordinal);
+
+        /// 把「查不到文本」的实体按出现次数写到 dump/ai/gaps.txt：
+        /// 洞从"感觉有"变成可枚举清单，补一条少一条。
+        private static void DumpGaps()
+        {
+            try
+            {
+                string dir = System.IO.Path.Combine(DuneAiProbe.Plugin.RootDir, "dump", "ai");
+                System.IO.Directory.CreateDirectory(dir);
+                var sb = new System.Text.StringBuilder();
+                sb.Append("# 缺少效果文本的实体（按出现次数降序）\n# 行数: ").Append(_gapCount.Count).Append('\n');
+                var list = new List<KeyValuePair<string, int>>(_gapCount);
+                list.Sort((a, b) => b.Value.CompareTo(a.Value));
+                foreach (var kv in list) sb.Append(kv.Value).Append('\t').Append(kv.Key).Append('\n');
+                System.IO.File.WriteAllText(System.IO.Path.Combine(dir, "gaps.txt"), sb.ToString(),
+                    new System.Text.UTF8Encoding(false));
+            }
+            catch { }
+        }
+
+
 
         /// <summary>
         /// ValidTargets 的元素到底是什么类型，只有运行时才知道（可能是 EntityID、Entity、
@@ -383,13 +412,67 @@ namespace DuneAiProbe
                 if (human == null && en != null) human = Coach.NameOf("button." + en);
                 if (human == null) human = en;
 
-                _effKey[id] = abilityKey ?? archGuid;
+                _effKey[id] = BestEffectKey(abilityKey ?? archGuid, ent, 3);
                 if (string.IsNullOrEmpty(human)) { _miss++; return shortId; }
 
                 _hit++;
                 return human + "(" + shortId + ")";
             }
             catch { _miss++; return shortId; }
+        }
+
+        /// <summary>
+        /// 能力实体往往没有独立文案（FamilyAtomicsAbility、DeployUnitsAbility…），
+        /// 但它们挂在某张卡或某个领袖下面。这里向上找 1-3 层父实体，
+        /// 谁有可用的效果文本就用谁的——纯游戏内数据，不依赖外部表。
+        /// </summary>
+        private static string BestEffectKey(string key, Entity ent, int maxUp)
+        {
+            if (!string.IsNullOrEmpty(key) && HasEffect(key)) return key;
+            if (ent == null) return key;
+
+            Entity cur = ent;
+            for (int i = 0; i < maxUp && cur != null; i++)
+            {
+                Entity up = null;
+                try { up = cur.Parent; } catch { }
+                if (up == null) break;
+                cur = up;
+
+                string guid = null;
+                try
+                {
+                    var a = cur.GetArchetype();
+                    if (a != null && a.ArchetypeID != null) guid = a.ArchetypeID.ToString();
+                }
+                catch { }
+
+                if (!string.IsNullOrEmpty(guid) && HasEffect(guid)) return guid;
+
+                string nm = null;
+                try { nm = cur.EntityName; } catch { }
+                if (!string.IsNullOrEmpty(nm) && HasEffect("worm.canis.abilities." + nm))
+                    return "worm.canis.abilities." + nm;
+            }
+            return key;
+        }
+
+        /// 该键查到东西才算数（GUID 还要试中文名兜底）
+        private static bool HasEffect(string key)
+        {
+            if (string.IsNullOrEmpty(key)) return false;
+            if (!string.IsNullOrEmpty(Coach.EffectOf(key))) return true;
+            if (IsGuidish(key))
+            {
+                string nm = Coach.NameOf(key);
+                if (!string.IsNullOrEmpty(nm) && !string.IsNullOrEmpty(Coach.EffectOf(nm))) return true;
+            }
+            else
+            {
+                string t = Coach.NameOf(key);
+                if (!string.IsNullOrEmpty(t)) return true;
+            }
+            return false;
         }
 
         /// <summary>
