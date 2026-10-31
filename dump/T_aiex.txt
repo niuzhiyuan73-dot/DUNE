@@ -1,0 +1,9 @@
+================================================================
+TYPE AIInfiniteLoopException
+  BASE Il2CppSystem.Exception
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(String message)
+  METHOD Void .ctor(String message, Il2CppSystem.Exception inner)
+  METHOD Void .ctor(IntPtr pointer)
+

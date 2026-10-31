@@ -101,8 +101,9 @@ internal static class Program
             {
                 var f = md.GetFieldDefinition(fh);
                 var fn = md.GetString(f.Name);
-                // interop 生成的 Native*MethodInfoPtr/NativeFieldInfoPtr 噪音，跳过
-                if (fn.StartsWith("NativeMethodInfoPtr_") || fn.StartsWith("NativeFieldInfoPtr_")) continue;
+                // interop 生成的 Native*MethodInfoPtr/NativeFieldInfoPtr 噪音，默认跳过；设 TD_ALL_FIELDS=1 时保留
+                if (Environment.GetEnvironmentVariable("TD_ALL_FIELDS") != "1"
+                    && (fn.StartsWith("NativeMethodInfoPtr_") || fn.StartsWith("NativeFieldInfoPtr_"))) continue;
                 string t;
                 try { t = f.DecodeSignature(prov, null); }
                 catch { t = "?"; }

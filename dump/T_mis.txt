@@ -1,0 +1,12 @@
+================================================================
+TYPE MethodInfoStoreGeneric_BestRankTimeout_Public_Static_TSource_IEnumerable_1_TSource_Func_2_TSource_TComparable_Int64_0`2
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD [Static] Void .cctor()
+
+================================================================
+TYPE MethodInfoStoreGeneric_BestRankTimeout_Public_Static_Nullable_1_TSource_IEnumerable_1_TSource_Func_2_Nullable_1_TSource_TComparable_Int64_0`2
+  BASE System.Object
+  FIELD IntPtr Pointer   [Assembly, Static]
+  METHOD [Static] Void .cctor()
+

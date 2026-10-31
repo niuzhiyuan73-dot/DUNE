@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TypeDump")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5ad1af4817d7243b7e1c846513e16ad71a7f7f9e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+976caa5e6ad2b8b8a0f88113727f1b367ccdaaf4")]
 [assembly: System.Reflection.AssemblyProductAttribute("TypeDump")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TypeDump")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
