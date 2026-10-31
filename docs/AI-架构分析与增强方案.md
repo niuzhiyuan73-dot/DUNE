@@ -13,7 +13,8 @@
 
 2. **权重表是 437 个具名参数（432 个 double + 5 个 int）**，打包在 `worm.canis.ai.AIConstantsRef` 里，按难度档分成三套：Easy / Medium / Hard。
 
-3. **当前 mod 里四个玩家全部是 `aiLevel = 1`（Medium）**——`mods/tools/build_presets.py` 早先把 AI 难度写死成 1。官方剧本里 `aiLevel = 2`（Hard）被大量使用（约一半战役），所以切到 Hard 是**厂商自己验证过的配置，零风险**。
+3. **当前实际跑的是 Hard**（首局实测修正，见 3.4）。剧本里 `aiLevel` 写的 1 被大厅难度设置覆盖，
+   注册表里账号级 `AIDifficulty = 2`。所以"切难度档"这条零成本路径不存在——AI 已经在最高档。
 
 4. **真正让 AI "显得笨"的不是难度，而是规则改动与权重的失配**：权重表是按「10 分 / 一级到三级混合冲突 / 3 工人」调的，而现在的 mod 是「12 分 / 全二三级冲突 / 4 工人 / 每人双霍兹曼引擎 / 起始高等议会」。这些都在权重表的假设之外，且方向可预测（详见第五节）。
 
@@ -92,10 +93,27 @@ AIDifficultyLevels  Easy = 0
 "aiLevel": 0 if human else 1,
 ```
 
-所有预设、所有 AI 座位都是 Medium。**这是"AI 不够聪明"最直接、最便宜的一处**。
+所有预设、所有 AI 座位都写成 1。
 
 已改为 `--ai-level 0|1|2`（默认 1，保持现有行为；非 1 时产物加 `_aiN` 后缀避免覆盖）。
 已空跑校验：`--ai-level 2` 生成后回读 bundle，`StandardSolo` 的 `aiLevel` 为 `0,2,2,2`。
+
+### 3.4 实测修正：剧本里的 `aiLevel` 会被大厅设置覆盖
+
+**2026-10-31 首局实测**（分阵营 Ultra，剧本 `aiLevel = 1`）：
+
+- `profile/DireWolf/Dune Imperium/Player.log` 里三名 AI 全部注册为 **`Player AI（困难）`**；
+- 注册表 `HKCU\Software\Dire Wolf Digital\Dune: Imperium` 中
+  `3ec2f6ca-…AIDifficulty = 2`（账号级），`00000000-…AIDifficulty = 1`（全局默认）；
+- 历史存档对照（`savedgames/_GameMetaData`）：Campaign203（`aiLevel=1`）当年显示「AI（中等）」，
+  教程局显示「AI（简单）」。
+
+即：**难度档取的是大厅里的难度设置，不是剧本里的 `aiLevel`**。中文名与档位一一对应
+（简单/中等/困难 = 0/1/2），所以这局 AI 实际跑的是 **Hard**。
+
+**结论**：`--ai-level` 对单人标准局无效，Tier 0（切难度档）没有收益——AI 本来就在 Hard。
+真正的杠杆只剩权重（Tier 1）与动态调制（Tier 2）。要在运行时确实改变权重，
+用探针的 `force_level.txt`（把目标档权重整体拷到实际使用的对象上），而不是改剧本。
 
 **注意**：`mods/out/` 里已有的 170 个剧本包是旧脚本生成的，`aiLevel` 全部固化在 bundle 里。
 要让既有预设生效，要么用 `--ai-level 2` 整体重生成，要么用探针的 `force_level.txt` 在运行时直接调档（后者不需要动任何 bundle，见第七节）。
@@ -138,9 +156,10 @@ AIDifficultyLevels  Easy = 0
 
 ## 六、增强路线（按性价比排序）
 
-### Tier 0 · 切难度档（工具已就绪，零风险）
+### Tier 0 · 切难度档（已作废）
 
-`--ai-level 2`。厂商自带的 Hard 表，无副作用。预期收益：中低（Hard 与 Medium 的差异可能主要体现在扰动幅度而非权重）。
+原本打算用 `--ai-level 2`。首局实测证明剧本字段被大厅设置覆盖，而当前已经是 Hard，
+所以这一层没有剩余空间。留着 `--ai-level` 只是为了让剧本数据自洽。
 
 ### Tier 1 · 按当前规则重标定权重（推荐，低成本）
 
@@ -173,15 +192,23 @@ Harmony 补丁挂在 `AIConstantsRef` 的 getter 上，让权重随局面变化�
 | `mods/ai/ai_override.example.json` | 权重覆盖模板 |
 | `dump/T_worm_ai.txt` | `AIConstantsRef` 全部 437 个属性的清单 |
 
-探针在 `SetupPhase.SetupPlayer` 触发一次（该钩子此前已实证可用），做四件事：
+探针 v2 的触发点改了三处，因为 v1 在 `SetupPlayer` 采集时三档 ref 全是 `null`——
+AI 常量是**惰性初始化**的：
+
+1. `StandardAIProfile..ctor`（AI 档案创建）
+2. `AIProfileAbs.MakeChoice`（AI 第一次做决策）
+3. `AIProfileAbs.AILog`（AI 自述日志，几乎每步都走）
+
+哪个先拿到非空 ref 就在哪里落盘，只做一次。拿到后做四件事：
 
 1. 打印 `AIConstants.FilePattern`、`persistentDataPath` / `dataPath` / `streamingAssetsPath` 下是否存在 `AIConstants*.json`；
-2. 把 Easy / Medium / Hard 三套权重导出到 `dump/ai_constants_runtime.json`；
-3. 若存在 `mods/ai/ai_override.json`，按难度档写入并逐条打印 `旧值 -> 新值`；
-4. 若存在 `mods/ai/force_level.txt`（内容为 `0`/`1`/`2` 单行），调用 `AIConstants.SetInstance(level, ref)` 强制该难度档——**这是不重生成剧本包就能整体调档的开关**。
-   默认不建这个文件，探针不会改变任何难度。
+2. 打印本局 AI 的 `PlayerEntity.AILevel`（实测应为 2）与前三档 ref 指针；
+3. 把已建表的难度档权重导出到 `dump/ai_constants_runtime.json`；
+4. 若存在 `mods/ai/ai_override.json` 或 `mods/ai/force_level.txt`，分别做逐条权重覆盖 / 整表拷贝。
+   两个文件都不建时，探针只读不写，不改变任何难度。
 
-另外挂了一个可选钩子 `AIConstants.SetInstance(aiLevel, ref)`，用来确认本局实际生效的难度档；绑定失败不影响主流程。
+另外还挂了一个 `AIConstants.SetInstance(aiLevel, ref)` 钩子。实测这一局**从未被调用**，
+说明常量不是通过它注入的——它的用途仅剩"手动改写运行时表"，不能作为观察点。
 
 ---
 
@@ -192,8 +219,9 @@ Harmony 补丁挂在 `AIConstantsRef` 的 getter 上，让权重随局面变化�
 1. 双击 `启动mod版.bat`，进单人 → 标准剧本，随便打几回合后退出。
 2. 取 `game/BepInEx/LogOutput.log` 中 `[AIPROBE]` 开头的行，以及 `dump/ai_constants_runtime.json`。
 3. 关注三件事：
-   - `SetInstance(aiLevel=?)` 打印的是 1 还是 2 → 确认剧本 `aiLevel` 是否真的生效（若被 UI 选项覆盖，Tier 0 就要改走 UI 或插件）。
-   - 三档权重是否真的不同 → 决定 Tier 0 的实际收益。
+   - `[AIPROBE] first AI decision … AILevel=?` 打印的数字 → 与"困难"标签是否一致。
+   - 三档权重是否都导出、彼此差多少 → 决定权重调优的起点。
+   - `[AIPROBE][ailog]` 里的 AI 自述文本 → 直接看它为什么这么选。
    - `loadedConstants count` → 游戏实际创建了几套表。
 
 A/B 建议：同一套预设、同一先手、同一冲突顺序（`--conflict fixed`），各打 3 局，比较 AI 的平均终局分数与冲突胜率。单局噪声很大，3 局只是下限。

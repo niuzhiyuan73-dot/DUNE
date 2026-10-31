@@ -1,0 +1,120 @@
+================================================================
+TYPE Canis.entities.PlayerEntity
+  BASE Canis.entities.Entity
+  PROP Canis.utils.ids.AccountID AccountID
+  PROP Canis.entities.ai.AIProfileAbs _AIProfile_k__BackingField
+  PROP Int32 consecutiveSelections
+  PROP Int32 _ConsecutiveAITimeouts_k__BackingField
+  PROP Il2CppSystem.Collections.Generic.List<Canis.selectionfilters.SelectionFilter> playerSelectionFilters
+  PROP Canis.PlayerMatchInitData PlayerInitData
+  PROP Boolean _explainYourself
+  PROP Int32 _explainTimeout
+  PROP Il2CppSystem.Collections.Generic.Dictionary<String, Int32> abilityUsage
+  PROP Il2CppSystem.Collections.Generic.Dictionary<String, Int32> additionalReports
+  PROP Networking.selection.messages.SelectionMessage _AISelection_k__BackingField
+  PROP Canis.entities.ai.AIProfileAbs AIProfile
+  PROP Int32 ConsecutiveAITimeouts
+  PROP Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.selectionfilters.SelectionFilter> PlayerSelectionFilters
+  PROP Il2CppSystem.Collections.Generic.List<Canis.selectionfilters.SelectionFilter> SelectionFilters
+  PROP String PlayerName
+  PROP Boolean IsAI
+  PROP Boolean StartsAsAI
+  PROP Boolean IsReplacedByAI
+  PROP Boolean StartedAsHuman
+  PROP Boolean ShouldExplainItself
+  PROP Int32 ExplainTimeoutSeconds
+  PROP Int32 AILevel
+  PROP Canis.data.ClientVersionInfo ClientVersion
+  PROP Canis.PlayerInfoSaveData InfoSaveData
+  PROP Int32 ConsecutiveTimeoutThreshold
+  PROP Il2CppSystem.Collections.Generic.Dictionary<String, Int32> AbilityUsage
+  PROP Il2CppSystem.Collections.Generic.Dictionary<String, Int32> AdditionalReports
+  PROP Networking.selection.messages.SelectionMessage AISelection
+  METHOD [Static] Void .cctor()
+  METHOD Canis.entities.ai.AIProfileAbs get_AIProfile()
+  METHOD Void set_AIProfile(Canis.entities.ai.AIProfileAbs value)
+  METHOD Int32 get_ConsecutiveAITimeouts()
+  METHOD Void set_ConsecutiveAITimeouts(Int32 value)
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.selectionfilters.SelectionFilter> get_PlayerSelectionFilters()
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.selectionfilters.SelectionFilter> get_SelectionFilters()
+  METHOD Void AddSelectionFilter(Canis.selectionfilters.SelectionFilter selectionFilter)
+  METHOD Void ReplaceSelectionFilters(Il2CppSystem.Collections.Generic.IEnumerable<Canis.selectionfilters.SelectionFilter> selectionFilters)
+  METHOD Void .ctor(Canis.Match m, Canis.utils.ids.AccountID accountID, Canis.PlayerMatchInitData playerInitData)
+  METHOD Void .ctor(Canis.Match m, Canis.utils.ids.AccountID accountID, Canis.PlayerMatchInitData playerInitData, Il2CppSystem.Collections.Generic.List<Canis.selectionfilters.SelectionFilter> playerSelectionFilters)
+  METHOD Void .ctor(Canis.Match m, Canis.utils.ids.AccountID accountID, Canis.PlayerMatchInitData playerInitData, String name, Il2CppSystem.Collections.Generic.List<Canis.selectionfilters.SelectionFilter> playerSelectionFilters)
+  METHOD Void .ctor(Canis.messages.SerializedEntity se, Canis.Match m, Canis.entities.Entity parent, Il2CppSystem.Collections.Generic.List<Canis.selectionfilters.SelectionFilter> playerSelectionFilters)
+  METHOD String get_PlayerName()
+  METHOD Boolean get_IsAI()
+  METHOD Boolean get_StartsAsAI()
+  METHOD Boolean get_IsReplacedByAI()
+  METHOD Boolean get_StartedAsHuman()
+  METHOD Void SetExplainYourself(Boolean explainYourself)
+  METHOD Boolean get_ShouldExplainItself()
+  METHOD Void SetExplainTimeout(Int32 explainTimeoutSeconds)
+  METHOD Int32 get_ExplainTimeoutSeconds()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> OnCompletedSelection()
+  METHOD Int32 get_AILevel()
+  METHOD Canis.data.ClientVersionInfo get_ClientVersion()
+  METHOD Canis.PlayerInfoSaveData get_InfoSaveData()
+  METHOD Boolean IsOpponentOf(Canis.entities.PlayerEntity player)
+  METHOD Canis.actions.Action GetPlayerPreAIDecisionAction(Networking.selection.messages.SelectionMessage sm)
+  METHOD Il2CppSystem.Collections.IEnumerator SelectFrom(Networking.selection.messages.SelectionMessage selection, Canis.Match match)
+  METHOD Boolean IsInSelectionLoop(Networking.selection.messages.SelectionMessage selection, Canis.Match match)
+  METHOD Int32 get_ConsecutiveTimeoutThreshold()
+  METHOD Boolean IncrementConsecutiveTimeout(Networking.selection.messages.SelectionMessage selectionMessage)
+  METHOD Void ResetConsecutiveTimeout()
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<String, Int32> get_AbilityUsage()
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<String, Int32> get_AdditionalReports()
+  METHOD Networking.selection.messages.SelectionMessage get_AISelection()
+  METHOD Void set_AISelection(Networking.selection.messages.SelectionMessage value)
+  METHOD Void UpsertAbilityUsage(String abilityName, Int32 amount)
+  METHOD Void UpsertAbilityUsageInternal(String abilityName, Int32 amount)
+  METHOD Void UpsertAdditionalReports(String reportName, Int32 amount)
+  METHOD Void UpsertAdditionalReportsInternal(String reportName, Int32 amount)
+  METHOD Networking.selection.messages.outgoing.ISelectionCounter DefaultRandomChoice(Networking.selection.messages.SelectionMessage selection)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Networking.selection.targetresponse.TargetResponse> MakeEmptyResponse(Canis.utils.ids.EntityID selected)
+  METHOD Networking.selection.messages.outgoing.ISelectionCounter DetermineDefaultRandomChoice(Networking.selection.messages.SelectionMessage selection)
+  METHOD Il2CppSystem.ValueTuple<Il2CppSystem.Collections.Generic.List<Il2CppSystem.ValueTuple<Canis.utils.ids.EntityID, Int32>>, Int32> SelectRandomlyForTargetInformation(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetinformation.TargetInformation> targets, Int32 i, Il2CppSystem.Collections.Generic.List<Networking.selection.targetresponse.TargetResponse> responses, Canis.utils.ids.EntityID sourceID)
+  METHOD String ToString()
+  METHOD Networking.selection.messages.outgoing.ISelectionCounter MakeAIChoice(Networking.selection.messages.SelectionMessage selectionToMake)
+  METHOD M0 GetStrategy()
+  METHOD String AIType()
+  METHOD Double GetSelectionNoiseMin()
+  METHOD Double GetNoiseValue()
+  METHOD Canis.data.PendingSelection DecorateSelection(Canis.data.PendingSelection pendingSelection)
+  METHOD Boolean __ctor_b__21_0(Canis.PlayerMatchInitData p)
+  METHOD Boolean _ToString_b__73_0(Canis.entities.PlayerEntity p)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.utils.ids.AccountID get_AccountID()
+  METHOD Void set_AccountID(Canis.utils.ids.AccountID)
+  METHOD Canis.entities.ai.AIProfileAbs get__AIProfile_k__BackingField()
+  METHOD Void set__AIProfile_k__BackingField(Canis.entities.ai.AIProfileAbs)
+  METHOD Int32 get_consecutiveSelections()
+  METHOD Void set_consecutiveSelections(Int32)
+  METHOD Int32 get__ConsecutiveAITimeouts_k__BackingField()
+  METHOD Void set__ConsecutiveAITimeouts_k__BackingField(Int32)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.selectionfilters.SelectionFilter> get_playerSelectionFilters()
+  METHOD Void set_playerSelectionFilters(Il2CppSystem.Collections.Generic.List<Canis.selectionfilters.SelectionFilter>)
+  METHOD Canis.PlayerMatchInitData get_PlayerInitData()
+  METHOD Void set_PlayerInitData(Canis.PlayerMatchInitData)
+  METHOD Boolean get__explainYourself()
+  METHOD Void set__explainYourself(Boolean)
+  METHOD Int32 get__explainTimeout()
+  METHOD Void set__explainTimeout(Int32)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<String, Int32> get_abilityUsage()
+  METHOD Void set_abilityUsage(Il2CppSystem.Collections.Generic.Dictionary<String, Int32>)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<String, Int32> get_additionalReports()
+  METHOD Void set_additionalReports(Il2CppSystem.Collections.Generic.Dictionary<String, Int32>)
+  METHOD Networking.selection.messages.SelectionMessage get__AISelection_k__BackingField()
+  METHOD Void set__AISelection_k__BackingField(Networking.selection.messages.SelectionMessage)
+
+================================================================
+TYPE Canis.entities.PlayerEntityUtils
+  BASE Il2CppSystem.Object
+  METHOD [Static] Void .cctor()
+  METHOD [Static] Il2CppSystem.Collections.Generic.IReadOnlyCollection<Canis.data.PendingSelection> PendingSelections(Canis.entities.PlayerEntity player)
+  METHOD [Static] Canis.entities.Entity CreateEntity(Canis.entities.PlayerEntity player, canis.archetypes.Archetype archetype, Canis.entities.Entity parent)
+  METHOD [Static] Canis.actions.Action AddWinCondition(Canis.entities.PlayerEntity player, Canis.data.WinCondition winCon)
+  METHOD [Static] Boolean HasDisabledGlobalAbility(Canis.entities.PlayerEntity player, Canis.utils.ids.AbilityID abilityID)
+  METHOD Void .ctor(IntPtr pointer)
+
