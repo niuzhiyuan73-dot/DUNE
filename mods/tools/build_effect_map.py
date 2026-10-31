@@ -126,12 +126,54 @@ def build():
     for nm, text in by_name.items():
         pairs.setdefault("name:" + nm, text)
 
+    # 人工补充表：基础包卡牌在本地化里没有文本，只能靠公开卡表补（见文件头注释）。
+    # 表里用英文卡名做键，这里借 image 反查官方中文名，避免手写译名对不上。
+    extra = os.path.join(ROOT, "mods", "ai", "card_text_extra.tsv")
+    added, unmatched = 0, []
+    if os.path.exists(extra):
+        en = B.load_locale("en_US")
+        en_title_img = {}
+        for k, v in en.items():
+            m = re.match(r"^card\.[a-z]+\.([a-z0-9_]+)\.title$", k)
+            if m:
+                en_title_img.setdefault(v.strip().lower(), m.group(1))
+
+        zh_img_title = {}
+        for k, v in kv.items():
+            m = re.match(r"^card\.[a-z]+\.([a-z0-9_]+)\.title$", k)
+            if m:
+                zh_img_title.setdefault(m.group(1), v.strip())
+
+        for line in open(extra, encoding="utf-8-sig"):
+            line = line.rstrip("\n")
+            if not line.strip() or line.lstrip().startswith("#"):
+                continue
+            parts = line.split("\t")
+            if len(parts) < 2 or not parts[0].strip() or not parts[1].strip():
+                continue
+            en_name = parts[0].strip()
+            img = en_title_img.get(en_name.lower())
+            zh_name = zh_img_title.get(img) if img else None
+            if not zh_name:
+                unmatched.append(en_name)
+                zh_name = en_name
+            key = "name:" + zh_name
+            if key in pairs:
+                continue
+            text = parts[1].strip()
+            if len(text) > EFFECT_MAX:
+                text = text[:EFFECT_MAX] + "…"
+            pairs[key] = text
+            added += 1
+        if unmatched:
+            print("补充表里无法对应到中文名的条目:", ", ".join(unmatched))
+
     with open(OUT, "w", encoding="utf-8", newline="\n") as f:
         for k in sorted(pairs):
             v = pairs[k].replace("\\", "\\\\").replace("\t", " ").replace("\n", " ")
             f.write("%s\t%s\n" % (k, v))
 
-    print("写出 %d 条效果摘要 -> %s" % (len(pairs), OUT))
+    print("写出 %d 条效果摘要（人工补充 %d 条）-> %s" % (len(pairs), added, OUT))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,67 @@
+# 基础包（Dune: Imperium 基础版）卡牌效果补充表
+#
+# 为什么需要：数字版 zh_CN / en_US 本地化里，基础包卡牌只有 title，没有 agent/reveal 文本
+# （证据见 docs/DeepSeek接入可行性.md 第十节）；基础包效果在数字版里是图标化渲染的。
+#
+# 键用「英文卡名」而不是中文名：中文名靠 image 键回查（card.<set>.<image>.title），
+# 避免手写中文名对不上游戏内官方译名。build_effect_map.py 会把它转成 name:<中文名> 合并。
+#
+# 来源：公开卡表（Dune Imperium Card Database，基础游戏 43 张帝国牌库 + 起始牌组 + 特殊牌），
+#       术语按本作本地化习惯统一（特使/展示/说服/剑/太阳币/香料/水/影响力/部队）。
+# 维护：只追加，不改已有行；效果控制在 70 字内。
+
+Diplomacy	特使：四个阵营皆可；展示：说服1、太阳币1	public-card-db
+Signet Ring	特使：兰兹拉德/宇联商会/厄拉科斯；特使效果：发动你的领袖戒指能力；展示：说服1	public-card-db
+Dagger	特使：兰兹拉德/宇联商会；展示：剑1	public-card-db
+Dune, the Desert Planet	特使：厄拉科斯（沙漠）；展示：说服1	public-card-db
+Convincing Argument	展示：说服2	public-card-db
+Seek Allies	特使：贝尼·杰瑟里特；特使效果：销毁此牌	public-card-db
+Reconnaissance	特使：厄拉科斯；特使效果：抽1张牌	public-card-db
+Arrakis Recruiter	费用2；特使：城市；特使效果：部队+1；展示：说服1、剑1	public-card-db
+Assassination Mission	费用1；展示：剑1、太阳币1；此牌被销毁时：太阳币4	public-card-db
+Bene Gesserit Initiate	费用3；特使：兰兹拉德/城市/厄拉科斯；特使效果：抽1张牌；展示：说服1	public-card-db
+Bene Gesserit Sister	费用3；特使：贝尼·杰瑟里特/兰兹拉德；展示：说服2 或 剑2（二选一）	public-card-db
+Carryall	费用5；特使：厄拉科斯；特使效果：本回合用特使采集的基础香料翻倍；展示：说服1、香料1	public-card-db
+Chani	费用5；获得时：水1；特使：弗雷曼/城市/厄拉科斯；展示：说服2，可撤退任意数量部队	public-card-db
+CHOAM Directorship	费用8；获得时：四个阵营各影响力1；展示：太阳币3	public-card-db
+Crysknife	费用3；特使：弗雷曼/厄拉科斯；特使效果：太阳币1；展示：剑1；若已有弗雷曼羁绊则弗雷曼影响力1	public-card-db
+Dr. Yueh	费用1；特使：城市；特使效果：抽1张牌；展示：说服1	public-card-db
+Duncan Idaho	费用4；特使：城市；特使效果：支付水1，部队+1并抽1张牌；展示：剑2、水1	public-card-db
+Fedaykin Death Commando	费用3；特使：城市/厄拉科斯；特使效果：销毁1张牌；展示：说服1、剑3（需弗雷曼羁绊）	public-card-db
+Firm Grip	费用4；特使：皇帝/兰兹拉德；特使效果：支付太阳币2，获得宇联商会/贝尼·杰瑟里特/弗雷曼之一的1点影响力；展示：说服4（需皇帝同盟）	public-card-db
+Fremen Camp	费用4；特使：厄拉科斯；特使效果：支付香料2，部队+3；展示：说服2、剑1	public-card-db
+Gene Manipulation	费用3；特使：兰兹拉德/城市；特使效果：销毁1张牌，若场上有贝尼·杰瑟里特牌则香料2；展示：说服2	public-card-db
+Guild Administrator	费用2；特使：宇航公会/厄拉科斯；特使效果：销毁1张牌；展示：说服1	public-card-db
+Guild Ambassador	费用4；特使：兰兹拉德；特使效果：宇航公会影响力1 或 香料2；展示：支付香料3获得胜利点1（需宇航公会同盟）	public-card-db
+Guild Bankers	费用3；特使：皇帝/宇航公会/兰兹拉德；展示：本回合购买「香料永流传」费用减3	public-card-db
+Gun Thopter	费用4；特使：城市/厄拉科斯；特使效果：对手失去1支驻军部队；展示：剑3，可从驻军部署1支部队	public-card-db
+Gurney Halleck	费用6；特使：城市；特使效果：部队+2并抽1张牌；展示：说服2；支付太阳币3可向冲突区部署2支部队	public-card-db
+Imperial Spy	费用2；特使：皇帝；特使效果：销毁此牌并获得1张阴谋牌；展示：说服1、剑1	public-card-db
+Kwisatz Haderach	费用8；特使：任意空间（可渗透）；特使效果：将任意位置的一个特使移到任意位置；无展示效果	public-card-db
+Lady Jessica	费用7；获得时：影响力1；特使：贝尼·杰瑟里特/兰兹拉德/城市/厄拉科斯；特使效果：抽2张牌；展示：说服3、剑1	public-card-db
+Liet Kynes	费用5；获得时：皇帝影响力1；特使：弗雷曼/城市；展示：每有1张弗雷曼牌则说服2	public-card-db
+Missionaria Protectiva	费用1；特使：城市；特使效果：若场上另有贝尼·杰瑟里特牌则影响力1；展示：说服1	public-card-db
+Opulence	费用6；特使：皇帝；特使效果：太阳币3；展示：说服1；支付太阳币6获得胜利点1	public-card-db
+Other Memory	费用4；特使：城市/厄拉科斯；特使效果：抽1张牌，或从弃牌堆取回1张贝尼·杰瑟里特牌；展示：说服2	public-card-db
+Piter De Vries	费用5；特使：兰兹拉德/城市；特使效果：获得1张阴谋牌；展示：说服3、剑1	public-card-db
+Power Play	费用5；特使：皇帝/宇航公会/贝尼·杰瑟里特/弗雷曼；特使效果：影响力+2（而非+1），并销毁此牌	public-card-db
+Reverend Mother Mohiam	费用6；特使：皇帝/贝尼·杰瑟里特；特使效果：若场上有贝尼·杰瑟里特牌，对手弃2张牌；展示：说服2、香料2	public-card-db
+Sardaukar Infantry	费用1；展示：说服1、剑2	public-card-db
+Sardaukar Legion	费用5；特使：皇帝/兰兹拉德；特使效果：部队+2；展示：说服1，可从驻军最多部署3支部队	public-card-db
+Scout	费用1；特使：城市/厄拉科斯；展示：说服1、剑1，可撤退最多2支部队	public-card-db
+Shifting Allegiances	费用3；特使：兰兹拉德/厄拉科斯；特使效果：影响力-1、香料-2，换取影响力+2；展示：说服2	public-card-db
+Sietch Reverend Mother	费用4；特使：贝尼·杰瑟里特/弗雷曼；特使效果：销毁1张牌；展示：说服3（需弗雷曼羁绊）、香料1	public-card-db
+Smuggler's Thopter	费用4；特使：厄拉科斯；特使效果：若宇航公会影响力≥2则抽2张牌；展示：说服1、香料1	public-card-db
+Space Travel	费用3；特使：宇航公会；特使效果：抽1张牌；展示：说服2	public-card-db
+Spice Hunter	费用2；特使：弗雷曼/厄拉科斯；展示：说服1、剑1；若弗雷曼羁绊则香料1	public-card-db
+Spice Smugglers	费用2；特使：城市；特使效果：支付香料2，宇航公会影响力1、太阳币3；展示：说服1、剑1	public-card-db
+Stilgar	费用5；特使：弗雷曼/城市/厄拉科斯；特使效果：水1；展示：说服2、剑3	public-card-db
+Test of Humanity	费用3；特使：贝尼·杰瑟里特/兰兹拉德/城市；特使效果：对手选择弃1张牌或失去1支已部署部队；展示：说服2	public-card-db
+The Voice	费用2；特使：城市/厄拉科斯；特使效果：指定1个空间，对手本回合不能前往；展示：说服2	public-card-db
+Thufir Hawat	费用5；特使：全部空间；特使效果：抽1张牌；展示：说服1、阴谋牌1	public-card-db
+Worm Riders	费用6；特使：城市/厄拉科斯；特使效果：香料2；展示：剑4（需弗雷曼影响力≥2，同盟再+2）	public-card-db
+Control the Spice	费用4；特使：皇帝/厄拉科斯；特使效果：香料1；展示：说服1，你特使所在的每个沙漠空间（含此牌处）各得香料1	public-card-db
+Arrakis Liaison	费用2；特使：四个阵营；展示：说服2	public-card-db
+The Spice Must Flow	费用9；特使：四个阵营；特使效果：胜利点+1；展示：说服2	public-card-db
+Foldspace	费用0；特使：任意空间；效果：销毁此牌并抽1张牌（只能通过宇航公会获得）	public-card-db
+Experimentation	费用3；特使：厄拉科斯；特使效果：研究轨前进1；展示：说服1、标本1	public-card-db

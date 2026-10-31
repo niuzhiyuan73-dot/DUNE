@@ -25,13 +25,14 @@ LOCALE = "zh_CN"
 KEY_PREFIXES = ("worm.", "card.", "button.", "label.", "ability.", "lookup.")
 
 
-def load_locale():
+def load_locale(locale=None):
+    want = locale or LOCALE
     env = UnityPy.load(LOC)
     for o in env.objects:
         if o.type.name != "TextAsset":
             continue
         ta = o.read()
-        if getattr(ta, "m_Name", "") != LOCALE:
+        if getattr(ta, "m_Name", "") != want:
             continue
         t = ta.m_Script
         if isinstance(t, bytes):
@@ -43,7 +44,7 @@ def load_locale():
             k, v = line.split("=", 1)
             kv[k.strip()] = v.strip()
         return kv
-    raise SystemExit(f"本地化包里找不到语言段 {LOCALE}")
+    raise SystemExit(f"本地化包里找不到语言段 {want}")
 
 
 def build():
