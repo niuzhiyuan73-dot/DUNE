@@ -315,7 +315,7 @@ MODES = {
     },
     "faction_ultra": {
         "label": "分阵营 Ultra",
-        "endgame": 14,
+        "endgame": 16,
         "water": 1, "spice": 0, "solari": 0,
         "extra_deck": [],
         "use_faction": True,
@@ -332,7 +332,7 @@ MODES = {
         "conflict_order": "fixed",
         "conflict_shuffle_repeat": False,
         "conflict_repeat_last": 0,
-        "note": "14 分；冲突 = 宣传策略 + 三张三级随机循环；固定开跃迁与 Ultra；兵营 5 支 + 钩杖 + 引爆",
+        "note": "16 分；冲突 = 宣传策略 + 三张三级随机循环；固定开跃迁与 Ultra；兵营 5 支 + 钩杖 + 引爆",
     },
 }
 

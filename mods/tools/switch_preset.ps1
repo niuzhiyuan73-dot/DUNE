@@ -71,7 +71,7 @@ function Show-Menu {
     Write-Host "   12) $($Presets[11].Label)"
     Write-Host "   13) $($Presets[12].Label)"
     Write-Host ""
-    Write-Host "  分阵营 Ultra（14 分，固定开跃迁 + 最后的时代 Ultra；兵营 5 支 + 钩杖 + 引爆）"
+    Write-Host "  分阵营 Ultra（16 分，固定开跃迁 + 最后的时代 Ultra；兵营 5 支 + 钩杖 + 引爆）"
     Write-Host "   14) $($Presets[13].Label)"
     Write-Host "   15) $($Presets[14].Label)"
     Write-Host "   16) $($Presets[15].Label)"

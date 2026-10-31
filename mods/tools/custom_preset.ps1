@@ -65,7 +65,7 @@ $ModeDefs = @(
     @{ Text = "分阵营（10 分，标准冲突）";          Key = "faction" },
     @{ Text = "分阵营 Pro（12 分，5 二级 + 5 三级）"; Key = "faction_pro" },
     @{ Text = "分阵营 Extra（14 分，10 张三级）";     Key = "faction_extra" },
-    @{ Text = "分阵营 Ultra（14 分，固定跃迁+Ultra）"; Key = "faction_ultra" }
+    @{ Text = "分阵营 Ultra（16 分，固定跃迁+Ultra）"; Key = "faction_ultra" }
 )
 
 $FacDefs = @(
