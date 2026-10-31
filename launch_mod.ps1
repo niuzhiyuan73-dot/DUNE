@@ -108,6 +108,35 @@ if (-not (Test-Path -LiteralPath $appidFile)) {
 
 try {
     Swap-To-Profile
+
+    # 每次启动重新随机排座（座位号会写进剧本包，所以放在启动前做）
+    $seater = Join-Path $Root "mods\tools\randomize_seats.py"
+    if (Test-Path -LiteralPath $seater) {
+        $pyCands = @(
+            (Join-Path $env:USERPROFILE ".workbuddy\binaries\python\versions\3.13.12\python.exe"),
+            "python"
+        )
+        $py = $null
+        foreach ($c in $pyCands) {
+            if ($c -ne "python" -and -not (Test-Path -LiteralPath $c)) { continue }
+            try {
+                & $c -c "import UnityPy" 2>$null | Out-Null
+                if ($LASTEXITCODE -eq 0) { $py = $c; break }
+            } catch { }
+        }
+        if ($py) {
+            try {
+                $seatOut = & $py $seater 2>&1
+                if ($LASTEXITCODE -eq 0) { $seatOut | ForEach-Object { Write-Host $_ } }
+                else { Write-Host "[seats] 随机排座失败（不影响启动）" }
+            }
+            catch { Write-Host "[seats] 跳过随机排座：$($_.Exception.Message)" }
+        }
+        else {
+            Write-Host "[seats] 未找到带 UnityPy 的 Python，本次沿用剧本里的座位"
+        }
+    }
+
     Write-Host "[run] launching game..."
     $p = Start-Process -FilePath $Exe -WorkingDirectory (Split-Path -Parent $Exe) -PassThru
     $p.WaitForExit()
