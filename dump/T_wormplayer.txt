@@ -1,0 +1,501 @@
+================================================================
+TYPE worm.canis.selectionfilters.WormPlayerSelectionFiltering
+  BASE Canis.selectionfilters.PlayerSelectionFiltering
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor(Canis.Match m)
+  METHOD Il2CppSystem.Func<Canis.entities.Entity, Boolean> SelectArchetype(Canis.utils.ids.ArchetypeID archID)
+  METHOD Il2CppSystem.Func<Canis.entities.Entity, Boolean> SelectAbility(Canis.utils.ids.AbilityID abilityID)
+  METHOD Il2CppSystem.Func<Canis.entities.Entity, Boolean> SelectEntity(Il2CppSystem.Func<Canis.entities.Entity> entityGen)
+  METHOD Il2CppSystem.Func<Networking.selection.targetinformation.TargetInformation, Canis.selectionfilters.SelectionNodeFilterData> SelectTroops(Il2CppSystem.Func<Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity>> troops, Int32 numTroops)
+  METHOD Il2CppSystem.Func<Networking.selection.targetinformation.TargetInformation, Canis.selectionfilters.SelectionNodeFilterData> CustomChoiceWithResult(Int32 customChoice, Il2CppSystem.Func<Canis.entities.Entity> entityGen)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseCustomChoiceWithEntityResult(Int32 round, Int32 turn, Int32 customChoice, Il2CppSystem.Func<Canis.entities.Entity> entityGen, Canis.utils.ids.AbilityID abilityID, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseTroops(Int32 round, Int32 turn, Int32 numTroops, Il2CppSystem.Func<Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity>> troops, Canis.utils.ids.AbilityID abilityID, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseAbility(Int32 round, Int32 turn, Canis.utils.ids.AbilityID abilityID, String prompt, Il2CppSystem.Func<Boolean> additionalCheck, Boolean forced)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseAbilityTarget(Int32 round, Int32 turn, Canis.utils.ids.AbilityID abilityID, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseAbilityWithString(Int32 round, Int32 turn, Canis.utils.ids.AbilityID abilityID, String choice, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseAbilityWithArchetypeTarget(Int32 round, Int32 turn, Canis.utils.ids.AbilityID abilityID, Canis.utils.ids.ArchetypeID archID, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseAbilityWithEntityTarget(Int32 round, Int32 turn, Canis.utils.ids.AbilityID abilityID, Il2CppSystem.Func<Canis.entities.Entity> entityGen, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseArchetype(Int32 round, Int32 turn, Canis.utils.ids.ArchetypeID archID, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseArchetypeWithString(Int32 round, Int32 turn, Canis.utils.ids.ArchetypeID archID, String choice, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseArchetypeTarget(Int32 round, Int32 turn, Canis.utils.ids.ArchetypeID archID, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseArchetypeTargetWithArchetype(Int32 round, Int32 turn, Canis.utils.ids.ArchetypeID firstID, Canis.utils.ids.ArchetypeID secondID, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseArchetypeTargetWithArchetype(Int32 round, Int32 turn, Canis.utils.ids.ArchetypeID firstID, Canis.utils.ids.ArchetypeID secondID, Il2CppSystem.Collections.Generic.List<String> prompts, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseCustomWithArchetype(Int32 round, Int32 turn, Il2CppSystem.Func<Canis.entities.Entity, Boolean> filter, Canis.utils.ids.ArchetypeID secondID, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseAmount(Int32 round, Int32 turn, Int32 amount, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseEntityTarget(Int32 round, Int32 turn, Il2CppSystem.Func<Canis.entities.Entity> entityGen, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseStringValue(Int32 round, Int32 turn, String stringValue, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseAccept(Int32 round, Int32 turn, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ChooseSkip(Int32 round, Int32 turn, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ForceSkip(Int32 round, Int32 turn, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD worm.canis.selectionfilters.WormSelectionFilter ClearSelections(Int32 round, Int32 turn, String prompt, Il2CppSystem.Func<Boolean> additionalCheck)
+  METHOD Boolean HasSkipSelection(Networking.selection.messages.SelectionWithTargetsRequired swtr)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute> SelectAccept(Canis.json.events.NetworkMessageEvent evt)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute> SelectSkip(Canis.json.events.NetworkMessageEvent evt)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.attributes.IAttribute> ForceSkip(Canis.json.events.NetworkMessageEvent evt)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE worm.canis.match.WormPlayerMatchInitData
+  BASE Canis.PlayerMatchInitData
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> StartingDeck
+  PROP Il2CppSystem.Collections.Generic.List<worm.canis.match.CardReplacement> DeckReplacements
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> StartingIntrigue
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> LeaderOptions
+  PROP Int32 AllianceTokenVP
+  PROP Int32 StartingAgents
+  PROP Int32 StartingOrder
+  PROP worm.canis.data.enums.PieceColor PlayerColor
+  PROP Boolean HagalPlayer
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> StartingTechTiles
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> PreferredLeaders
+  PROP worm.canis.match.WormPlayerMatchSoloOptions PlayerMatchSoloOptions
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Int32 ail)
+  METHOD Void .ctor(String n)
+  METHOD Void .ctor(String n, Canis.utils.ids.AccountID aid)
+  METHOD Void .ctor(Int32 ail, Canis.utils.ids.AccountID aid, String name)
+  METHOD Void .ctor(Canis.PlayerInfoSaveData saveData)
+  METHOD Void CopyFrom(worm.canis.match.WormPlayerMatchInitData other)
+  METHOD Void .ctor(worm.canis.match.WormPlayerMatchInitData other)
+  METHOD Void .ctor(Canis.PlayerMatchInitData other)
+  METHOD Canis.PlayerMatchInitData Clone()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_StartingDeck()
+  METHOD Void set_StartingDeck(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Il2CppSystem.Collections.Generic.List<worm.canis.match.CardReplacement> get_DeckReplacements()
+  METHOD Void set_DeckReplacements(Il2CppSystem.Collections.Generic.List<worm.canis.match.CardReplacement>)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_StartingIntrigue()
+  METHOD Void set_StartingIntrigue(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_LeaderOptions()
+  METHOD Void set_LeaderOptions(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Int32 get_AllianceTokenVP()
+  METHOD Void set_AllianceTokenVP(Int32)
+  METHOD Int32 get_StartingAgents()
+  METHOD Void set_StartingAgents(Int32)
+  METHOD Int32 get_StartingOrder()
+  METHOD Void set_StartingOrder(Int32)
+  METHOD worm.canis.data.enums.PieceColor get_PlayerColor()
+  METHOD Void set_PlayerColor(worm.canis.data.enums.PieceColor)
+  METHOD Boolean get_HagalPlayer()
+  METHOD Void set_HagalPlayer(Boolean)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_StartingTechTiles()
+  METHOD Void set_StartingTechTiles(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_PreferredLeaders()
+  METHOD Void set_PreferredLeaders(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD worm.canis.match.WormPlayerMatchSoloOptions get_PlayerMatchSoloOptions()
+  METHOD Void set_PlayerMatchSoloOptions(worm.canis.match.WormPlayerMatchSoloOptions)
+
+================================================================
+TYPE worm.canis.match.WormPlayerMatchSoloOptions
+  BASE Il2CppSystem.Object
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> StartingDiscard
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> StartingDeckOrder
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> Reshuffle1DeckOrder
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> Reshuffle2DeckOrder
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> Reshuffle3DeckOrder
+  PROP Int32 BonusStartingGarrison
+  PROP Int32 BonusStartingWater
+  PROP Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> ControlLocations
+  PROP Int32 BonusStartingVP
+  PROP Boolean StartingSwordmaster
+  PROP Boolean StartingHighCouncil
+  PROP Int32 StartingSolari
+  PROP Int32 StartingSpice
+  PROP Int32 StartingWater
+  PROP Int32 StartingGarrison
+  PROP Int32 StartingSpecimens
+  PROP Il2CppSystem.Collections.Generic.Dictionary<worm.canis.data.enums.Factions, Int32> StartingInfluence
+  PROP Il2CppSystem.Collections.Generic.List<worm.canis.data.enums.BattleIcons> StartingBattleIcons
+  PROP Boolean StartingMakerHooks
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(worm.canis.match.WormPlayerMatchSoloOptions other)
+  METHOD worm.canis.match.WormPlayerMatchSoloOptions Clone()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_StartingDiscard()
+  METHOD Void set_StartingDiscard(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_StartingDeckOrder()
+  METHOD Void set_StartingDeckOrder(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_Reshuffle1DeckOrder()
+  METHOD Void set_Reshuffle1DeckOrder(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_Reshuffle2DeckOrder()
+  METHOD Void set_Reshuffle2DeckOrder(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_Reshuffle3DeckOrder()
+  METHOD Void set_Reshuffle3DeckOrder(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Int32 get_BonusStartingGarrison()
+  METHOD Void set_BonusStartingGarrison(Int32)
+  METHOD Int32 get_BonusStartingWater()
+  METHOD Void set_BonusStartingWater(Int32)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> get_ControlLocations()
+  METHOD Void set_ControlLocations(Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID>)
+  METHOD Int32 get_BonusStartingVP()
+  METHOD Void set_BonusStartingVP(Int32)
+  METHOD Boolean get_StartingSwordmaster()
+  METHOD Void set_StartingSwordmaster(Boolean)
+  METHOD Boolean get_StartingHighCouncil()
+  METHOD Void set_StartingHighCouncil(Boolean)
+  METHOD Int32 get_StartingSolari()
+  METHOD Void set_StartingSolari(Int32)
+  METHOD Int32 get_StartingSpice()
+  METHOD Void set_StartingSpice(Int32)
+  METHOD Int32 get_StartingWater()
+  METHOD Void set_StartingWater(Int32)
+  METHOD Int32 get_StartingGarrison()
+  METHOD Void set_StartingGarrison(Int32)
+  METHOD Int32 get_StartingSpecimens()
+  METHOD Void set_StartingSpecimens(Int32)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<worm.canis.data.enums.Factions, Int32> get_StartingInfluence()
+  METHOD Void set_StartingInfluence(Il2CppSystem.Collections.Generic.Dictionary<worm.canis.data.enums.Factions, Int32>)
+  METHOD Il2CppSystem.Collections.Generic.List<worm.canis.data.enums.BattleIcons> get_StartingBattleIcons()
+  METHOD Void set_StartingBattleIcons(Il2CppSystem.Collections.Generic.List<worm.canis.data.enums.BattleIcons>)
+  METHOD Boolean get_StartingMakerHooks()
+  METHOD Void set_StartingMakerHooks(Boolean)
+
+================================================================
+TYPE worm.canis.entities.WormPlayer
+  BASE Canis.entities.PlayerEntity
+  PROP worm.canis.match.WormPlayerMatchInitData playerInitData
+  PROP worm.canis.WormMatch match
+  PROP Il2CppSystem.Collections.Generic.List<Canis.selectionfilters.SelectionFilter> playerSelectionFilters
+  PROP Canis.entities.Entity selectionAttrsEnt
+  PROP worm.canis.entities.WormPlayArea _PlayArea_k__BackingField
+  PROP worm.canis.entities.WormPlayArea _ActiveAgentArea_k__BackingField
+  PROP worm.canis.entities.WormPlayArea _PermanentArea_k__BackingField
+  PROP worm.canis.entities.WormPlayArea _Hand_k__BackingField
+  PROP worm.canis.entities.WormPlayArea _Deck_k__BackingField
+  PROP worm.canis.entities.WormPlayArea _Discard_k__BackingField
+  PROP worm.canis.entities.WormPlayArea _IntrigueHand_k__BackingField
+  PROP worm.canis.entities.WormPlayArea _Supply_k__BackingField
+  PROP worm.canis.entities.WormPlayArea _AllianceTokens_k__BackingField
+  PROP worm.canis.entities.WormPlayArea _PrivateInformation_k__BackingField
+  PROP worm.canis.entities.WormPlayArea _SetAside_k__BackingField
+  PROP worm.canis.entities.WormPlayArea _PrivateSetAside_k__BackingField
+  PROP worm.canis.entities.WormLeader _Leader_k__BackingField
+  PROP worm.canis.entities.WormPlayArea _TechTileArea_k__BackingField
+  PROP worm.canis.entities.WormPlayArea _ContractArea_k__BackingField
+  PROP worm.canis.ai.WormAIProfile AIProfile
+  PROP Int32 DeferralThreshold
+  PROP worm.canis.entities.WormPlayArea PlayArea
+  PROP worm.canis.entities.WormPlayArea ActiveAgentArea
+  PROP worm.canis.entities.WormPlayArea PermanentArea
+  PROP worm.canis.entities.WormPlayArea Hand
+  PROP worm.canis.entities.WormPlayArea Deck
+  PROP worm.canis.entities.WormPlayArea Discard
+  PROP worm.canis.entities.WormPlayArea IntrigueHand
+  PROP worm.canis.entities.WormPlayArea Supply
+  PROP worm.canis.entities.WormPlayArea AllianceTokens
+  PROP worm.canis.entities.WormPlayArea PrivateInformation
+  PROP worm.canis.entities.WormPlayArea SetAside
+  PROP worm.canis.entities.WormPlayArea PrivateSetAside
+  PROP worm.canis.entities.WormLeader Leader
+  PROP worm.canis.entities.WormPlayArea TechTileArea
+  PROP worm.canis.entities.WormPlayArea ContractArea
+  PROP Int32 ConsecutiveTimeoutThreshold
+  PROP Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormPlayer> Opponents
+  PROP Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormAgent> RemainingAgents
+  PROP Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormPlayable> AllCardsInPlay
+  PROP Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormImperiumPlayable> AllImperiumCards
+  PROP Int32 HandCount
+  PROP Int32 IntrigueHandCount
+  PROP Int32 DeckCount
+  PROP String PlayerName
+  PROP Int32 Score
+  PROP Boolean Winner
+  PROP Boolean HasImperiumCards
+  PROP Boolean CanTakePlayerTurn
+  PROP Boolean IsHagal
+  PROP Boolean HasHighCouncilSeat
+  PROP Boolean HasSwordmaster
+  PROP Int32 CardsDrawnStartOfRound
+  PROP Int32 Strength
+  PROP Boolean CanDeploy
+  PROP Boolean CanDeploySandworms
+  PROP Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormPlayable> ActiveCards
+  PROP Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormSpace> ActiveSpace
+  PROP Int32 GetDeferralThreshold
+  PROP Int32 ConflictTroops
+  PROP Int32 GarrisonTroops
+  PROP Int32 ConflictUnits
+  PROP Int32 GarrisonUnits
+  PROP Int32 ConflictDreadnoughts
+  PROP Int32 GarrisonDreadnoughts
+  PROP Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormSandworm> ConflictSandworms
+  PROP Int32 ConflictSandwormCount
+  PROP Int32 TechTileCount
+  PROP Boolean IsDuringTurn
+  PROP Boolean IsDuringTurnOrCombatRewards
+  PROP Boolean IsDuringCombatRewards
+  PROP Int32 GeneticMarkers
+  PROP Boolean HasMakerHooks
+  PROP Int32 SpyRemainingCount
+  PROP Int32 SpyDeployedCount
+  PROP Int32 GetContractsCompletedCount
+  PROP Int32 GetContractsOpenCount
+  PROP Il2CppSystem.Collections.Generic.IReadOnlyList<worm.canis.entities.WormPlayArea> SetAsidePiles
+  PROP Int32 DefaultPlayerTurnPadding
+  METHOD [Static] Void .cctor()
+  METHOD worm.canis.entities.WormPlayArea get_PlayArea()
+  METHOD Void set_PlayArea(worm.canis.entities.WormPlayArea value)
+  METHOD worm.canis.entities.WormPlayArea get_ActiveAgentArea()
+  METHOD Void set_ActiveAgentArea(worm.canis.entities.WormPlayArea value)
+  METHOD worm.canis.entities.WormPlayArea get_PermanentArea()
+  METHOD Void set_PermanentArea(worm.canis.entities.WormPlayArea value)
+  METHOD worm.canis.entities.WormPlayArea get_Hand()
+  METHOD Void set_Hand(worm.canis.entities.WormPlayArea value)
+  METHOD worm.canis.entities.WormPlayArea get_Deck()
+  METHOD Void set_Deck(worm.canis.entities.WormPlayArea value)
+  METHOD worm.canis.entities.WormPlayArea get_Discard()
+  METHOD Void set_Discard(worm.canis.entities.WormPlayArea value)
+  METHOD worm.canis.entities.WormPlayArea get_IntrigueHand()
+  METHOD Void set_IntrigueHand(worm.canis.entities.WormPlayArea value)
+  METHOD worm.canis.entities.WormPlayArea get_Supply()
+  METHOD Void set_Supply(worm.canis.entities.WormPlayArea value)
+  METHOD worm.canis.entities.WormPlayArea get_AllianceTokens()
+  METHOD Void set_AllianceTokens(worm.canis.entities.WormPlayArea value)
+  METHOD worm.canis.entities.WormPlayArea get_PrivateInformation()
+  METHOD Void set_PrivateInformation(worm.canis.entities.WormPlayArea value)
+  METHOD worm.canis.entities.WormPlayArea get_SetAside()
+  METHOD Void set_SetAside(worm.canis.entities.WormPlayArea value)
+  METHOD worm.canis.entities.WormPlayArea get_PrivateSetAside()
+  METHOD Void set_PrivateSetAside(worm.canis.entities.WormPlayArea value)
+  METHOD worm.canis.entities.WormLeader get_Leader()
+  METHOD Void set_Leader(worm.canis.entities.WormLeader value)
+  METHOD worm.canis.entities.WormPlayArea get_TechTileArea()
+  METHOD Void set_TechTileArea(worm.canis.entities.WormPlayArea value)
+  METHOD worm.canis.entities.WormPlayArea get_ContractArea()
+  METHOD Void set_ContractArea(worm.canis.entities.WormPlayArea value)
+  METHOD Void .ctor(Canis.messages.SerializedEntity se, Canis.Match m, Canis.entities.Entity parent)
+  METHOD Void .ctor(Canis.Match m, Canis.utils.ids.AccountID accountID, worm.canis.match.WormPlayerMatchInitData initialData)
+  METHOD Void Initialize()
+  METHOD Void InitializeSelectionFilter(Canis.Match m, Boolean isReload)
+  METHOD Int32 get_ConsecutiveTimeoutThreshold()
+  METHOD Networking.selection.messages.outgoing.ISelectionCounter MakeAIChoice(Networking.selection.messages.SelectionMessage selectionToMake)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormPlayer> get_Opponents()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormAgent> get_RemainingAgents()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormPlayable> get_AllCardsInPlay()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormImperiumPlayable> get_AllImperiumCards()
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyCollection<Canis.entities.Entity> HandCards()
+  METHOD Int32 get_HandCount()
+  METHOD Int32 get_IntrigueHandCount()
+  METHOD Int32 get_DeckCount()
+  METHOD Canis.actions.Action MarkVisitedSpace(worm.canis.entities.WormSpace space)
+  METHOD Canis.actions.Action UndoMarkVisitedSpace(worm.canis.entities.WormSpace space)
+  METHOD Void UpsertReport(String reportName, Int32 amount)
+  METHOD Void UpsertAbilityUsage(worm.canis.abilities.WormAbilityDefinition ability, Int32 amount)
+  METHOD Void UpsertAbilityUsageCustom(String abilityType, String name)
+  METHOD Void PrepareAbilityUsage()
+  METHOD Il2CppSystem.Collections.IEnumerator SelectFrom(Networking.selection.messages.SelectionMessage selection, Canis.Match m)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Networking.selection.targetresponse.TargetResponse> MakeEmptyResponse(Canis.utils.ids.EntityID selected)
+  METHOD String get_PlayerName()
+  METHOD Int32 get_Score()
+  METHOD Boolean get_Winner()
+  METHOD Boolean get_HasImperiumCards()
+  METHOD Boolean HasIntrigueCard(Canis.utils.ids.ArchetypeID archID)
+  METHOD Boolean get_CanTakePlayerTurn()
+  METHOD Boolean get_IsHagal()
+  METHOD Boolean get_HasHighCouncilSeat()
+  METHOD Boolean get_HasSwordmaster()
+  METHOD Int32 get_CardsDrawnStartOfRound()
+  METHOD Boolean IsInPlayerTurn(worm.canis.data.enums.PlayerTurnTypes playerTurnType)
+  METHOD Int32 get_Strength()
+  METHOD Boolean get_CanDeploy()
+  METHOD Boolean get_CanDeploySandworms()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormPlayable> get_ActiveCards()
+  METHOD Int32 TurnOfRound()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormSpace> get_ActiveSpace()
+  METHOD Canis.entities.Entity GetNextAgent()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> GetNextUnits(Int32 amt)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> GetNextTroops(Int32 amt)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<M0> GetNextGarrisonUnits(Int32 amt)
+  METHOD Il2CppSystem.Collections.Generic.List<M0> GetGarrisonUnits()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormTroop> GetNextGarrisonTroops(Int32 amt)
+  METHOD Int32 GetFactionInfluence(worm.canis.data.enums.Factions faction)
+  METHOD Void SetFactionInfluence(worm.canis.data.enums.Factions faction, Int32 rank)
+  METHOD Boolean InAlliance(worm.canis.data.enums.Factions faction)
+  METHOD Il2CppSystem.Collections.Generic.List<worm.canis.entities.WormFactionTrack> GetFactionTrackTargets()
+  METHOD Il2CppSystem.Collections.Generic.List<worm.canis.entities.WormFactionTrack> GetFactionTrackTargets(FactionTrackPredicate filter)
+  METHOD Int32 get_GetDeferralThreshold()
+  METHOD Boolean DeferredThresholdReached()
+  METHOD Boolean DeferredThresholdReached(Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormPlayable> activeCards, Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormSpace> activeSpace)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.localization.LocalizableTextVariables, Int32> GetSkirmishScore(worm.canis.WormMatch wormMatch)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<String, Int32> GetRevealPreview(worm.canis.WormMatch wormMatch, Boolean includeTriggers)
+  METHOD Boolean HasMetCampaignRequirment(worm.canis.WormMatch wormMatch)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.EntityID> GetDarkSpaces(worm.canis.WormMatch wormMatch, Il2CppSystem.Collections.Generic.List<Canis.utils.ids.ArchetypeID> exceptions)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.utils.ids.EntityID> GetEndgamePlayableList(worm.canis.WormMatch wormMatch)
+  METHOD Boolean CanAcquireFromImperiumRow(worm.canis.WormMatch wormMatch)
+  METHOD Il2CppSystem.Collections.Generic.List<Il2CppSystem.ValueTuple<Canis.utils.localization.LocalizableTextVariables, Il2CppSystem.Collections.Generic.List<Canis.utils.ids.EntityID>>> GetUnusualSelectionsForImperiumSelections(Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.entities.Entity> targets, Boolean trash, Boolean discard, Canis.entities.Entity sourceEntity)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Canis.attributes.ReadOnlyAttributes> GetTargetHintingForImperiumSelections(Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.entities.Entity> targets, Boolean trash, Boolean discard)
+  METHOD Canis.attributes.MutableAttributes GetPickerAttributesForImperiumTrash(Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.entities.Entity> targets, Canis.entities.Entity sourceAbility)
+  METHOD Canis.attributes.MutableAttributes GetPickerAttributesForImperiumDiscard(Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.entities.Entity> targets)
+  METHOD Canis.attributes.MutableAttributes GetPickerAttributesForImperiumSelections(Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.entities.Entity> targets, Boolean trash, Boolean discard, Canis.entities.Entity sourceAbility)
+  METHOD Il2CppSystem.Collections.Generic.List<Il2CppSystem.ValueTuple<Canis.utils.localization.LocalizableTextVariables, Il2CppSystem.Collections.Generic.List<Canis.utils.ids.EntityID>>> GetTroopSupplyUnusualSelections(Il2CppSystem.Collections.Generic.List<Canis.entities.Entity> entityList, Il2CppSystem.Func<Canis.entities.Entity, Int32> troopCounter)
+  METHOD Il2CppSystem.Collections.Generic.List<Il2CppSystem.ValueTuple<Canis.utils.localization.LocalizableTextVariables, Il2CppSystem.Collections.Generic.List<Canis.utils.ids.EntityID>>> GetTroopDeployUnusualSelections(Il2CppSystem.Collections.Generic.List<M0> entityList)
+  METHOD Il2CppSystem.Collections.Generic.List<lib.canis.Canis.data.UnusualSelection> GetAcquireWarnings(Il2CppSystem.Collections.Generic.List<Canis.entities.Entity> targets)
+  METHOD Int32 get_ConflictTroops()
+  METHOD Int32 get_GarrisonTroops()
+  METHOD Int32 get_ConflictUnits()
+  METHOD Int32 get_GarrisonUnits()
+  METHOD Int32 get_ConflictDreadnoughts()
+  METHOD Int32 get_GarrisonDreadnoughts()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormSandworm> get_ConflictSandworms()
+  METHOD Int32 get_ConflictSandwormCount()
+  METHOD Int32 GetShippingTrackSpace()
+  METHOD Int32 get_TechTileCount()
+  METHOD Boolean HasTechTile(Canis.utils.ids.ArchetypeID archID)
+  METHOD Boolean HasTechTileFaceUp(Canis.utils.ids.ArchetypeID archID)
+  METHOD Boolean get_IsDuringTurn()
+  METHOD Boolean get_IsDuringTurnOrCombatRewards()
+  METHOD Boolean get_IsDuringCombatRewards()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormUnit> GetSpecimens()
+  METHOD Int32 get_GeneticMarkers()
+  METHOD Int32 GetTleilaxuInfluence()
+  METHOD worm.canis.data.enums.CardToAreas FindAcquireDestination()
+  METHOD Il2CppSystem.ValueTuple<Boolean, Canis.utils.ids.ArchetypeID, String> GetAcquireArchIDAndPickerKind(Canis.entities.Entity card, Boolean checkRecruitmentMission)
+  METHOD Int32 GetSnooperInfluenceLevel()
+  METHOD Boolean get_HasMakerHooks()
+  METHOD worm.canis.entities.WormSpy GetNextSpy()
+  METHOD Int32 get_SpyRemainingCount()
+  METHOD Int32 get_SpyDeployedCount()
+  METHOD Int32 get_GetContractsCompletedCount()
+  METHOD Int32 get_GetContractsOpenCount()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormContractPlayable> GetContractsForSpace(worm.canis.entities.WormSpace space)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<M0> FindSetAside(Il2CppSystem.Func<M0, Boolean> setAsideConditions)
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<worm.canis.entities.WormPlayArea> get_SetAsidePiles()
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<worm.canis.entities.WormContractPlayable> GetContractOptions()
+  METHOD Boolean HasContract(Canis.utils.ids.ArchetypeID archID)
+  METHOD Boolean HasContractCompleted(Canis.utils.ids.ArchetypeID archID)
+  METHOD Boolean HasContractOpen(Canis.utils.ids.ArchetypeID archID)
+  METHOD Boolean CanTakeHighCouncilSeat()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.entities.Entity> FindAdditionalAcquireOptionTargets()
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID> FindAdditionalAcquireOptions()
+  METHOD Boolean HasAdditionalAcquireOption(Canis.entities.Entity entity)
+  METHOD Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.entities.Entity> FindTrashTargets(Il2CppSystem.Predicate<Canis.entities.Entity> filter)
+  METHOD [Static] Boolean MeetsFactionCountRequirements(worm.canis.data.enums.Factions faction, worm.canis.entities.WormPlayer player)
+  METHOD Boolean CanGainFactionInfluence(worm.canis.data.enums.Factions faction)
+  METHOD Canis.entities.Entity FindStartingVP()
+  METHOD Canis.entities.Entity FindChallengeVP()
+  METHOD Canis.entities.Entity FindBattleIconsVP()
+  METHOD Canis.actions.Action DeploySandworms(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<worm.canis.entities.WormSandworm> sandworms)
+  METHOD Canis.actions.Action DeploySandworms(worm.canis.actions.ActionLogModes logMode, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<worm.canis.entities.WormSandworm> sandworms)
+  METHOD Il2CppSystem.Collections.Generic.List<worm.canis.abilities.ActivatedAbilities.DeferredAbility> GetDeployUnitsAbilities(Boolean onlyExausted)
+  METHOD Int32 get_DefaultPlayerTurnPadding()
+  METHOD Void InitializeTurnTimer(Int32 timerLength)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> ResetTurnTimer(Int32 timerLength)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> UpdateTurnTimer(Il2CppSystem.DateTime startTime, Il2CppSystem.DateTime endTime)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> AddExtraTimeForOpponents(Int32 seconds, worm.canis.WormMatch wormMatch)
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.Action> PadOpponentTime(Int32 seconds)
+  METHOD Boolean __ctor_b__64_0(worm.canis.match.WormPlayerMatchInitData p)
+  METHOD Boolean _get_Opponents_b__72_0(worm.canis.entities.WormPlayer _)
+  METHOD Boolean _DeferredThresholdReached_b__141_1(worm.canis.entities.WormSpace _)
+  METHOD Boolean _HasMetCampaignRequirment_b__145_0(Canis.data.WinCondition winCon)
+  METHOD Boolean _GetEndgamePlayableList_b__147_0(worm.canis.entities.WormIntriguePlayable intrigueCard)
+  METHOD Boolean _GetEndgamePlayableList_b__147_4(worm.canis.abilities.WormAbilityDefinition _)
+  METHOD Boolean _GetEndgamePlayableList_b__147_2(worm.canis.entities.WormTechTilePlayable techTile)
+  METHOD Boolean _GetEndgamePlayableList_b__147_5(worm.canis.abilities.WormAbilityDefinition _)
+  METHOD Boolean _CanAcquireFromImperiumRow_b__148_0(worm.canis.entities.WormImperiumPlayable card)
+  METHOD Boolean _GetSpecimens_b__184_0(worm.canis.entities.WormUnit _)
+  METHOD Canis.actions.Action DeploySandworms(worm.canis.entities.WormSandworm[] sandworms)
+  METHOD Canis.actions.Action DeploySandworms(worm.canis.actions.ActionLogModes logMode, worm.canis.entities.WormSandworm[] sandworms)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD worm.canis.match.WormPlayerMatchInitData get_playerInitData()
+  METHOD Void set_playerInitData(worm.canis.match.WormPlayerMatchInitData)
+  METHOD worm.canis.WormMatch get_match()
+  METHOD Void set_match(worm.canis.WormMatch)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.selectionfilters.SelectionFilter> get_playerSelectionFilters()
+  METHOD Void set_playerSelectionFilters(Il2CppSystem.Collections.Generic.List<Canis.selectionfilters.SelectionFilter>)
+  METHOD Canis.entities.Entity get_selectionAttrsEnt()
+  METHOD Void set_selectionAttrsEnt(Canis.entities.Entity)
+  METHOD worm.canis.entities.WormPlayArea get__PlayArea_k__BackingField()
+  METHOD Void set__PlayArea_k__BackingField(worm.canis.entities.WormPlayArea)
+  METHOD worm.canis.entities.WormPlayArea get__ActiveAgentArea_k__BackingField()
+  METHOD Void set__ActiveAgentArea_k__BackingField(worm.canis.entities.WormPlayArea)
+  METHOD worm.canis.entities.WormPlayArea get__PermanentArea_k__BackingField()
+  METHOD Void set__PermanentArea_k__BackingField(worm.canis.entities.WormPlayArea)
+  METHOD worm.canis.entities.WormPlayArea get__Hand_k__BackingField()
+  METHOD Void set__Hand_k__BackingField(worm.canis.entities.WormPlayArea)
+  METHOD worm.canis.entities.WormPlayArea get__Deck_k__BackingField()
+  METHOD Void set__Deck_k__BackingField(worm.canis.entities.WormPlayArea)
+  METHOD worm.canis.entities.WormPlayArea get__Discard_k__BackingField()
+  METHOD Void set__Discard_k__BackingField(worm.canis.entities.WormPlayArea)
+  METHOD worm.canis.entities.WormPlayArea get__IntrigueHand_k__BackingField()
+  METHOD Void set__IntrigueHand_k__BackingField(worm.canis.entities.WormPlayArea)
+  METHOD worm.canis.entities.WormPlayArea get__Supply_k__BackingField()
+  METHOD Void set__Supply_k__BackingField(worm.canis.entities.WormPlayArea)
+  METHOD worm.canis.entities.WormPlayArea get__AllianceTokens_k__BackingField()
+  METHOD Void set__AllianceTokens_k__BackingField(worm.canis.entities.WormPlayArea)
+  METHOD worm.canis.entities.WormPlayArea get__PrivateInformation_k__BackingField()
+  METHOD Void set__PrivateInformation_k__BackingField(worm.canis.entities.WormPlayArea)
+  METHOD worm.canis.entities.WormPlayArea get__SetAside_k__BackingField()
+  METHOD Void set__SetAside_k__BackingField(worm.canis.entities.WormPlayArea)
+  METHOD worm.canis.entities.WormPlayArea get__PrivateSetAside_k__BackingField()
+  METHOD Void set__PrivateSetAside_k__BackingField(worm.canis.entities.WormPlayArea)
+  METHOD worm.canis.entities.WormLeader get__Leader_k__BackingField()
+  METHOD Void set__Leader_k__BackingField(worm.canis.entities.WormLeader)
+  METHOD worm.canis.entities.WormPlayArea get__TechTileArea_k__BackingField()
+  METHOD Void set__TechTileArea_k__BackingField(worm.canis.entities.WormPlayArea)
+  METHOD worm.canis.entities.WormPlayArea get__ContractArea_k__BackingField()
+  METHOD Void set__ContractArea_k__BackingField(worm.canis.entities.WormPlayArea)
+  METHOD worm.canis.ai.WormAIProfile get_AIProfile()
+  METHOD Void set_AIProfile(worm.canis.ai.WormAIProfile)
+  METHOD [Static] Int32 get_DeferralThreshold()
+  METHOD [Static] Void set_DeferralThreshold(Int32)
+
+================================================================
+TYPE worm.canis.entities.WormPlayerAIExtensions
+  BASE Il2CppSystem.Object
+  METHOD [Static] Void .cctor()
+  METHOD [Static] Canis.ai.value.AIValueSummer<Double> ValueForRewardsFrom(Canis.entities.PlayerEntity player, Canis.attributes.IHasAttributes reward, worm.canis.entities.WormConflictPlayable conflict)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE worm.canis.entities.WormPlayerActionExtensions
+  BASE Il2CppSystem.Object
+  METHOD [Static] Void .cctor()
+  METHOD [Static] Canis.actions.Action GainVP(Canis.entities.PlayerEntity player, Int32 amount, Canis.entities.Entity source, String reason)
+  METHOD [Static] Canis.actions.Action GainVPNoLog(Canis.entities.PlayerEntity player, Int32 amount, Canis.entities.Entity source, String reason)
+  METHOD [Static] Canis.actions.Action GainVPOf(Canis.entities.PlayerEntity player, Canis.attributes.IHasAttributes amount, Canis.entities.Entity source, String reason)
+  METHOD [Static] Canis.actions.Action GainSpice(Canis.entities.PlayerEntity player, Int32 amount)
+  METHOD [Static] Canis.actions.Action GainSpiceNoLog(Canis.entities.PlayerEntity player, Int32 amount)
+  METHOD [Static] Canis.actions.Action GainSolari(Canis.entities.PlayerEntity player, Int32 amount)
+  METHOD [Static] Canis.actions.Action GainSolariNoLog(Canis.entities.PlayerEntity player, Int32 amount)
+  METHOD [Static] Canis.actions.Action GainAllResources(Canis.entities.PlayerEntity player, Canis.attributes.IHasAttributes reward)
+  METHOD [Static] Canis.actions.Action GainInfluence(Canis.entities.PlayerEntity player, worm.canis.data.enums.Factions faction, Int32 amount)
+  METHOD [Static] Canis.actions.Action GainInfluenceNoLog(Canis.entities.PlayerEntity player, worm.canis.data.enums.Factions faction, Int32 amount)
+  METHOD [Static] Canis.actions.Action DrawIntrigue(Canis.entities.PlayerEntity player)
+  METHOD [Static] Canis.actions.Action GainCustomAbility(Canis.entities.PlayerEntity player, Canis.utils.ids.AbilityID abilityID)
+  METHOD [Static] Canis.actions.Action RemoveCustomAbility(Canis.entities.PlayerEntity player, Canis.utils.ids.AbilityID abilityID)
+  METHOD [Static] Canis.actions.Action RemoveCustomAbility(Canis.entities.PlayerEntity player, Canis.entities.AbilityDefinition ability)
+  METHOD [Static] Canis.actions.Action GainRewardsFrom(Canis.entities.PlayerEntity player, Canis.attributes.IHasAttributes reward, Canis.entities.Entity source, String reason)
+  METHOD [Static] Canis.actions.Action GainConflictRewards(Canis.entities.PlayerEntity player, worm.canis.entities.WormConflictPlayable conflict, Int32 place)
+  METHOD [Static] Canis.actions.Action PayCostsOf(Canis.entities.PlayerEntity player, Canis.attributes.IHasAttributes cost)
+  METHOD [Static] Canis.actions.Action PaySolariCostOf(Canis.entities.PlayerEntity player, Canis.attributes.IHasAttributes cost)
+  METHOD [Static] Canis.actions.Action PaySolari(Canis.entities.PlayerEntity player, Int32 amount)
+  METHOD [Static] Canis.actions.Action PaySpiceCostOf(Canis.entities.PlayerEntity player, Canis.attributes.IHasAttributes cost)
+  METHOD [Static] Canis.actions.Action GainUnits(Canis.entities.PlayerEntity player, Int32 amount)
+  METHOD [Static] Canis.actions.Action AcquireCard(Canis.entities.PlayerEntity player, Canis.entities.Entity card)
+  METHOD [Static] Canis.actions.Action AcquireCardToHand(Canis.entities.PlayerEntity player, Canis.entities.Entity card)
+  METHOD [Static] Canis.actions.Action TrashCard(Canis.entities.PlayerEntity player, Canis.entities.Entity card)
+  METHOD [Static] Canis.actions.Action DeploySandworm(Canis.entities.PlayerEntity player)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE worm.canis.entities.WormPlayerExtensions
+  BASE Il2CppSystem.Object
+  METHOD [Static] Void .cctor()
+  METHOD [Static] Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormAgent> GetDeployedAgents(worm.canis.entities.WormPlayer player)
+  METHOD [Static] Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormSpy> GetDeployedSpies(worm.canis.entities.WormPlayer player)
+  METHOD [Static] Boolean HasExactlyTwoInfluenceWithEachFaction(worm.canis.entities.WormPlayer player)
+  METHOD [Static] Boolean HasThreeUniqueActionIconsFromSpies(worm.canis.entities.WormPlayer player)
+  METHOD [Static] worm.canis.entities.WormTrainingTrack TrainingTrack(worm.canis.entities.WormPlayer player)
+  METHOD [Static] worm.canis.entities.WormPlayArea Memories(worm.canis.entities.WormPlayer player)
+  METHOD [Static] Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.entities.WormTroop> GetDeployedTroops(Canis.entities.PlayerEntity player)
+  METHOD [Static] Il2CppSystem.Collections.Generic.IEnumerable<M0> GetDeployedUnits(Canis.entities.PlayerEntity player)
+  METHOD [Static] Boolean CanAcquireCard(Canis.entities.PlayerEntity player, Canis.entities.Entity card)
+  METHOD [Static] Int32 CountCardTags(Canis.entities.PlayerEntity player, Il2CppSystem.Collections.Generic.IEnumerable<worm.canis.data.enums.CardTags> tagList)
+  METHOD [Static] Int32 CountCardTags(Canis.entities.PlayerEntity player, worm.canis.data.enums.CardTags tag)
+  METHOD [Static] Boolean CanGainBattleIcons(worm.canis.entities.WormPlayer player, ref String failReason)
+  METHOD [Static] Boolean CanWinConflict(worm.canis.entities.WormPlayer player, ref String failReason)
+  METHOD [Static] Canis.utils.ids.ArchetypeID GetSequenceLeaderArchetypeID(worm.canis.entities.WormPlayer player)
+  METHOD Void .ctor(IntPtr pointer)
+

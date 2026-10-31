@@ -1,0 +1,65 @@
+================================================================
+TYPE ai_sim.AIConstantsVector`1
+  BASE Il2CppSystem.Object
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Il2CppSystem.Nullable<Double>> _vector
+  PROP Il2CppSystem.Nullable<Double> Item
+  PROP Il2CppSystem.Nullable<Double> Item
+  PROP Int32 Length
+  METHOD Void .cctor()
+  METHOD Void .ctor(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Il2CppSystem.Nullable<Double>> vector)
+  METHOD Void .ctor(ai_sim.AIConstantsVector<T0> v)
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.Dictionary<T0, Double> dict)
+  METHOD Il2CppSystem.Nullable<Double> get_Item(T0 index)
+  METHOD Il2CppSystem.Nullable<Double> get_Item(Int32 index)
+  METHOD Int32 get_Length()
+  METHOD ai_sim.AIConstantsVector<T0> CloneWithReplacementAt(Int32 index, Double newValue)
+  METHOD ai_sim.AIConstantsVector<T0> CloneWithReplacements(Il2CppSystem.Collections.Generic.Dictionary<Int32, Double> newValues)
+  METHOD ai_sim.AIConstantsVector<T0> op_Addition(ai_sim.AIConstantsVector<T0> a, ai_sim.AIConstantsVector<T0> b)
+  METHOD ai_sim.AIConstantsVector<T0> op_Subtraction(ai_sim.AIConstantsVector<T0> a, ai_sim.AIConstantsVector<T0> b)
+  METHOD String ToString()
+  METHOD String DiffString(ai_sim.AIConstantsVector<T0> other)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Il2CppSystem.Nullable<Double>> get__vector()
+  METHOD Void set__vector(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Il2CppSystem.Nullable<Double>>)
+
+================================================================
+TYPE Canis.ai.AIConstants
+  BASE Il2CppSystem.Object
+  PROP Il2CppSystem.Text.RegularExpressions.Regex FilePattern
+  PROP Il2CppSystem.Collections.Concurrent.ConcurrentDictionary<Il2CppSystem.ValueTuple<String, Int32>, Il2CppSystem.Object> loadedConstants
+  METHOD Void .cctor()
+  METHOD Void SetInstance(String aiType, Int32 aiLevel, Il2CppSystem.Object aiConstantsRef)
+  METHOD Boolean TrySetFrom(Int32 aiLevel, String json)
+  METHOD Boolean TrySetFrom(String aiType, Int32 aiLevel, String json)
+  METHOD Void RegisterDeserializer()
+  METHOD M0 GetConstants(String aiType, Int32 aiLevel)
+  METHOD Boolean IsSet(String aiType, Il2CppSystem.Nullable<Int32> aiLevel)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Text.RegularExpressions.Regex get_FilePattern()
+  METHOD Void set_FilePattern(Il2CppSystem.Text.RegularExpressions.Regex)
+  METHOD Il2CppSystem.Collections.Concurrent.ConcurrentDictionary<Il2CppSystem.ValueTuple<String, Int32>, Il2CppSystem.Object> get_loadedConstants()
+  METHOD Void set_loadedConstants(Il2CppSystem.Collections.Concurrent.ConcurrentDictionary<Il2CppSystem.ValueTuple<String, Int32>, Il2CppSystem.Object>)
+
+================================================================
+TYPE Canis.ai.IHasAIConstantsVector`1
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  PROP ai_sim.AIConstantsVector<T0> Vector
+  PROP Il2CppSystem.Nullable<Double> Item
+  METHOD Void .cctor()
+  METHOD ai_sim.AIConstantsVector<T0> get_Vector()
+  METHOD Il2CppSystem.Nullable<Double> get_Item(T0 constantName)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.ai.StandardAIConstants`1
+  BASE Il2CppSystem.Object
+  PROP ai_sim.AIConstantsVector<T0> _Vector_k__BackingField
+  PROP ai_sim.AIConstantsVector<T0> Vector
+  METHOD Void .cctor()
+  METHOD ai_sim.AIConstantsVector<T0> get_Vector()
+  METHOD Void .ctor(ai_sim.AIConstantsVector<T0> vector)
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.Dictionary<T0, Double> dictionary)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD ai_sim.AIConstantsVector<T0> get__Vector_k__BackingField()
+  METHOD Void set__Vector_k__BackingField(ai_sim.AIConstantsVector<T0>)
+

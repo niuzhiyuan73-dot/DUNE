@@ -1,0 +1,5 @@
+{
+  "_说明": "复制为 mods/ai/ai_override.json 后生效。键 = 难度档（Easy / Medium / Hard / all），值 = {AIConstantsRef 属性名: 数值}。属性名清单见 dump/ai_constants_runtime.json（需先跑一局生成）。没有把握就不要留任何条目。",
+  "Hard": {},
+  "Medium": {}
+}

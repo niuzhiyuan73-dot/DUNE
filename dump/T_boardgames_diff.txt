@@ -1,0 +1,8 @@
+================================================================
+TYPE AIDifficultyLevels
+  BASE System.Enum
+  FIELD Int32 value__   [Public, SpecialName, RTSpecialName, HasDefault]
+  FIELD AIDifficultyLevels Easy   [Public, Static, Literal, HasDefault]
+  FIELD AIDifficultyLevels Medium   [Public, Static, Literal, HasDefault]
+  FIELD AIDifficultyLevels Hard   [Public, Static, Literal, HasDefault]
+

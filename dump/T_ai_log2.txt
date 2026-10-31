@@ -1,0 +1,32 @@
+================================================================
+TYPE dwd.core.logging.messages.AIDetailLoggingMessage
+  BASE Canis.messages.effect.EffectMessage
+  PROP String Message
+  METHOD Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD String get_Message()
+  METHOD Void set_Message(String)
+
+================================================================
+TYPE lotus.src.match.commands.messageCommands.AIDetailLoggingCommand
+  BASE dwd.core.commands.Command
+  PROP String message
+  METHOD Void .cctor()
+  METHOD Void .ctor(dwd.core.logging.messages.AIDetailLoggingMessage message)
+  METHOD Il2CppSystem.Collections.IEnumerator execute()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD String get_message()
+  METHOD Void set_message(String)
+
+================================================================
+TYPE lotus.src.match.commands.messageCommands.AIInfoMessageCommand
+  BASE dwd.core.commands.Command
+  PROP String message
+  METHOD Void .cctor()
+  METHOD Void .ctor(dwd.core.logging.messages.AIInfoMessage message)
+  METHOD Il2CppSystem.Collections.IEnumerator execute()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD String get_message()
+  METHOD Void set_message(String)
+

@@ -107,7 +107,31 @@ internal static class Program
                 try { t = f.DecodeSignature(prov, null); }
                 catch { t = "?"; }
                 var attrs = f.Attributes.ToString();
-                w.WriteLine($"  FIELD {t} {fn}   [{attrs}]");
+                string cv = "";
+                try
+                {
+                    if ((f.Attributes & System.Reflection.FieldAttributes.Literal) != 0)
+                    {
+                        var ch = f.GetDefaultValue();
+                        if (!ch.IsNil)
+                        {
+                            var c = md.GetConstant(ch);
+                            var br = md.GetBlobReader(c.Value);
+                            switch (c.TypeCode)
+                            {
+                                case ConstantTypeCode.Int32: cv = "   = " + br.ReadInt32(); break;
+                                case ConstantTypeCode.Int64: cv = "   = " + br.ReadInt64(); break;
+                                case ConstantTypeCode.Int16: cv = "   = " + br.ReadInt16(); break;
+                                case ConstantTypeCode.SByte: cv = "   = " + br.ReadSByte(); break;
+                                case ConstantTypeCode.Byte: cv = "   = " + br.ReadByte(); break;
+                                case ConstantTypeCode.Boolean: cv = "   = " + br.ReadBoolean(); break;
+                                case ConstantTypeCode.String: cv = "   = \"" + br.ReadUTF16(br.Length) + "\""; break;
+                            }
+                        }
+                    }
+                }
+                catch { }
+                w.WriteLine($"  FIELD {t} {fn}   [{attrs}]{cv}");
             }
 
             foreach (var ph in td.GetProperties())
@@ -146,7 +170,8 @@ internal static class Program
                     sig = $"{s.ReturnType} {mn}({string.Join(", ", ps)})";
                 }
                 catch { sig = "? " + mn + "(...)"; }
-                w.WriteLine("  METHOD " + sig);
+                var st = (m.Attributes & System.Reflection.MethodAttributes.Static) != 0 ? "[Static] " : "";
+                w.WriteLine("  METHOD " + st + sig);
             }
             w.WriteLine();
         }

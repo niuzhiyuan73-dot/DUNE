@@ -1,0 +1,36 @@
+================================================================
+TYPE Canis.ai.AIValuationFunction
+  BASE Il2CppSystem.Object
+  METHOD [Static] Void .cctor()
+  METHOD Canis.ai.value.IReadOnlyAIValueSummer<Double> Evaluate(Canis.entities.PlayerEntity player, Canis.entities.Entity card)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.ai.FallbackAIValuationFunction
+  BASE Canis.ai.AIValuationFunction
+  METHOD [Static] Void .cctor()
+  METHOD Canis.ai.value.IReadOnlyAIValueSummer<Double> Evaluate(Canis.entities.PlayerEntity player, Canis.entities.Entity card)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.ai.value.AIValueSummerExtensions
+  BASE Il2CppSystem.Object
+  METHOD [Static] Void .cctor()
+  METHOD [Static] Canis.ai.value.AIValueSummer<Double> Sum(Il2CppSystem.Collections.Generic.IEnumerable<M0> source, Il2CppSystem.Func<M0, Canis.ai.value.AIValueSummer<Double>> func)
+  METHOD [Static] Canis.ai.value.AIValueSummer<Double> Average(Il2CppSystem.Collections.Generic.IEnumerable<M0> source, Il2CppSystem.Func<M0, Canis.ai.value.AIValueSummer<Double>> func)
+  METHOD [Static] Void InjectNoise(Canis.ai.value.AIValueSummer<Double> summer, Canis.entities.PlayerEntity player)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Canis.entities.ai.AIAlgorithmUtil
+  BASE Il2CppSystem.Object
+  METHOD [Static] Void .cctor()
+  METHOD [Static] M0 BestRankTimeout(Il2CppSystem.Collections.Generic.IEnumerable<M0> elems, Il2CppSystem.Func<M0, M1> ranker, Int64 timeout)
+  METHOD [Static] Il2CppSystem.Nullable<M0> BestRankTimeout(Il2CppSystem.Collections.Generic.IEnumerable<M0> elems, Il2CppSystem.Func<Il2CppSystem.Nullable<M0>, M1> ranker, Int64 timeout)
+  METHOD [Static] Il2CppSystem.Collections.Generic.IEnumerable<M0> KnapsackSolver(Il2CppSystem.Collections.Generic.IEnumerable<M0> elems, Il2CppSystem.Func<M0, Int32> weightFunc, Il2CppSystem.Func<M0, Il2CppSystem.Decimal> valueFunc, Int32 maxWeight)
+  METHOD [Static] Il2CppSystem.Collections.Generic.IEnumerable<M0> KnapsackSolver(Il2CppSystem.Collections.Generic.IEnumerable<Il2CppSystem.ValueTuple<M0, Int32, Il2CppSystem.Decimal>> elems, Int32 maxWeight)
+  METHOD [Static] Il2CppSystem.Collections.Generic.IEnumerable<M0> KnapsackSolver(Il2CppSystem.Collections.Generic.IEnumerable<KnapsackItem<M0>> elems, Int32 maxWeight)
+  METHOD Void .ctor(IntPtr pointer)
+
