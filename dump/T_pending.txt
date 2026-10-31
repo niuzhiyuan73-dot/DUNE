@@ -1,0 +1,44 @@
+================================================================
+TYPE Canis.data.PendingSelection
+  BASE Il2CppSystem.Object
+  PROP Networking.selection.messages.SelectionMessage Selection
+  PROP Int64 OfferedAt
+  PROP Canis.actions.responseparsers.ResponseParser ResponseParser
+  PROP Canis.actions.continuations.ActionContinuation Continuation
+  PROP Canis.actions.completions.SelectionCompletion Completion
+  PROP Boolean CreateUndo
+  PROP Canis.data.CreateUndoCriteria CreateUndoCriteria
+  PROP Int32 Counter
+  METHOD [Static] Void .cctor()
+  METHOD Int32 get_Counter()
+  METHOD Il2CppSystem.Collections.Generic.IEnumerable<Canis.actions.continuations.ActionAcrossTargets> GenerateContinuationAction(Il2CppSystem.Collections.IEnumerable selectionResponse, Canis.entities.PlayerEntity selectingPlayer, Canis.Match match)
+  METHOD Il2CppSystem.Collections.IEnumerable ParseSelectionResponse(Canis.Match match, Il2CppSystem.Object responseMessage)
+  METHOD Boolean ShouldGenerateUndo(Canis.Match match, Il2CppSystem.Object responseMessage)
+  METHOD Boolean UndoCriteriaMet(Canis.Match match, Il2CppSystem.Collections.IEnumerable responses)
+  METHOD Boolean ShouldRunUndo(Canis.Match match, Canis.entities.PlayerEntity player, Il2CppSystem.Object responseMessage)
+  METHOD String ToString()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Networking.selection.messages.SelectionMessage get_Selection()
+  METHOD Void set_Selection(Networking.selection.messages.SelectionMessage)
+  METHOD Int64 get_OfferedAt()
+  METHOD Void set_OfferedAt(Int64)
+  METHOD Canis.actions.responseparsers.ResponseParser get_ResponseParser()
+  METHOD Void set_ResponseParser(Canis.actions.responseparsers.ResponseParser)
+  METHOD Canis.actions.continuations.ActionContinuation get_Continuation()
+  METHOD Void set_Continuation(Canis.actions.continuations.ActionContinuation)
+  METHOD Canis.actions.completions.SelectionCompletion get_Completion()
+  METHOD Void set_Completion(Canis.actions.completions.SelectionCompletion)
+  METHOD Boolean get_CreateUndo()
+  METHOD Void set_CreateUndo(Boolean)
+  METHOD Canis.data.CreateUndoCriteria get_CreateUndoCriteria()
+  METHOD Void set_CreateUndoCriteria(Canis.data.CreateUndoCriteria)
+
+================================================================
+TYPE Canis.data.PendingSelectionDecorator
+  BASE Il2CppSystem.Object
+  METHOD [Static] Void .cctor()
+  METHOD Canis.data.PendingSelection DecorateSelection(Canis.Match match, Canis.entities.PlayerEntity player, Canis.data.PendingSelection pendingSelection)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+

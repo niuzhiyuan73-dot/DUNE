@@ -1,0 +1,89 @@
+================================================================
+TYPE ArchetypeCustomChoiceRequired
+  BASE Networking.selection.messages.SelectionMessage
+  PROP Il2CppSystem.Collections.Generic.List<Canis.attributes.SerializableAttributes> Buttons
+  PROP Canis.utils.ids.EntityID SourceEntity
+  PROP String Kind
+  PROP Il2CppSystem.Collections.Generic.Dictionary<String, Il2CppSystem.Object> SelectionParams
+  PROP Il2CppSystem.Nullable<Boolean> forced
+  PROP Boolean isForced
+  PROP String Networking.selection.messages.outgoing.IHasKind.Kind
+  METHOD [Static] Void .cctor()
+  METHOD Boolean get_isForced()
+  METHOD String Networking_selection_messages_outgoing_IHasKind_get_Kind()
+  METHOD String ToString()
+  METHOD Boolean Validate(Networking.selection.messages.outgoing.ISelectionCounter responseMessage)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.List<Canis.attributes.SerializableAttributes> get_Buttons()
+  METHOD Void set_Buttons(Il2CppSystem.Collections.Generic.List<Canis.attributes.SerializableAttributes>)
+  METHOD Canis.utils.ids.EntityID get_SourceEntity()
+  METHOD Void set_SourceEntity(Canis.utils.ids.EntityID)
+  METHOD String get_Kind()
+  METHOD Void set_Kind(String)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<String, Il2CppSystem.Object> get_SelectionParams()
+  METHOD Void set_SelectionParams(Il2CppSystem.Collections.Generic.Dictionary<String, Il2CppSystem.Object>)
+  METHOD Il2CppSystem.Nullable<Boolean> get_forced()
+  METHOD Void set_forced(Il2CppSystem.Nullable<Boolean>)
+
+================================================================
+TYPE Networking.selection.messages.CustomChoiceRequired
+  BASE Networking.selection.messages.SelectionMessage
+  PROP String SortType
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.localization.LocalizableText> Buttons
+  PROP Canis.utils.ids.EntityID SourceEntity
+  PROP String Kind
+  PROP String Networking.selection.messages.outgoing.IHasKind.Kind
+  PROP Boolean isForced
+  METHOD [Static] Void .cctor()
+  METHOD String Networking_selection_messages_outgoing_IHasKind_get_Kind()
+  METHOD Boolean get_isForced()
+  METHOD String ToString()
+  METHOD Boolean Validate(Networking.selection.messages.outgoing.ISelectionCounter responseMessage)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD String get_SortType()
+  METHOD Void set_SortType(String)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.localization.LocalizableText> get_Buttons()
+  METHOD Void set_Buttons(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.localization.LocalizableText>)
+  METHOD Canis.utils.ids.EntityID get_SourceEntity()
+  METHOD Void set_SourceEntity(Canis.utils.ids.EntityID)
+  METHOD String get_Kind()
+  METHOD Void set_Kind(String)
+
+================================================================
+TYPE Networking.selection.messages.SelectionMessage
+  BASE Canis.messages.GameMessage
+  PROP Canis.utils.ids.AccountID _PlayerAccountID_k__BackingField
+  PROP Int32 Counter
+  PROP Canis.utils.localization.LocalizableTextVariables Prompt
+  PROP Int64 OfferLength
+  PROP Canis.attributes.ReadOnlyAttributes Attributes
+  PROP Canis.utils.ids.AccountID PlayerAccountID
+  PROP Canis.attributes.IHasAttributes Networking.selection.messages.outgoing.ISelectionMessage.Attributes
+  PROP Canis.utils.localization.LocalizableTextVariables Networking.selection.messages.outgoing.ISelectionMessage.Prompt
+  PROP Boolean Networking.selection.messages.outgoing.ISelectionMessage.Forced
+  PROP Boolean isForced
+  METHOD [Static] Void .cctor()
+  METHOD Canis.utils.ids.AccountID get_PlayerAccountID()
+  METHOD Void set_PlayerAccountID(Canis.utils.ids.AccountID value)
+  METHOD Canis.attributes.IHasAttributes Networking_selection_messages_outgoing_ISelectionMessage_get_Attributes()
+  METHOD Canis.utils.localization.LocalizableTextVariables Networking_selection_messages_outgoing_ISelectionMessage_get_Prompt()
+  METHOD Int32 GetCounter()
+  METHOD Boolean Networking_selection_messages_outgoing_ISelectionMessage_get_Forced()
+  METHOD Boolean get_isForced()
+  METHOD String ToString()
+  METHOD Boolean Validate(Networking.selection.messages.outgoing.ISelectionCounter responseMessage)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.utils.ids.AccountID get__PlayerAccountID_k__BackingField()
+  METHOD Void set__PlayerAccountID_k__BackingField(Canis.utils.ids.AccountID)
+  METHOD Int32 get_Counter()
+  METHOD Void set_Counter(Int32)
+  METHOD Canis.utils.localization.LocalizableTextVariables get_Prompt()
+  METHOD Void set_Prompt(Canis.utils.localization.LocalizableTextVariables)
+  METHOD Int64 get_OfferLength()
+  METHOD Void set_OfferLength(Int64)
+  METHOD Canis.attributes.ReadOnlyAttributes get_Attributes()
+  METHOD Void set_Attributes(Canis.attributes.ReadOnlyAttributes)
+

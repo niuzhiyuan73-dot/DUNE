@@ -1,0 +1,147 @@
+================================================================
+TYPE dwd.core.match.messages.outgoing.GameCustomChoice
+  BASE Canis.messages.GameMessage
+  PROP Il2CppSystem.Nullable<Int32> Selection
+  PROP Int32 Counter
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Canis.utils.ids.GameID gameID, Il2CppSystem.Nullable<Int32> selection, Int32 counter)
+  METHOD Int32 GetCounter()
+  METHOD String ToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Nullable<Int32> get_Selection()
+  METHOD Void set_Selection(Il2CppSystem.Nullable<Int32>)
+  METHOD Int32 get_Counter()
+  METHOD Void set_Counter(Int32)
+
+================================================================
+TYPE Networking.selection.messages.outgoing.EntityIDEntityTargetsResponse
+  BASE Il2CppSystem.Object
+  PROP Canis.utils.ids.EntityID entityID
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID> targets
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor(Canis.utils.ids.EntityID entityID, Il2CppSystem.Collections.Generic.IEnumerable<Canis.utils.ids.EntityID> targets)
+  METHOD String ToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.utils.ids.EntityID get_entityID()
+  METHOD Void set_entityID(Canis.utils.ids.EntityID)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID> get_targets()
+  METHOD Void set_targets(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID>)
+
+================================================================
+TYPE Networking.selection.messages.outgoing.EntityIDTargetResponses
+  BASE Il2CppSystem.Object
+  PROP Canis.utils.ids.EntityID entityID
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetresponse.TargetResponse> targetResponses
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor(Canis.utils.ids.EntityID entityID, Il2CppSystem.Collections.Generic.IEnumerable<Networking.selection.targetresponse.TargetResponse> targetResponses)
+  METHOD String ToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.utils.ids.EntityID get_entityID()
+  METHOD Void set_entityID(Canis.utils.ids.EntityID)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetresponse.TargetResponse> get_targetResponses()
+  METHOD Void set_targetResponses(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetresponse.TargetResponse>)
+
+================================================================
+TYPE Networking.selection.messages.outgoing.IHasKind
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  PROP String Kind
+  METHOD [Static] Void .cctor()
+  METHOD String get_Kind()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Networking.selection.messages.outgoing.IIncludeSentToPlayer
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  PROP Canis.utils.ids.AccountID PlayerAccountID
+  METHOD [Static] Void .cctor()
+  METHOD Canis.utils.ids.AccountID get_PlayerAccountID()
+  METHOD Void set_PlayerAccountID(Canis.utils.ids.AccountID value)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Networking.selection.messages.outgoing.ISelectionCounter
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  METHOD [Static] Void .cctor()
+  METHOD Int32 GetCounter()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Networking.selection.messages.outgoing.ISelectionMessage
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  PROP Canis.attributes.IHasAttributes Attributes
+  PROP Canis.utils.localization.LocalizableTextVariables Prompt
+  PROP Boolean Forced
+  METHOD [Static] Void .cctor()
+  METHOD Canis.attributes.IHasAttributes get_Attributes()
+  METHOD Canis.utils.localization.LocalizableTextVariables get_Prompt()
+  METHOD Boolean get_Forced()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Networking.selection.messages.outgoing.ISelectionResponse
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Networking.selection.messages.outgoing.MultipleSelectionWithTargets
+  BASE Il2CppSystem.Object
+  PROP Canis.utils.ids.GameID gameID
+  PROP Il2CppSystem.Collections.Generic.List<Networking.selection.messages.outgoing.EntityIDEntityTargetsResponse> selection
+  PROP Int32 counter
+  METHOD [Static] Void .cctor()
+  METHOD Int32 GetCounter()
+  METHOD String ToString()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.utils.ids.GameID get_gameID()
+  METHOD Void set_gameID(Canis.utils.ids.GameID)
+  METHOD Il2CppSystem.Collections.Generic.List<Networking.selection.messages.outgoing.EntityIDEntityTargetsResponse> get_selection()
+  METHOD Void set_selection(Il2CppSystem.Collections.Generic.List<Networking.selection.messages.outgoing.EntityIDEntityTargetsResponse>)
+  METHOD Int32 get_counter()
+  METHOD Void set_counter(Int32)
+
+================================================================
+TYPE Networking.selection.messages.outgoing.Outgoing
+  BASE Il2CppSystem.Object
+  METHOD [Static] Void .cctor()
+  METHOD [Static] Networking.selection.messages.outgoing.SelectionWithTargets SelectionWithTargets(Networking.selection.messages.SelectionMessage message, Canis.utils.ids.EntityID entityID, Il2CppSystem.Collections.Generic.IEnumerable<Networking.selection.targetresponse.TargetResponse> targetResponses)
+  METHOD [Static] Il2CppSystem.Object SelectionWithTargetsAndActions(Networking.selection.messages.SelectionMessage message, Canis.utils.ids.EntityID entityID, Canis.utils.ids.AbilityID abilityID, Il2CppSystem.Collections.Generic.IEnumerable<Networking.selection.targetresponse.TargetResponse> targets)
+  METHOD [Static] Il2CppSystem.Object GameMulliganChoice(Networking.selection.messages.SelectionMessage message, Boolean mulligan)
+  METHOD [Static] Il2CppSystem.Object MultipleSelectionWithTargets(Networking.selection.messages.SelectionMessage message, Il2CppSystem.Collections.Generic.IDictionary<Canis.utils.ids.EntityID, Il2CppSystem.Collections.Generic.IReadOnlyList<Canis.utils.ids.EntityID>> targets)
+  METHOD [Static] Il2CppSystem.Object CustomChoice(Networking.selection.messages.SelectionMessage message, Int32 choice)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Networking.selection.messages.outgoing.SelectionFinished
+  BASE Canis.messages.GameMessage
+  PROP Canis.utils.ids.AccountID _PlayerAccountID_k__BackingField
+  PROP Canis.utils.ids.AccountID PlayerAccountID
+  METHOD [Static] Void .cctor()
+  METHOD Canis.utils.ids.AccountID get_PlayerAccountID()
+  METHOD Void set_PlayerAccountID(Canis.utils.ids.AccountID value)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.utils.ids.AccountID get__PlayerAccountID_k__BackingField()
+  METHOD Void set__PlayerAccountID_k__BackingField(Canis.utils.ids.AccountID)
+
+================================================================
+TYPE Networking.selection.messages.outgoing.SelectionWithTargets
+  BASE Il2CppSystem.Object
+  PROP Canis.utils.ids.GameID gameID
+  PROP Networking.selection.messages.outgoing.EntityIDTargetResponses selection
+  PROP Int32 counter
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Networking.selection.messages.SelectionMessage message, Canis.utils.ids.EntityID entityID, Il2CppSystem.Collections.Generic.IEnumerable<Networking.selection.targetresponse.TargetResponse> targetResponses)
+  METHOD Int32 GetCounter()
+  METHOD String ToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.utils.ids.GameID get_gameID()
+  METHOD Void set_gameID(Canis.utils.ids.GameID)
+  METHOD Networking.selection.messages.outgoing.EntityIDTargetResponses get_selection()
+  METHOD Void set_selection(Networking.selection.messages.outgoing.EntityIDTargetResponses)
+  METHOD Int32 get_counter()
+  METHOD Void set_counter(Int32)
+
