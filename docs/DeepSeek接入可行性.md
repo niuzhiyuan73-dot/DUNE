@@ -109,3 +109,35 @@
 2. 用 T1 的日志校验 prompt 质量：它能否说清"我该抢哪场冲突"。
 3. **T2 策略层**：把 LLM 输出映射成权重覆盖，A/B 对比原生 AI。
 4. T3 只在确认线程与延迟可控后再评估。
+
+---
+
+## 八、T1 观察者实测记录（10-31）
+
+### 注入点与数据源
+
+- 唯一可靠观察点：`worm.canis.ai.WormAIProfile.MakeChoice(SelectionMessage, WormAIChoiceContext)`。
+  `AIProfileAbs.MakeChoice` 那条从没触发（单人标准局的 AI 走 worm 自己的实现）。
+- 待选文本直接取 `SelectionMessage.ToString()`。它是紧凑格式（约 400–1000 字符），不是 JSON：
+  `[SelectionWithTargetsRequired] Prompt … TargetMap <[能力名(短ID): [XTargetInformation] 细节]>`。
+  早期版本把序列化 JSON（6KB+）发出去，`Continuation`/`SerializedStack` 占了绝大部分篇幅，
+  真正要看的目标信息反而被 6000 字截断挤掉。
+
+### 三轮修正
+
+1. **认错人**：`LatestRespondedPlayer` 是「刚答完的人」而不是「正在被问的人」，12/15 的请求其实是人类玩家的。
+   改挂 `WormAIProfile.MakeChoice` 后，`__instance.Player` 天然就是被问者，问题消失。
+2. **机器标识**：GUID / `worm.*` / `button.*` 全部翻成人话（`mods/ai/name_map.tsv`，2032 条，按内容哈希去重）。
+3. **validTargets 不可读**（本轮）：目标给的是实体实例 ID，名称表里没有，模型只能说「无法判断」。
+   解法链：`new EntityID(str)` → `match.TryGetEntity(id, out ent)` → `ent.EntityName` +
+   `ent.GetArchetype().ArchetypeID`（原型 GUID）→ 名称表；能力类实体再兜一层 `button.<类名>`。
+
+### 本轮结论（22:0x 一局，14 条样本）
+
+- 名字全部解析成功（渗透 / 沙虫骑士 / 斯第尔格 / 印章戒指 / 匕首 / 家族原子弹…），
+  单条待选从 6000 字符降到 300–800，延迟 1.9–2.9s，HTTP 全 200。
+- 模型不再编造牌名，而会明确说「缺目标信息」——这是信息缺失，不是模型问题。
+- 剩余缺口：目标信息类型只给数量（`ValidTargets (6)`）。
+  `SelectionWithTargetsRequired.TargetMap` 里有 `EntityListTargetInformation.ValidTargets`，
+  已加「目标明细」段把它逐条解析成名字（`Targets.Detail`），待下一局验证。
+- 同名不同副本（两个「渗透」）目前只靠短 ID 区分，模型会要求「按目标区分」，属预期行为。

@@ -38,6 +38,7 @@ namespace DuneAiProbe
         public const string GUID = "local.duneaiprobe";
 
         private const string Root = @"C:/Users/17789/Desktop/DUNE";
+        internal const string RootDir = Root;
         private const string DumpPath = Root + "/dump/ai_constants_runtime.json";
         private const string OverridePath = Root + "/mods/ai/ai_override.json";
         private const string ForceLevelPath = Root + "/mods/ai/force_level.txt";
@@ -60,6 +61,7 @@ namespace DuneAiProbe
             LogEnvironment();
 
             var h = new Harmony(GUID + ".harmony");
+            _harmony = h;
             ReadTimeoutFactor();
             SurveyTimeoutApi(h);
             Coach.Init(L, Root);
@@ -83,15 +85,26 @@ namespace DuneAiProbe
             catch (Exception e) { L.LogWarning("[AIPROBE] RunAIResponses hook: " + e.Message); }
 
             // 真正的 AI 决策入口：worm.canis.ai.WormAIProfile.MakeChoice（AIProfileAbs 那条从没触发过）
+            // 注意：不能直接 GetMethod("MakeChoice")——派生类与基类同名同签名会让它抛 Ambiguous match。
             try
             {
-                var wm = typeof(worm.canis.ai.WormAIProfile).GetMethod("MakeChoice",
-                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                var cand = typeof(worm.canis.ai.WormAIProfile)
+                    .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                    .Where(m => m.Name == "MakeChoice")
+                    .ToList();
+                foreach (var m in cand)
+                {
+                    L.LogInfo("[AIPROBE] MakeChoice candidate: " + m.DeclaringType.FullName + "(" +
+                              string.Join(", ", m.GetParameters().Select(p => p.ParameterType.Name).ToArray()) + ")");
+                }
+
+                var wm = cand.FirstOrDefault(m => m.DeclaringType == typeof(worm.canis.ai.WormAIProfile))
+                         ?? cand.FirstOrDefault();
                 if (wm != null)
                 {
                     h.Patch(wm, prefix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(OnWormMakeChoice),
                         BindingFlags.Static | BindingFlags.NonPublic)));
-                    L.LogInfo("[AIPROBE] hooked WormAIProfile.MakeChoice");
+                    L.LogInfo("[AIPROBE] hooked WormAIProfile.MakeChoice on " + wm.DeclaringType.FullName);
                 }
                 else L.LogWarning("[AIPROBE] WormAIProfile.MakeChoice not found");
             }
@@ -190,6 +203,15 @@ namespace DuneAiProbe
 
         private static int _wormChoices;
 
+        // 权重覆盖：属性只有 getter，所以走 getter 后置补丁（见 OnWeightGetter）
+        private static Harmony _harmony;
+        private static readonly Dictionary<string, double> _weightOverrides =
+            new Dictionary<string, double>(StringComparer.Ordinal);
+        private static readonly HashSet<string> _patchedGetters = new HashSet<string>(StringComparer.Ordinal);
+        private static readonly HashSet<string> _getterHitLogged = new HashSet<string>(StringComparer.Ordinal);
+        private static IntPtr _weightTarget = IntPtr.Zero;
+        private static int _getterHitBudget = 24;
+
         /// WormAIProfile.MakeChoice 里能同时拿到"谁在被问"和"在选什么"，是目前唯一可靠的观察点。
         private static void OnWormMakeChoice(worm.canis.ai.WormAIProfile __instance,
             Networking.selection.messages.SelectionMessage selection)
@@ -204,6 +226,19 @@ namespace DuneAiProbe
                 string pending = null;
                 try { pending = selection != null ? selection.ToString() : null; } catch { }
                 if (string.IsNullOrEmpty(pending)) return;
+
+                // 实体实例 ID → 中文名；顺带砍掉执行栈快照（否则 targetMap 会被截断挤掉）
+                try
+                {
+                    Canis.Match mt = null;
+                    try { mt = __instance.Match; } catch { }
+                    pending = Targets.Rewrite(mt, pending, L);
+
+                    // ValidTargets 在原生 ToString 里只有数量，追加一份"可选目标"明细
+                    string detail = Targets.Detail(selection, mt, L);
+                    if (!string.IsNullOrEmpty(detail)) pending = pending + "\n" + detail;
+                }
+                catch (Exception e) { L.LogWarning("[TARGETS] " + e.Message); }
 
                 string name = null;
                 try { name = asker != null ? asker.PlayerName : null; } catch { }
@@ -233,6 +268,13 @@ namespace DuneAiProbe
             {
                 _batchCount++;
                 L.LogInfo("[AIPROBE] AI batch #" + _batchCount + " took " + (Environment.TickCount64 - _batchStart) + " ms");
+            }
+
+            // 权重补丁只在游戏真的调用 getter 时才有意义；跑了几批还没命中就是被内联/直读了
+            if (_batchCount == 6 && _weightOverrides.Count > 0 && _getterHitLogged.Count == 0)
+            {
+                L.LogWarning("[AIPROBE] weight getters never invoked after 6 batches"
+                             + " -> patch ineffective, needs field-level write");
             }
             PlayerEntity p = null;
             try { p = __instance.LatestRespondedPlayer; } catch { }
@@ -415,67 +457,58 @@ namespace DuneAiProbe
         private static void ApplyOverrides(Dictionary<string, WormAIConstantsRef> refs, int usedLevel)
         {
             string usedName = LevelName(usedLevel);
+            WormAIConstantsRef usedRef = null;
+            if (usedName != null) refs.TryGetValue(usedName, out usedRef);
 
-            // 1) force_level：把指定档的权重整体拷到本局实际使用的档
+            _weightOverrides.Clear();
+            _weightTarget = IntPtr.Zero;
+            try { if (usedRef != null) _weightTarget = usedRef.Pointer; } catch { }
+
+            // 1) force_level：把指定档的整张表转成覆盖值，作用在本局实际使用的档上
             int force = ReadForceLevel();
             if (force >= 0 && force != usedLevel)
             {
                 string srcName = LevelName(force);
-                if (refs.TryGetValue(srcName, out var src) && src != null
-                    && refs.TryGetValue(usedName, out var dst) && dst != null)
+                if (refs.TryGetValue(srcName, out var src) && src != null && usedRef != null)
                 {
                     int n = 0;
                     foreach (var p in DoubleProps())
                     {
-                        try
-                        {
-                            double v = (double)p.GetValue(src);
-                            p.SetValue(dst, v);
-                            n++;
-                        }
-                        catch { }
+                        try { _weightOverrides[p.Name] = (double)p.GetValue(src); n++; } catch { }
                     }
-                    L.LogWarning("[AIPROBE] forced " + usedName + " := " + srcName + " (" + n + " props copied)");
+                    L.LogWarning("[AIPROBE] force " + usedName + " := " + srcName + " (" + n + " props queued)");
                 }
                 else L.LogWarning("[AIPROBE] force level " + force + ": source or target ref missing");
             }
 
             // 2) ai_override.json：按档覆盖
-            if (!File.Exists(OverridePath))
+            if (File.Exists(OverridePath))
             {
-                L.LogInfo("[AIPROBE] no override file, skip");
-                return;
-            }
+                var table = MiniJson.ParseObject(File.ReadAllText(OverridePath, Encoding.UTF8));
+                var props = new Dictionary<string, PropertyInfo>(StringComparer.Ordinal);
+                foreach (var p in DoubleProps()) props[p.Name] = p;
 
-            var table = MiniJson.ParseObject(File.ReadAllText(OverridePath, Encoding.UTF8));
-            var props = new Dictionary<string, PropertyInfo>(StringComparer.Ordinal);
-            foreach (var p in DoubleProps()) props[p.Name] = p;
-
-            foreach (var kv in table)
-            {
-                if (kv.Key.StartsWith("_")) continue;   // 说明性字段
-                var targets = new List<KeyValuePair<string, WormAIConstantsRef>>();
-                if (kv.Key == "all")
+                foreach (var kv in table)
                 {
-                    foreach (var r0 in refs) if (r0.Value != null) targets.Add(r0);
-                }
-                else if (refs.TryGetValue(kv.Key, out var only) && only != null)
-                    targets.Add(new KeyValuePair<string, WormAIConstantsRef>(kv.Key, only));
-                else { L.LogWarning("[AIPROBE] override: unknown level '" + kv.Key + "'"); continue; }
+                    if (kv.Key.StartsWith("_")) continue;   // 说明性字段
+                    if (kv.Value == null) continue;
+                    if (kv.Key != "all" && kv.Key != usedName)
+                    {
+                        L.LogInfo("[AIPROBE] override block '" + kv.Key + "' skipped (in use: " + usedName + ")");
+                        continue;
+                    }
 
-                foreach (var t in targets)
-                {
-                    int n = 0;
                     foreach (var pv in kv.Value)
                     {
                         if (!props.TryGetValue(pv.Key, out var p)) { L.LogWarning("[AIPROBE] unknown prop " + pv.Key); continue; }
                         double old;
-                        try { old = (double)p.GetValue(t.Value); } catch { continue; }
+                        try { old = (double)p.GetValue(usedRef); }
+                        catch (Exception e) { L.LogWarning("[AIPROBE] read " + pv.Key + ": " + e.Message); continue; }
 
                         // 支持三种写法：绝对 "3.5"、倍数 "*1.4"、增量 "+2" / "-0.5"
                         double v;
                         string raw = pv.Value;
-                        if (raw.Length > 0 && (raw[0] == '*' || raw[0] == '+'))
+                        if (raw.Length > 0 && (raw[0] == '*' || raw[0] == '+' || raw[0] == '-'))
                         {
                             if (!double.TryParse(raw.Substring(1), System.Globalization.NumberStyles.Float,
                                     System.Globalization.CultureInfo.InvariantCulture, out double k))
@@ -483,7 +516,7 @@ namespace DuneAiProbe
                                 L.LogWarning("[AIPROBE] bad modifier " + pv.Key + "=" + raw);
                                 continue;
                             }
-                            v = raw[0] == '*' ? old * k : old + k;
+                            v = raw[0] == '*' ? old * k : (raw[0] == '+' ? old + k : old - k);
                         }
                         else if (!double.TryParse(raw, System.Globalization.NumberStyles.Float,
                                      System.Globalization.CultureInfo.InvariantCulture, out v))
@@ -492,18 +525,91 @@ namespace DuneAiProbe
                             continue;
                         }
 
-                        try
-                        {
-                            p.SetValue(t.Value, v);
-                            if (Math.Abs(old - v) > 1e-9)
-                                L.LogInfo("[AIPROBE] " + t.Key + "." + pv.Key + ": " + old + " -> " + v + "  (" + raw + ")");
-                            n++;
-                        }
-                        catch (Exception e) { L.LogWarning("[AIPROBE] set " + pv.Key + ": " + e.Message); }
+                        _weightOverrides[pv.Key] = v;
+                        if (Math.Abs(old - v) > 1e-9)
+                            L.LogInfo("[AIPROBE] queue " + pv.Key + ": " + old + " -> " + v + "  (" + raw + ")");
                     }
-                    L.LogWarning("[AIPROBE] applied " + n + " overrides to " + t.Key);
                 }
             }
+            else L.LogInfo("[AIPROBE] no override file, skip");
+
+            PatchWeightGetters();
+        }
+
+        private static void PatchWeightGetters()
+        {
+            if (_weightOverrides.Count == 0)
+            {
+                L.LogInfo("[AIPROBE] no weight overrides to apply");
+                return;
+            }
+            if (_harmony == null) { L.LogWarning("[AIPROBE] harmony not ready, overrides dropped"); return; }
+
+            var post = typeof(Plugin).GetMethod(nameof(OnWeightGetter),
+                BindingFlags.Static | BindingFlags.NonPublic);
+            int ok = 0, fail = 0, already = 0;
+
+            foreach (var name in _weightOverrides.Keys.ToList())
+            {
+                if (_patchedGetters.Contains(name)) { already++; continue; }
+
+                PropertyInfo prop = null;
+                try
+                {
+                    prop = typeof(WormAIConstantsRef).GetProperty(name,
+                        BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                }
+                catch (Exception e) { L.LogWarning("[AIPROBE] prop " + name + ": " + e.Message); }
+
+                if (prop == null) { L.LogWarning("[AIPROBE] no property named " + name); fail++; continue; }
+                var getter = prop.GetGetMethod(true);
+                if (getter == null) { L.LogWarning("[AIPROBE] " + name + " has no getter"); fail++; continue; }
+                if (getter.ReturnType != typeof(double))
+                {
+                    L.LogWarning("[AIPROBE] " + name + " returns " + getter.ReturnType.Name + ", only double supported");
+                    fail++;
+                    continue;
+                }
+                try
+                {
+                    _harmony.Patch(getter, postfix: new HarmonyMethod(post));
+                    _patchedGetters.Add(name);
+                    ok++;
+                }
+                catch (Exception e) { L.LogWarning("[AIPROBE] patch " + name + ": " + e.Message); fail++; }
+            }
+
+            L.LogWarning("[AIPROBE] weight getters: patched=" + ok + " failed=" + fail + " already=" + already
+                         + " (target=" + (_weightTarget == IntPtr.Zero ? "all levels" : _weightTarget.ToString("X")) + ")");
+        }
+
+        /// <summary>
+        /// 这些权重在 interop 里只有 getter（没有 setter，底层字段也没暴露），
+        /// 所以唯一可行的改法是在 getter 上做后置补丁。getter 是虚方法，走 vtable，不会被内联。
+        /// </summary>
+        private static void OnWeightGetter(WormAIConstantsRef __instance, MethodBase __originalMethod, ref double __result)
+        {
+            if (_weightOverrides.Count == 0) return;
+            if (_weightTarget != IntPtr.Zero)
+            {
+                IntPtr p = IntPtr.Zero;
+                try { p = __instance.Pointer; } catch { }
+                if (p != _weightTarget) return;
+            }
+
+            string name = __originalMethod != null ? __originalMethod.Name : null;
+            if (string.IsNullOrEmpty(name)) return;
+            if (name.StartsWith("get_", StringComparison.Ordinal)) name = name.Substring(4);
+
+            double v;
+            if (!_weightOverrides.TryGetValue(name, out v)) return;
+
+            if (_getterHitBudget > 0 && _getterHitLogged.Add(name))
+            {
+                _getterHitBudget--;
+                L.LogInfo("[AIPROBE] getter used: " + name + " " + __result + " -> " + v);
+            }
+            __result = v;
         }
 
         private static int ReadForceLevel()

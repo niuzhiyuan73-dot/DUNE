@@ -64,6 +64,10 @@
       <HintPath>$(GameDir)\BepInEx\interop\DwdJson.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Utils">
+      <HintPath>$(GameDir)\BepInEx\interop\Utils.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 
 </Project>

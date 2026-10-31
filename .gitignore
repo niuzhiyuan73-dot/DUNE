@@ -30,3 +30,10 @@ dump/api_worm_client.txt
 # 本地密钥（LLM API Key 等，绝不入库）
 mods/ai/deepseek_key.txt
 mods/ai/*_key.txt
+
+# 观察者：每次覆盖写的当前待选文本（临时）
+dump/llm/last_pending.txt
+
+# 离线分析工具的编译产物
+tools/*/bin/
+tools/*/obj/

@@ -40,9 +40,11 @@ namespace DuneAiProbe
         private const string SystemPrompt =
             "你是《沙丘：帝国》(Dune: Imperium) 的资深教练。玩家会给你一份游戏原生导出的待选列表" +
             "（Pending Selection，含有 Kind 与若干 Buttons，按钮里带标题、费用等属性）。" +
+            "实体已译成「中文名(短ID)」的形式，短 ID 只用于区分同名实体，回答时直接用中文名即可。" +
             "请判断哪一项对最终胜利最有利，并给出 2-3 句理由。要求：" +
             "1) 只讨论给出的选项，不要发明新选项；2) 优先考虑胜利点与后期兑现能力，" +
-            "而不是短期资源堆叠；3) 用中文，先给结论（选项标题或序号），再给理由。";
+            "而不是短期资源堆叠；3) 用中文，先给结论（选项标题或序号），再给理由。" +
+            "4) 若某项信息确实缺失（例如只给了 ID 没有名字），明确说缺什么，不要臆测牌名。";
 
         public static void Init(ManualLogSource log, string root)
         {
@@ -102,6 +104,14 @@ namespace DuneAiProbe
             catch (Exception e) { _log.LogWarning("[COACH] name_map: " + e.Message); }
         }
 
+        /// 名称表查询：脚本（Targets）与文本翻译共用。未收录返回 null。
+        public static string NameOf(string key)
+        {
+            if (string.IsNullOrEmpty(key)) return null;
+            string n;
+            return _names.TryGetValue(key, out n) ? n : null;
+        }
+
         private static readonly Regex KeyRe = new Regex(
             @"\b(?:worm|card|button)\.[A-Za-z0-9_.]+", RegexOptions.Compiled);
 
@@ -155,7 +165,8 @@ namespace DuneAiProbe
             int seq = _sent;
 
             pending = Humanize(pending);
-            if (pending.Length > 6000) pending = pending.Substring(0, 6000) + " …(截断)";
+            if (pending.Length > 9000) pending = pending.Substring(0, 9000) + " …(截断)";
+            _log.LogInfo("[COACH] observe #" + seq + " len=" + pending.Length + " player=" + (playerName ?? "?"));
             string user = "AI 玩家：" + (playerName ?? "?") + "（第 " + counter + " 号选择）\n";
             if (!string.IsNullOrEmpty(stateBlock)) user += stateBlock + "\n";
             user += "待选列表：\n" + pending;
