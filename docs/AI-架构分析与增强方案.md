@@ -154,6 +154,63 @@ AIDifficultyLevels  Easy = 0
 
 ---
 
+## 五之一、实测基线（2026-10-31 抓取）
+
+探针终于在 `RunAIResponses` 上抓到数据：`AILevel = 2 (Hard)`，三档 432 项全部导出，
+原始数据在 `dump/ai_constants_baseline.json`。
+
+### 三档难度其实几乎一样
+
+| 项目 | 数值 |
+|---|---|
+| 432 项中三档有差异的 | **29 项**（其余 403 项三档完全相同） |
+| `VictoryPointValueEarly/Mid/Late` | 6 / 6 / 9，**三档一致** |
+
+也就是说 Hard 并不是"更会算分"，它只在 29 个行为参数上更凶：
+
+| 参数 | Easy | Medium | Hard | 含义 |
+|---|---|---|---|---|
+| `ConflictPostureHighMod` | 0.85 | 1.05 | **1.8** | 高强度冲突的投入意愿 |
+| `RichMod` | 1.15 | 1.0 | **0.5** | 资源"富余"后的折价 |
+| `FloodedMod` | 1.15 | 0.85 | **0.25** | 资源"泛滥"后的折价 |
+| `MinimumAcquireValueLate` | 0.5 | 0.75 | **2.2** | 后期买牌门槛（越高越挑） |
+| `GainInfluenceStealAllianceMod` | 0.85 | 1.25 | **1.75** | 抢联盟的意愿 |
+
+### 价格表（Hard 档，单位＝内部评分）
+
+| 项目 | 价值 |
+|---|---|
+| 1 胜利点（后期） | **9** |
+| 1 胜利点（前中期） | 6 |
+| 1 阴谋牌 | 2.25–2.75 |
+| 1 水 | 1.3–2.25 |
+| 1 香料 | 1.5–2 |
+| 1 影响力 | 2.25 |
+| 1 兵 | 1.25 |
+| 1 说服 | 0.66–1 |
+| 1 太阳币（后期） | 0.25 |
+
+换算下来 **1 分 ≈ 6 份香料**。所以"分不值钱"这个猜测可以排除了——
+
+### 对"囤资源不拿分"的修正结论
+
+VP 的定价是整张表里最高的，AI 并没有低估分。它的问题是**拿不到分**，机制有三条：
+
+1. **冲突投入是绝对值，不跟收益挂钩。** `ConflictPosture*` 直接给"目标战力"区间
+   （竞争多时 5–20，高潮期 10–15），而 `ConflictAverageValue` 固定为 **14**——
+   这是照「一至三级混合牌堆」估的均值。你的牌堆全是二级/三级，每场收益都高于 14，
+   于是按 14 算出来的投入目标系统性偏低，打不过就干脆不打。
+2. **不打冲突的回合，它不会"空过投资"，而是花在当期正收益的资源动作上。** 这就是你看到的
+   "抢了一堆没意义的资源"——不是它更喜欢资源，是它在拿不到分的回合里没有更好的事可做。
+3. **后期买牌门槛 2.2 偏高。** 16 分制的后期比 10 分制长，门槛过高会让它后期几乎不补牌，
+   牌组停止进化。
+
+顺带两个在你这套 mod 下已经失效的参数：`GainSwordmasterEarly/Mid = 50`、
+`GainHighCouncilEarly = 15`——四家开局就自带剑术大师/高等议会，这两项再也触发不了，
+留着不碍事，但也说明这张表完全是按原版开局调的。
+
+---
+
 ## 五之二、为什么它会「囤一堆没用的资源，却不拿分」
 
 这不是错觉，是架构决定的。三个原因，按影响排序：
@@ -194,20 +251,21 @@ AIDifficultyLevels  Easy = 0
 用探针导出基线 → 只改下面几组参数 → 用 `ai_override.json` 注入，不改 bundle，随时可回滚。
 预期收益：中高。这是唯一能针对「16 分 / 全高级冲突 / 4 工人」做定向修正的层级。
 
-已备好一份实验档案 `mods/ai/profiles/vp_first.json`（复制为 `mods/ai/ai_override.json` 即生效）：
+已备好一份实验档案 `mods/ai/profiles/vp_first.json`（复制为 `mods/ai/ai_override.json` 即生效）。
+基线已拿到，这里用**绝对值**而不是倍数：
 
-| 参数 | 倍数 | 意图 |
-|---|---|---|
-| `VictoryPointValueMid` / `Late` | ×1.2 / ×1.4 | 让"分"更值钱，末期尤其 |
-| `ConflictAverageValue` | ×1.3 | 全高级冲突局，每场收益都高于原表假设的均值 |
-| `ConflictInterestHandSwordValue` / `GarrisonUnitValue` | ×1.25 | 更愿意为冲突投入手牌/驻军 |
-| `ConflictPostureManyCompetitorsUpperBound` | ×1.25 | 竞争激烈时肯多压兵 |
-| `MinimumAcquireValueMid` / `Late` | ×1.2 / ×1.3 | 提高买牌门槛，少买纯资源牌 |
-| `TrashCardLate` | ×1.5 | 末期更愿意精简牌组 |
-| `SolariRichThreshold` / `SpiceRichThreshold` | ×0.85 | 更早判定"钱/香料已经够多" |
+| 参数 | 原值 | 新值 | 意图 |
+|---|---|---|---|
+| `VictoryPointValueLate` | 9 | **12** | 16 分制后期更长，末期每分更该抢 |
+| `ConflictInterestHandSwordValue` | 1 | **1.3** | 手牌当战力投入时更舍得 |
+| `ConflictPostureNoCompetitorsUpperBound` | 5 | **7** | 无人竞争也别只放最低限度 |
+| `ConflictPostureSomeCompetitorsUpperBound` | 12.5 | **17** | 有人争时把目标战力抬起来 |
+| `ConflictPostureManyCompetitorsUpperBound` | 20 | **26** | 多人混战时肯压更多兵 |
+| `ConflictPostureManyCompetitorsUpperBoundClimax` | 15 | **20** | 高潮期目标战力同步上调 |
 
-全部用**倍数**而不是绝对值，是因为还没拿到基线：倍数在未知基线上仍然安全，
-且每条都能在日志里看到 `旧值 -> 新值 (倍数)`，方便回滚与对比。
+只动了 6 项，全部是"投入强度"类参数（方向明确、不会反转语义）。
+`ConflictAverageValue` 也有嫌疑（14 是按混合牌堆估的），但它的语义可能是"均值基准"也可能是"除数"，
+方向不确定，暂不动——等 `[AIPROBE][ailog]` 里看到 AI 自述的冲突估值再决定。
 
 ### Tier 2 · 动态调制（中等成本，中等风险）
 
