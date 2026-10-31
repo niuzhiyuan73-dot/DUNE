@@ -1380,6 +1380,68 @@ fa88cfcc-67be-4445-abf2-f0a683e3ab4f	博取注意
 label.familyatomics	家族原子标记
 label.gatherintelligence	收集情报
 label.name	名字
+lookup.archdukearmandecaz	伊卡兹大公
+lookup.baronvladimirharkonnen	哈克南男爵
+lookup.benegesserit	贝尼·杰瑟里特
+lookup.benegesseritcolor	#9c48b2
+lookup.benegesseriticon	<sprite name="BeneGesserit">
+lookup.benegesseritwithicon	<sprite name="BeneGesserit">贝尼·杰瑟里特
+lookup.black	#000000
+lookup.blankslate	空白数据板
+lookup.blue	#0000FF
+lookup.circlecolor	#384edc
+lookup.circleicon	<sprite name="PopulationCenter">
+lookup.control.blue	<size=150%><sprite name="ControlMarkerBlue"><size=100%>[space]的控制权
+lookup.control.green	<size=150%><sprite name="ControlMarkerGreen"><size=100%>[space]的控制权
+lookup.control.red	<size=150%><sprite name="ControlMarkerRed"><size=100%>[space]的控制权
+lookup.control.yellow	<size=150%><sprite name="ControlMarkerYellow"><size=100%>[space]的控制权
+lookup.countessarianathorvald	艾莉安娜·托瓦尔德
+lookup.countilbanrichese	伊尔班·里奇塞
+lookup.dukeletoatreides	雷托公爵
+lookup.earlmemnonthorvald	曼农·托瓦尔德
+lookup.emperor	皇帝
+lookup.emperorcolor	#c8c8c8
+lookup.emperoricon	<sprite name="Emperor">
+lookup.emperorwithicon	<sprite name="Emperor">皇帝
+lookup.feydrauthaharkonnen	菲德-罗萨·哈克南
+lookup.fremen	弗雷曼人
+lookup.fremencolor	#00b4ff
+lookup.fremenicon	<sprite name="Fremen">
+lookup.fremenwithicon	<sprite name="Fremen">弗雷曼人
+lookup.glossuthebeastrabban	野兽拉班
+lookup.green	#00FF00
+lookup.gurneyhalleck	哥尼·哈莱克
+lookup.helenarichese	海伦娜·里奇塞
+lookup.ilesaecaz	伊莱莎·伊卡兹
+lookup.ladyambermetulli	安帕·麦图利
+lookup.ladyjessica	杰西卡夫人
+lookup.ladymargotfenring	玛戈·芬伦夫人
+lookup.muaddib	穆阿迪布
+lookup.paulatreides	保罗·厄崔迪
+lookup.pentagoncolor	#066714
+lookup.pentagonicon	<sprite name="Landsraad">
+lookup.persuasionicon	<sprite name="Persuasion">
+lookup.princerhomburvernius	龙伯·维尔涅斯
+lookup.princessirulan	伊勒琅公主
+lookup.princessyunamoritani	尤娜·莫里特尼
+lookup.red	#FF0000
+lookup.reverendmotherjessica	圣母杰西卡
+lookup.shaddamcorrinoiv	沙达姆·科瑞诺四世
+lookup.smuggler	走私者
+lookup.solariicon	<sprite name="Solari">
+lookup.spacingguild	宇航公会
+lookup.spacingguildcolor	#ce1114
+lookup.spacingguildicon	<sprite name="SpacingGuild">
+lookup.spacingguildwithicon	<sprite name="SpacingGuild">宇航公会
+lookup.spiceicon	<sprite name="Spice">
+lookup.stabantuek	斯塔班·图克
+lookup.strengthicon	<sprite name="Strength">
+lookup.tessiavernius	泰西娅·维尔涅斯
+lookup.trianglecolor	#f2a003
+lookup.triangleicon	<sprite name="Commerce">
+lookup.viscounthundromoritani	翁得罗·莫里特尼子
+lookup.watericon	<sprite name="Water">
+lookup.yellow	#FFFF00
 worm.agent.play	派遣你的特使前往可用的面板区域。
 worm.agent.play.opponent	[name]正在选择面板区域。
 worm.alliance.lose	选择一个对手获得[Faction]同盟：

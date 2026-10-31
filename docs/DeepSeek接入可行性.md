@@ -179,3 +179,40 @@
 
 `Coach.Humanize` 增加富文本清理：`<sprite name=DrawCard>` → `DrawCard`（保留图标语义）、
 其余版式标签直接删。之前 `<sprite name=BuyTech_MinusOne> —或— …` 这种会原样进 prompt。
+
+---
+
+## 十、三个收尾项（10-31 深夜，build 2026-10-31g）
+
+### 1. 基础包（Imperium）卡牌效果文本：本地化里不存在
+
+逐项核对过：
+
+- `Localization/win` 的 zh_CN 与 en_US 两份文本键集合完全相同（各 4784 条），
+  `card.imperium.wormriders.*` 只有 `.title`，没有 `.agent` / `.reveal` / `.text`；
+- 卡牌资源包 `9b0d29d4…bundle` 里，沙虫骑士预制体的 `locKey` 也只有 `card.imperium.wormriders.title`；
+- `Localization/gamecore` 段（1866 条）同样没有。
+
+结论：**基础包的效果是图标化表达的**（能力实体靠图标 + 属性渲染），没有可抽取的文本源。
+要补只能走两条路：OCR 卡面贴图（375 张，准确率存疑）或对接公开中文卡表（需人工/联网录入）。
+当前不做，宁缺勿造。
+
+### 2. 同名实体：阵营轨道与部队
+
+存档实测（三个存档一致）：`FactionTracks` 的四个子节点顺序固定为
+`Emperor / SpacingGuild / BeneGesserit / Fremen`，属性 `900009` 也是这个枚举。
+文本里原本只显示 `FactionTrack(28dcf898)`、`Troop(2ee0d4ac)`——同名字段，模型无法区分。
+
+- 轨道：按 `PositionInParent` 取序号，映射到 `lookup.<faction>withicon` 得到 皇帝/宇航公会/贝尼·杰瑟里特/弗雷曼人，
+  并打印 `[TARGETS] faction track idx=N -> 名字` 便于核对；
+- 部队：彼此等价，直接写「部队」，不再带无信息的短 ID。
+
+### 3. 能力类实体的效果
+
+`FamilyAtomicsAbility` 这类实体的 `EntityName` 就是能力类名，中文名与文案都在
+`worm.canis.abilities.<类名>` 下。之前只试过 `button.<类名>`，所以名字与效果都空着。
+
+- 名字：仍走 `button.<类名>`（那是短名），拿不到再用类名；
+- 效果：走 `worm.canis.abilities.<类名>`，例如家族原子弹 → 「移除并替换公共牌池？」。
+
+`name_map.tsv` 同时把 `lookup.*` 纳入（+62 条），供阵营轨道取名用。

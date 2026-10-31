@@ -35,21 +35,24 @@ namespace DuneAiProbe
             new Dictionary<string, string>(StringComparer.Ordinal);
 
         private static int _hit, _miss;
+        private static ManualLogSource _log;
+        private static readonly HashSet<int> _factionLogged = new HashSet<int>();
 
-        // 实体实例 ID -> 原型 GUID，供 Detail 查效果摘要（Resolve 时顺手记下）
-        private static readonly Dictionary<string, string> _effGuid =
+        // 实体实例 ID -> 效果键（原型 GUID，或 worm.canis.abilities.<类名>），Resolve 时顺手记下
+        private static readonly Dictionary<string, string> _effKey =
             new Dictionary<string, string>(StringComparer.Ordinal);
 
         public static string Rewrite(Canis.Match match, string text, ManualLogSource log)
         {
             if (string.IsNullOrEmpty(text)) return text;
+            _log = log;
             try
             {
                 for (int i = 0; i < NoiseKeys.Length; i++) text = StripBlock(text, NoiseKeys[i]);
 
                 IntPtr mp = IntPtr.Zero;
                 try { if (match != null) mp = match.Pointer; } catch { }
-                if (mp != _cacheMatch) { _cache.Clear(); _effGuid.Clear(); _cacheMatch = mp; }
+                if (mp != _cacheMatch) { _cache.Clear(); _effKey.Clear(); _cacheMatch = mp; }
 
                 _hit = 0;
                 _miss = 0;
@@ -238,22 +241,30 @@ namespace DuneAiProbe
             catch { return null; }
         }
 
-        /// <summary>选项的效果摘要：Resolve 时记下的原型 GUID 优先，查不到再按中文名回退。</summary>
+        /// <summary>选项的效果摘要：优先用 Resolve 记下的效果键，GUID 查不到再按中文名回退。</summary>
         private static string EffectFor(string idString, Canis.Match match)
         {
-            string g = null;
-            if (!_effGuid.TryGetValue(idString, out g))
+            string key = null;
+            if (!_effKey.TryGetValue(idString, out key))
             {
-                Replace(idString, match);          // 触发一次解析，把 GUID 补进缓存
-                _effGuid.TryGetValue(idString, out g);
+                Replace(idString, match);          // 触发一次解析，把效果键补进缓存
+                _effKey.TryGetValue(idString, out key);
             }
-            if (string.IsNullOrEmpty(g)) return null;
+            if (string.IsNullOrEmpty(key)) return null;
 
-            string e = Coach.EffectOf(g);
+            string e = Coach.EffectOf(key);        // key 可能是 GUID，也可能是能力本地化键
             if (string.IsNullOrEmpty(e))
             {
-                string nm = Coach.NameOf(g);
-                if (!string.IsNullOrEmpty(nm)) e = Coach.EffectOf(nm);
+                if (IsGuidish(key))
+                {
+                    string nm = Coach.NameOf(key);
+                    if (!string.IsNullOrEmpty(nm)) e = Coach.EffectOf(nm);
+                }
+                else
+                {
+                    // worm.canis.abilities.<类名> 在 name_map 里存的就是效果描述
+                    e = Coach.NameOf(key);
+                }
             }
             return string.IsNullOrEmpty(e) ? null : e;
         }
@@ -324,7 +335,7 @@ namespace DuneAiProbe
 
             // 1) 原型 GUID（attributes 里的 10000 = archetypeID 就是这种）→ 查名称表即可
             string byArch = Coach.NameOf(id);
-            if (byArch != null) { _effGuid[id] = id; _hit++; return byArch + "(" + shortId + ")"; }
+            if (byArch != null) { _effKey[id] = id; _hit++; return byArch + "(" + shortId + ")"; }
 
             if (match == null) { _miss++; return shortId; }
 
@@ -345,6 +356,11 @@ namespace DuneAiProbe
                 string en = null;
                 try { en = ent.EntityName; } catch { }
 
+                // 2a) 同名实体：阵营轨道与部队在存档里只有类名（FactionTrack / Troop），
+                //     轨道靠兄弟顺序区分（实测三个存档顺序一致：皇帝/宇航公会/姐妹会/弗雷曼）
+                string generic = GenericName(en, ent);
+                if (generic != null) { _hit++; return generic; }
+
                 string archGuid = null;
                 try
                 {
@@ -353,21 +369,70 @@ namespace DuneAiProbe
                 }
                 catch { }
 
-                if (archGuid != null) _effGuid[id] = archGuid;
-                string human = Coach.NameOf(archGuid) ?? Coach.NameOf(en) ?? en;
-                if (string.IsNullOrEmpty(human)) { _miss++; return shortId; }
+                string human = Coach.NameOf(archGuid) ?? Coach.NameOf(en);
 
-                // 能力类实体：entityName 是类名（FreighterAgentAbility），中文名在 button.* 键下
-                if (Coach.NameOf(archGuid) == null && Coach.NameOf(en) == null && en != null)
+                // 2b) 能力类实体：entityName 是类名（FamilyAtomicsAbility），
+                //     中文名与效果文本都在 worm.canis.abilities.<类名> 下
+                string abilityKey = null;
+                if (en != null && (Coach.NameOf(archGuid) == null || Coach.NameOf(en) == null))
                 {
-                    string byButton = Coach.NameOf("button." + en);
-                    if (byButton != null) human = byButton;
+                    abilityKey = "worm.canis.abilities." + en;
+                    if (Coach.NameOf(abilityKey) == null) abilityKey = null;
                 }
+
+                if (human == null && en != null) human = Coach.NameOf("button." + en);
+                if (human == null) human = en;
+
+                _effKey[id] = abilityKey ?? archGuid;
+                if (string.IsNullOrEmpty(human)) { _miss++; return shortId; }
 
                 _hit++;
                 return human + "(" + shortId + ")";
             }
             catch { _miss++; return shortId; }
+        }
+
+        /// <summary>
+        /// 存档里阵营轨道与部队都只存类名，没有可读名：
+        ///   FactionTrack —— 四个兄弟节点顺序固定（皇帝/宇航公会/贝尼·杰瑟里特/弗雷曼，三个存档实测一致）；
+        ///   Troop        —— 彼此等价，写成「部队」即可，短 ID 没有信息量。
+        /// </summary>
+        private static string GenericName(string en, Entity ent)
+        {
+            if (string.IsNullOrEmpty(en)) return null;
+
+            if (en == "Troop") return "部队";
+
+            if (en == "FactionTrack")
+            {
+                int idx = -1;
+                try { idx = ent.PositionInParent; } catch { }
+                string key = idx >= 0 && idx < FactionKeys.Length ? "lookup." + FactionKeys[idx] + "withicon" : null;
+                // 这些键带前置图标标签（<sprite name="Emperor">皇帝），图标名对阵营名没有意义，去掉
+                string nm = StripTags(key != null ? Coach.NameOf(key) : null);
+                if (_factionLogged.Add(idx))
+                    try { if (_log != null) _log.LogInfo("[TARGETS] faction track idx=" + idx + " -> " + (nm ?? "<null>")); } catch { }
+                return string.IsNullOrEmpty(nm) ? "阵营轨道#" + idx : nm;
+            }
+            return null;
+        }
+
+        private static readonly string[] FactionKeys = { "emperor", "spacingguild", "benegesserit", "fremen" };
+
+        /// 去掉 <sprite name=...> 这类富文本标签，保留标签外的文字
+        private static string StripTags(string v)
+        {
+            if (string.IsNullOrEmpty(v)) return v;
+            var sb = new System.Text.StringBuilder(v.Length);
+            bool inTag = false;
+            for (int i = 0; i < v.Length; i++)
+            {
+                char c = v[i];
+                if (c == '<') { inTag = true; continue; }
+                if (c == '>') { inTag = false; continue; }
+                if (!inTag) sb.Append(c);
+            }
+            return sb.ToString().Trim();
         }
 
         // ---------- 文本清理 ----------

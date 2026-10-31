@@ -22,7 +22,7 @@ OUT = os.path.join(ROOT, "mods", "ai", "name_map.tsv")
 LOCALE = "zh_CN"
 
 # 值得翻译的键前缀：游戏在协议里直接输出的机器标识
-KEY_PREFIXES = ("worm.", "card.", "button.", "label.", "ability.")
+KEY_PREFIXES = ("worm.", "card.", "button.", "label.", "ability.", "lookup.")
 
 
 def load_locale():
