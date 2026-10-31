@@ -365,7 +365,7 @@ FACTIONS = {
         "pro_remove": [],
         "extra_add": [CARD["KwisatzHaderach"]],
         "extra_remove": [CARD["Dagger"]],
-        "ultra_add": [CARD["LadyJessica"], CARD["Mohiam"]],
+        "ultra_add": [CARD["LadyJessica"], CARD["Mohiam"], CARD["Diplomacy"]],
         "ultra_remove": [],
         "ultra_tech": [TECH["Memocorders"]],
         "note": "+1 随机密卡，+暗中准备+奇异女士+基因操控，-侦查-沙丘-匕首",
@@ -383,7 +383,7 @@ FACTIONS = {
         "extra_add": [CARD["Steersman"]],
         "extra_remove": [CARD["ConvincingArgument"]],   # 一张说服换回沙丘（沙丘不再被移除）
         "ultra_add": [CARD["Steersman"], CARD["GuildBanker"]],
-        "ultra_remove": [],
+        "ultra_remove": [CARD["Dagger"]],
         "ultra_tech": [TECH["Minimicfilm"]],
         "note": "+1 香料，+私人航班+降落许可+太空旅行+卫星禁令，-匕首-沙丘-侦查-寻求盟友",
     },
@@ -400,7 +400,8 @@ FACTIONS = {
         "extra_remove": [CARD["ConvincingArgument"], CARD["Dagger"]],
         # Ultra：再拿掉一张匕首，加登基大典 + 占领，开局进高等议会
         "ultra_add": [CARD["Coronation"], CARD["Occupation"]],
-        "ultra_remove": [CARD["Dagger"]],
+        # 匕首在 Extra 阶段已删光，这里不再重复声明（否则每次构建都会警告）
+        "ultra_remove": [CARD["Experimentation"]],
         "ultra_tech": [TECH["Artillery"]],
         "ultra_high_council": True,
         "note": "+1 太阳币，+双面间谍+萨多卡士兵+帝国镇暴兵，-说服-匕首-侦查",
@@ -572,7 +573,7 @@ def effective_workers(agents, swordmaster):
 
 def make_player(idx, human, deck, intrigue, res, techs=None, agents=2, swordmaster=False,
                 seat=None, garrison=0, bonus_garrison=0, maker_hooks=False,
-                high_council=False):
+                high_council=False, ai_level=1):
     # seat 是「座位号」（0 = 先手）。它同时决定 StartingOrder 与 PlayerColor，
     # 早期版本固定写成 idx，导致人类玩家（idx 0）永远是先手。
     seat = idx if seat is None else seat
@@ -606,7 +607,8 @@ def make_player(idx, human, deck, intrigue, res, techs=None, agents=2, swordmast
         },
         "name": "",
         "isHuman": human,
-        "aiLevel": 0 if human else 1,
+        # aiLevel: 0=Easy / 1=Medium / 2=Hard（对应 AIDifficultyLevels 枚举），人类固定 0
+        "aiLevel": 0 if human else int(ai_level),
         "metadata": {},
         "accountID": f"00000000-0000-4000-8000-0000000000{idx:02d}",
     }
@@ -630,7 +632,7 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
           conflict_order=None, conflict_repeat=None, mods=None, first_order=None,
           extra_techs=None, conflict_same=None, conflict_count=10,
           garrison=None, bonus_garrison=0, maker_hooks=False, blow_wall=False,
-          high_council=None):
+          high_council=None, ai_level=1):
     m = dict(MODES[mode])
     # 模式自带的固定叠加（例如分阵营 Ultra 必定开跃迁 + 最后的时代 Ultra）
     cli_garrison, cli_hooks, cli_wall = garrison, maker_hooks, blow_wall
@@ -746,10 +748,16 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
         if m.get("ultra_ops") and fk:
             f = FACTIONS[fk]
             # 四家都去掉所有「说服」，再按阵营去掉各自的牌
-            for gid in [CARD["ConvincingArgument"], CARD["ConvincingArgument"]] + list(f.get("ultra_remove", [])):
+            for gid in [CARD["ConvincingArgument"], CARD["ConvincingArgument"]]:
+                if gid in deck:          # 各家剩的说服数量不同，删不到属正常
+                    deck.remove(gid)
+                    ultra_removed.append(gid)
+            for gid in f.get("ultra_remove", []):
                 if gid in deck:
                     deck.remove(gid)
                     ultra_removed.append(gid)
+                else:
+                    print(f"      [警告] Ultra 待删除卡不在牌组中: {name_of(gid)}")
             deck.extend(f.get("ultra_add", []))
             techs.extend(f.get("ultra_tech", []))
         if extra_techs:
@@ -759,7 +767,8 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
         players.append(make_player(i, i == 0, deck, intrigue, res, techs,
                                    agents=agents, swordmaster=swordmaster, seat=seats[i],
                                    garrison=0, bonus_garrison=gbonus,
-                                   maker_hooks=maker_hooks, high_council=hc))
+                                   maker_hooks=maker_hooks, high_council=hc,
+                                   ai_level=ai_level))
         loadouts.append({"faction": fk, "deck": deck, "resources": res,
                          "intrigue": intrigue, "removed": removed, "swapped": swapped,
                          "techs": techs, "mod_log": mod_log,
@@ -828,6 +837,8 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
         stem += f"_gb{bonus_garrison:+d}".replace("+", "p")
     if cli_wall:
         stem += "_wall"
+    if ai_level != 1:
+        stem += f"_ai{ai_level}"      # 非默认难度单独命名，避免覆盖 Medium 预设
     out = os.path.join(OUT_DIR, f"{stem}_{BUNDLE}")
     with open(out, "wb") as f:
         f.write(env.file.save(packer="lz4"))
@@ -948,6 +959,8 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
         "mods": mods, "mod_labels": [MODS[mk]["label"] for mk in mods],
         "first": "你" if first_idx == 0 else f"AI{first_idx}",
         "first_index": first_idx,
+        "ai_level": ai_level,
+        "ai_label": {0: "Easy", 1: "Medium", 2: "Hard"}.get(ai_level, f"Level{ai_level}"),
         "players": [{"index": i, "is_human": i == 0,
                      "faction": lo["faction"],
                      "faction_label": FACTIONS[lo["faction"]]["label"] if lo["faction"] else None,
@@ -1036,6 +1049,14 @@ if __name__ == "__main__":
     blow_wall = "--blow-wall" in args
     if blow_wall:
         args.remove("--blow-wall")
+    ai_arg = take("--ai-level")           # 0=Easy / 1=Medium（默认）/ 2=Hard
+    if ai_arg is None:
+        ai_level = 1
+    elif ai_arg.isdigit() and 0 <= int(ai_arg) <= 2:
+        ai_level = int(ai_arg)
+    else:
+        print(f"未知 AI 难度：{ai_arg}（可选：0=Easy / 1=Medium / 2=Hard）")
+        raise SystemExit(1)
     extra_arg = take("--extra-tech")      # 科技名或 GUID，逗号分隔，允许重复（实验用）
     extra_techs = []
     if extra_arg:
@@ -1096,7 +1117,7 @@ if __name__ == "__main__":
                   first_order=first_arg, extra_techs=extra_techs or None,
                   conflict_same=conflict_same, conflict_count=conflict_count,
                   garrison=garrison, bonus_garrison=bonus_garrison,
-                  maker_hooks=maker_hooks, blow_wall=blow_wall)
+                  maker_hooks=maker_hooks, blow_wall=blow_wall, ai_level=ai_level)
     finally:
         if log_path:
             sys.stdout.flush()
