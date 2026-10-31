@@ -12,7 +12,10 @@
 数组顺序完全不动。
 
 用法（由 launch_mod.ps1 在启动前调用）：
-  python mods/tools/randomize_seats.py [--seed N] [--quiet]
+  python mods/tools/randomize_seats.py [--seed N] [--quiet] [--ascii]
+
+--ascii：输出英文。启动脚本跑在 GBK 代码页的控制台上，UTF-8 中文会显示成乱码，
+所以由脚本调用时一律加这个开关。
 """
 import json
 import os
@@ -20,6 +23,24 @@ import random
 import sys
 
 import UnityPy
+
+ASCII = False
+
+
+def say(zh, en):
+    print("[seats] " + (en if ASCII else zh))
+
+
+def die(zh, en):
+    raise SystemExit(en if ASCII else zh)
+
+
+def ordinal(n):
+    if 10 <= n % 100 <= 20:
+        suf = "th"
+    else:
+        suf = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suf}"
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 BUNDLE = os.path.join(ROOT, "game", "DuneImperium_Data", "StreamingAssets", "aa",
@@ -39,12 +60,14 @@ def load_doc(env):
         if isinstance(txt, bytes):
             txt = txt.decode("utf-8", "replace")
         return o, ta, json.loads(txt)
-    raise SystemExit("剧本包里找不到 StandardSolo")
+    die("剧本包里找不到 StandardSolo", "TextAsset StandardSolo not found in bundle")
 
 
 def main():
+    global ASCII
     args = sys.argv[1:]
     quiet = "--quiet" in args
+    ASCII = "--ascii" in args
     seed = None
     if "--seed" in args:
         i = args.index("--seed")
@@ -54,14 +77,15 @@ def main():
         random.seed(seed)
 
     if not os.path.exists(BUNDLE):
-        raise SystemExit("找不到剧本包：" + BUNDLE)
+        die("找不到剧本包：" + BUNDLE, "bundle not found: " + BUNDLE)
 
     env = UnityPy.load(BUNDLE)
     obj, ta, doc = load_doc(env)
 
     players = doc.get("wormPlayers") or []
     if len(players) != 4:
-        raise SystemExit(f"玩家数不是 4（{len(players)}），不做随机排座")
+        die(f"玩家数不是 4（{len(players)}），不做随机排座",
+            f"expected 4 players, got {len(players)}; seats left untouched")
 
     seats = [0, 1, 2, 3]
     random.shuffle(seats)
@@ -82,9 +106,11 @@ def main():
     human = next((p for p in players if p.get("isHuman")), None)
     if not quiet:
         order = [(i, p["StartingOrder"], p["PlayerColor"]) for i, p in enumerate(players)]
-        print("[seats] 本次座位：" + "  ".join(f"#{i}->{o}({c})" for i, o, c in order))
+        table = "  ".join(f"#{i}->{o}({c})" for i, o, c in order)
+        say("本次座位：" + table, table)
         if human:
-            print(f"[seats] 你是第 {human['StartingOrder']} 位行动（{human['PlayerColor']}）")
+            say(f"你是第 {human['StartingOrder']} 位行动（{human['PlayerColor']}）",
+                f"you act {ordinal(human['StartingOrder'])} ({human['PlayerColor']})")
 
 
 if __name__ == "__main__":

@@ -82,6 +82,48 @@ function Unswap {
     if (Test-Path -LiteralPath $StateFile) { Remove-Item -LiteralPath $StateFile -Force }
 }
 
+# Reshuffle seats on every launch: the seat numbers live inside the installed
+# scenario bundle, so this has to run right before the game starts.
+# The helper is called with --ascii because this console uses the GBK code page
+# and UTF-8 Chinese output would come out garbled.
+function Invoke-SeatShuffle {
+    $seater = Join-Path $Root "mods\tools\randomize_seats.py"
+    if (-not (Test-Path -LiteralPath $seater)) { return }
+
+    $cands = @(
+        (Join-Path $env:USERPROFILE ".workbuddy\binaries\python\versions\3.13.12\python.exe"),
+        "python"
+    )
+
+    $savedEap = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    $lastOut = $null
+    try {
+        foreach ($c in $cands) {
+            if ($c -eq "python") {
+                if (-not (Get-Command python -ErrorAction SilentlyContinue)) { continue }
+            } elseif (-not (Test-Path -LiteralPath $c)) {
+                continue
+            }
+            $lastOut = & $c $seater --ascii 2>&1
+            if ($LASTEXITCODE -eq 0) {
+                $lastOut | ForEach-Object { Write-Host ("$_") }
+                return
+            }
+        }
+        Write-Host "[seats] shuffle unavailable (no python with UnityPy); keeping scenario seats"
+        if ($lastOut) {
+            $lastOut | Select-Object -First 4 | ForEach-Object { Write-Host ("[seats]   " + $_) }
+        }
+    }
+    catch {
+        Write-Host ("[seats] skipped: " + $_.Exception.Message)
+    }
+    finally {
+        $ErrorActionPreference = $savedEap
+    }
+}
+
 Write-Host "=== Dune Imperium modded launcher ==="
 
 if (-not (Test-Path -LiteralPath $Exe)) {
@@ -106,45 +148,28 @@ if (-not (Test-Path -LiteralPath $appidFile)) {
     Write-Host "[init] created steam_appid.txt"
 }
 
+$fatal = $null
 try {
     Swap-To-Profile
-
-    # 每次启动重新随机排座（座位号会写进剧本包，所以放在启动前做）
-    $seater = Join-Path $Root "mods\tools\randomize_seats.py"
-    if (Test-Path -LiteralPath $seater) {
-        $pyCands = @(
-            (Join-Path $env:USERPROFILE ".workbuddy\binaries\python\versions\3.13.12\python.exe"),
-            "python"
-        )
-        $py = $null
-        foreach ($c in $pyCands) {
-            if ($c -ne "python" -and -not (Test-Path -LiteralPath $c)) { continue }
-            try {
-                & $c -c "import UnityPy" 2>$null | Out-Null
-                if ($LASTEXITCODE -eq 0) { $py = $c; break }
-            } catch { }
-        }
-        if ($py) {
-            try {
-                $seatOut = & $py $seater 2>&1
-                if ($LASTEXITCODE -eq 0) { $seatOut | ForEach-Object { Write-Host $_ } }
-                else { Write-Host "[seats] 随机排座失败（不影响启动）" }
-            }
-            catch { Write-Host "[seats] 跳过随机排座：$($_.Exception.Message)" }
-        }
-        else {
-            Write-Host "[seats] 未找到带 UnityPy 的 Python，本次沿用剧本里的座位"
-        }
-    }
+    Invoke-SeatShuffle
 
     Write-Host "[run] launching game..."
     $p = Start-Process -FilePath $Exe -WorkingDirectory (Split-Path -Parent $Exe) -PassThru
     $p.WaitForExit()
     Write-Host "[run] game exited (code $($p.ExitCode))"
 }
+catch {
+    $fatal = $_
+    Write-Host ("[ERROR] " + $_.Exception.Message)
+}
 finally {
     Unswap
     Write-Host "[swap] real profile restored"
+}
+
+if ($fatal) {
+    Read-Host "Press Enter to exit"
+    exit 1
 }
 
 Read-Host "Press Enter to close"
