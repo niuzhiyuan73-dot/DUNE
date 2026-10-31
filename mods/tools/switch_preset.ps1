@@ -42,7 +42,7 @@ function Show-Menu {
     Write-Host "  叠加玩法：霍尔兹曼跃迁 $s1（m）｜ 最后的时代 $s2（n）｜ Ultra $s4（u）｜ 议会霸权 $s3（c）"
     Write-Host "   霍尔兹曼跃迁：起始带霍兹曼引擎 + 寻求盟友→伊克斯舰组"
     Write-Host "   最后的时代：  每人开局 3 个工人（自带剑术大师）"
-    Write-Host "   最后的时代 Ultra：每人开局 4 个工人（与「最后的时代」二选一）"
+    Write-Host "   最后的时代 Ultra：每人开局 4 个工人 + 1 块霍兹曼引擎（与「最后的时代」二选一）"
     Write-Host "   议会霸权：    每人多一块弹药制约科技 + 1 太阳币"
     Write-Host ""
     Write-Host "  马拉松（20 分）"

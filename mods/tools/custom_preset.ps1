@@ -77,7 +77,7 @@ $FacDefs = @(
 $ModDefs = @(
     @{ Text = "霍尔兹曼跃迁";              Key = "holtzman" },
     @{ Text = "最后的时代（3 工人）";       Key = "lasttime" },
-    @{ Text = "最后的时代 Ultra（4 工人）"; Key = "lasttime_ultra" },
+    @{ Text = "最后的时代 Ultra（4 工人 + 引擎）"; Key = "lasttime_ultra" },
     @{ Text = "议会霸权";                  Key = "council" }
 )
 

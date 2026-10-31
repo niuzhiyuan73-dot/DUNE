@@ -123,12 +123,13 @@ MODS = {
         "label": "最后的时代 Ultra",
         # 4 个工人：agents 3 + 剑术大师 1。这是最早那版「写满」的配置，
         # 当时被当成 bug；现在作为独立的 Ultra 档位保留，与 lasttime 互斥。
-        "note": "开局 4 个工人：起始特工 3 + 自带剑术大师（剑术大师本身再解锁 1 个）",
+        # 自带一块霍兹曼引擎；若再叠「霍尔兹曼跃迁」，两份同名科技叠加（实测引擎接受重复）。
+        "note": "开局 4 个工人 + 1 块霍兹曼引擎（与跃迁叠加则两块）",
         "agents": 3,
         "swordmaster": True,
-        "techs": [],
+        "techs": [TECH["HoltzmanEngine"]],
         "replace": [],
-        "require_sets": [],
+        "require_sets": ["RiseOfIx"],
         "suffix": "ultra",
         "excludes": ["lasttime"],
     },
@@ -513,7 +514,8 @@ def load_base():
 
 
 def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
-          conflict_order=None, conflict_repeat=None, mods=None, first_order=None):
+          conflict_order=None, conflict_repeat=None, mods=None, first_order=None,
+          extra_techs=None):
     m = MODES[mode]
     mods = list(mods or [])
     for mk in mods:
@@ -594,6 +596,9 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
                 else:
                     deck.append(new_gid)
                     mod_log.append(("追加", None, new_gid))
+        if extra_techs:
+            # 实验用：直接追加科技，允许重复（用于验证「同一玩家两份相同科技」是否被引擎接受）
+            techs.extend(extra_techs)
         players.append(make_player(i, i == 0, deck, intrigue, res, techs,
                                    agents=agents, swordmaster=swordmaster, seat=seats[i]))
         loadouts.append({"faction": fk, "deck": deck, "resources": res,
@@ -649,6 +654,8 @@ def build(mode, faction_key=None, sets_list=None, install=False, seed=None,
     for mk in MOD_ORDER:
         if mk in mods:
             stem += "_" + MODS[mk]["suffix"]
+    if extra_techs:
+        stem += "_techx"          # 实验包单独命名，避免覆盖正常预设
     out = os.path.join(OUT_DIR, f"{stem}_{BUNDLE}")
     with open(out, "wb") as f:
         f.write(env.file.save(packer="lz4"))
@@ -822,6 +829,20 @@ if __name__ == "__main__":
         print(f"未知冲突顺序：{conflict_order}（可选：fixed / shuffle / natural）")
         raise SystemExit(1)
     first_arg = take("--first")           # random | human | 1-4（1=你）
+    extra_arg = take("--extra-tech")      # 科技名或 GUID，逗号分隔，允许重复（实验用）
+    extra_techs = []
+    if extra_arg:
+        for tok in extra_arg.split(","):
+            tok = tok.strip()
+            if not tok:
+                continue
+            if tok in TECH:
+                extra_techs.append(TECH[tok])
+            elif len(tok) == 36 and tok.count("-") == 4:
+                extra_techs.append(tok)
+            else:
+                print(f"未知科技：{tok}（可选：{', '.join(TECH)}，或 36 位 GUID）")
+                raise SystemExit(1)
     sets_arg = take("--sets")
     if sets_arg:
         sets_arg = [x.strip() for x in sets_arg.split(",") if x.strip()]
@@ -864,7 +885,7 @@ if __name__ == "__main__":
         for mode, key in todo:
             build(mode, faction_key=key, sets_list=sets_arg, install=install,
                   conflict_order=conflict_order, conflict_repeat=repeat_val, mods=mods,
-                  first_order=first_arg)
+                  first_order=first_arg, extra_techs=extra_techs or None)
     finally:
         if log_path:
             sys.stdout.flush()
