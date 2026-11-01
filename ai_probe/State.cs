@@ -51,6 +51,7 @@ namespace DuneAiProbe
                 if (players == null) { log.LogInfo("[STATE] no players"); return null; }
 
                 int n = players.Count;
+                var strengths = new List<KeyValuePair<string, int>>();
                 sb.Append("【局势】\n");
                 for (int i = 0; i < n; i++)
                 {
@@ -86,6 +87,11 @@ namespace DuneAiProbe
                     AppendDiscardCount(sb, p);
                     sb.Append('\n');
 
+                    if (wp2 != null)
+                    {
+                        try { strengths.Add(new KeyValuePair<string, int>(nm, wp2.Strength)); } catch { }
+                    }
+
                     // 明细只给本 AI：对手手牌构成是隐藏信息，数量即可。
                     if (isMe && wp2 != null)
                     {
@@ -97,6 +103,8 @@ namespace DuneAiProbe
                             sb.Append("  密谋明细：").Append(intr).Append('\n');
                     }
                 }
+
+                AppendStrengthRank(sb, strengths, asker);
 
                 // 全局局面：当前冲突 + 版图占用
                 string shared = RenderShared(match, log);
@@ -114,6 +122,41 @@ namespace DuneAiProbe
                 log.LogWarning("[STATE] " + e.GetType().Name + ": " + e.Message);
                 return null;
             }
+        }
+
+        /// <summary>
+        /// 战力排名：只在有人战力 > 0 时输出（平时全 0，避免每回合刷噪声）。
+        /// Strength 是含部队/沙虫/剑刃/密谋加成的当前总战力，战斗阶段直接决定三档奖励归属。
+        /// 排名显式编号并标出并列 —— 实测只给「A > B > C」时模型会算错名次（把第 2 说成第 3）。
+        /// </summary>
+        private static void AppendStrengthRank(StringBuilder sb, List<KeyValuePair<string, int>> list,
+                                               PlayerEntity asker)
+        {
+            if (list == null || list.Count == 0) return;
+            bool any = false;
+            for (int i = 0; i < list.Count; i++) if (list[i].Value > 0) { any = true; break; }
+            if (!any) return;
+
+            string me = null;
+            try { me = asker != null ? asker.PlayerName : null; } catch { }
+
+            var sorted = new List<KeyValuePair<string, int>>(list);
+            sorted.Sort((a, b) => b.Value.CompareTo(a.Value));
+
+            sb.Append("【战力】");
+            int rank = 0, prev = int.MinValue;
+            for (int i = 0; i < sorted.Count; i++)
+            {
+                if (sorted[i].Value != prev) { rank = i + 1; prev = sorted[i].Value; }
+                if (i > 0) sb.Append("｜");
+                sb.Append(rank).Append('.').Append(sorted[i].Key).Append(' ').Append(sorted[i].Value);
+                if (sorted[i].Key == me) sb.Append("（本 AI）");
+                if (sorted[i].Value == 0) sb.Append("（无战力，拿不到奖励）");
+                // 并列：下一名与当前同分就标出来，模型据此走「并列第一都拿第二栏」
+                if (i + 1 < sorted.Count && sorted[i + 1].Value == sorted[i].Value && sorted[i].Value > 0)
+                    sb.Append("（并列）");
+            }
+            sb.Append("\n");
         }
 
         // ---------- 每玩家分段 ----------

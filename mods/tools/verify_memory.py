@@ -136,6 +136,10 @@ def main():
     check("配额按局重置", "ResetQuotaForNewMatch" in coach and "_quotaMatch" in coach)
     check("配额用完有明确告警", "本局配额已用完" in coach)
     check("可用特使 0 也输出（不省略）", "已全部派出" in read(os.path.join(SRC, "State.cs")))
+    state = read(os.path.join(SRC, "State.cs"))
+    check("战斗：输出各方战力与排名", "【战力】" in state and "Strength" in state)
+    check("战斗：战力全 0 时不刷噪声", "any" in state and "return" in state)
+    check("战斗：并列要显式标出", "并列" in state or "rank" in state)
     check("多 key 轮询", "NextKey()" in coach and "LoadKeys" in coach)
     check("不再用全局 Authorization", "DefaultRequestHeaders.Add" not in coach)
 

@@ -1,10 +1,15 @@
 # 效果文本缺口清单（按状态分组，组内按出现次数降序）
 # 说明：unknown=尚未采集到（可能有该效果）；ambiguous=同名多版本无法确定；absent=已确认没有该效果
-# [unknown] 行数: 5
-20	ReturnSpecimenAbility
+# [unknown] 行数: 10
+27	ReturnSpecimenAbility
 5	伊克斯工程师
-2	Player
-1	RecallSpyIntelligenceAbility
+3	Player
+2	RecallSpyIntelligenceAbility
 1	IxianEngineerAbility
+1	SpiceRefineryAbility
+1	狂热之心
+1	再生军队
+1	强化反射
+1	GainResearchCustomAbility
 # [ambiguous] 行数: 0
 # [absent] 行数: 0
