@@ -83,6 +83,8 @@ namespace DuneAiProbe
                         TryAppend(sb, "手牌", () => wp2.HandCount);
                         TryAppend(sb, "牌库", () => wp2.DeckCount);
                         TryAppend(sb, "密谋", () => wp2.IntrigueHandCount);
+                        // 说服只在展示阶段有意义，为 0 时不输出（避免每次都刷）；规则上"没这个字段就是 0"
+                        try { int pe = WormEntityExtensions.Persuasion(p); if (pe > 0) sb.Append("｜说服 ").Append(pe); } catch { }
                     }
                     AppendDiscardCount(sb, p);
                     sb.Append('\n');
