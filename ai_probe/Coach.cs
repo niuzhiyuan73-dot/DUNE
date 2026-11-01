@@ -493,7 +493,7 @@ namespace DuneAiProbe
 
         /// 在游戏线程里调用：pending 必须是已经转成托管字符串的文本。
         public static void Observe(string playerName, int counter, string stateBlock, string pending,
-            string memoryBlock = null)
+            string memoryBlock = null, long playerKey = 0)
         {
             if (!Enabled || string.IsNullOrEmpty(pending)) return;
 
@@ -529,7 +529,7 @@ namespace DuneAiProbe
             if (!string.IsNullOrEmpty(mech)) user += "【相关机制】\n" + mech;
             user += "待选列表：\n" + pending;
 
-            Task.Run(() => Send(seq, playerName, user, pending, stateBlock, memoryBlock, counter));
+            Task.Run(() => Send(seq, playerName, user, pending, stateBlock, memoryBlock, counter, playerKey));
         }
 
         /// 单次 prompt 的字符预算。
@@ -592,7 +592,7 @@ namespace DuneAiProbe
         }
 
         /// 在后台线程同步完成一次请求（不能用 async lambda：本工程引用的 Il2Cppmscorlib 缺 NullableAttribute）。
-        private static void Send(int seq, string playerName, string user, string pending, string state, string memory, int gameCounter)
+        private static void Send(int seq, string playerName, string user, string pending, string state, string memory, int gameCounter, long playerKey)
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
             try
@@ -611,7 +611,7 @@ namespace DuneAiProbe
                     int code = (int)resp.StatusCode;
                     _log.LogInfo("[COACH] #" + seq + " " + (int)sw.ElapsedMilliseconds + "ms http=" + code
                                  + " -> " + Short(answer, 300));
-                    Append(seq, playerName, pending, answer, (int)sw.ElapsedMilliseconds, code, text, state, memory, gameCounter);
+                    Append(seq, playerName, pending, answer, (int)sw.ElapsedMilliseconds, code, text, state, memory, gameCounter, playerKey);
                 }
             }
             catch (Exception e)
@@ -619,14 +619,14 @@ namespace DuneAiProbe
                 sw.Stop();
                 _log.LogWarning("[COACH] #" + seq + " failed after " + (int)sw.ElapsedMilliseconds + "ms: "
                                 + e.GetType().Name + ": " + e.Message);
-                Append(seq, playerName, pending, null, (int)sw.ElapsedMilliseconds, -1, e.Message, state, memory, gameCounter);
+                Append(seq, playerName, pending, null, (int)sw.ElapsedMilliseconds, -1, e.Message, state, memory, gameCounter, playerKey);
             }
         }
 
-        private static void Append(int seq, string player, string pending, string answer, int ms, int http, string raw, string state = null, string memory = null, int gameCounter = 0)
+        private static void Append(int seq, string player, string pending, string answer, int ms, int http, string raw, string state = null, string memory = null, int gameCounter = 0, long playerKey = 0)
         {
             // 记进本局记忆时只当"建议"，绝不写成已执行 —— 我们并不知道玩家是否照做。
-            if (!string.IsNullOrEmpty(answer)) Memory.NoteAdvice(player, answer, _log);
+            if (!string.IsNullOrEmpty(answer)) Memory.NoteAdvice(playerKey, answer, _log);
             try
             {
                 string line = "{\"seq\":" + seq

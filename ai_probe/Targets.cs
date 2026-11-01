@@ -118,7 +118,7 @@ namespace DuneAiProbe
         /// 其余的交给 ToString（Choices 之类它自己会打）。
         /// </summary>
         public static string Detail(Networking.selection.messages.SelectionMessage selection,
-            Canis.Match match, ManualLogSource log)
+            Canis.Match match, ManualLogSource log, int counter = 0)
         {
             if (selection == null) return null;
             try
@@ -143,6 +143,8 @@ namespace DuneAiProbe
                     string kid = null;
                     try { if (kv.Key != null) kid = kv.Key.ToString(); } catch { }
                     string label = kid != null ? Replace(kid, match) : "?";
+                    // 顺手登记"实体ID → 中文名"：postfix 拿到实选 entityID 后据此还原同一套名字
+                    if (kid != null) Actual.NoteOption(counter, kid, label);
 
                     // 选项侧补一句效果：模型反复说「没有效果文本，无法判断」，这一句就是给它判断依据
                     string eff = null;

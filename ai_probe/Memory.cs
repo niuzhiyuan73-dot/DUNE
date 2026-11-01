@@ -32,12 +32,14 @@ namespace DuneAiProbe
         {
             public long MatchPtr;
             public int Round;
-            public readonly Dictionary<string, State.Snapshot> Last =
-                new Dictionary<string, State.Snapshot>(StringComparer.Ordinal);
-            public readonly Dictionary<string, List<string>> Events =
-                new Dictionary<string, List<string>>(StringComparer.Ordinal);
-            public readonly Dictionary<string, List<string>> Advice =
-                new Dictionary<string, List<string>>(StringComparer.Ordinal);
+            // 键用玩家对象指针，而不是名字：实测出现过 "AI（困难）" 这类占位名，
+            // 按名字分桶会让两个 AI 的记忆串在一起。
+            public readonly Dictionary<long, State.Snapshot> Last =
+                new Dictionary<long, State.Snapshot>();
+            public readonly Dictionary<long, List<string>> Events =
+                new Dictionary<long, List<string>>();
+            public readonly Dictionary<long, List<string>> Advice =
+                new Dictionary<long, List<string>>();
             public bool DiagLogged;
         }
 
@@ -48,7 +50,7 @@ namespace DuneAiProbe
         /// 在游戏线程调用：取快照 → 与上次比较 → 追加事件 → 返回可直接放进 prompt 的记忆块。
         /// 任何一步失败都返回 null（调用方按"没有记忆"处理），不影响决策主流程。
         /// </summary>
-        public static string Update(Canis.Match match, PlayerEntity me, string playerName, ManualLogSource log)
+        public static string Update(Canis.Match match, PlayerEntity me, long playerKey, string playerName, ManualLogSource log)
         {
             try
             {
@@ -69,11 +71,11 @@ namespace DuneAiProbe
                     }
 
                     State.Snapshot prev;
-                    bool hasPrev = _s.Last.TryGetValue(who, out prev) && prev.Valid;
-                    var ev = GetList(_s.Events, who);
+                    bool hasPrev = _s.Last.TryGetValue(playerKey, out prev) && prev.Valid;
+                    var ev = GetList(_s.Events, playerKey);
 
                     if (hasPrev) Diff(prev, snap, ev);
-                    _s.Last[who] = snap;
+                    _s.Last[playerKey] = snap;
 
                     // 首次渲染时打一条诊断：确认字段真的取到了，而不是全是默认值
                     if (!_s.DiagLogged && hasPrev)
@@ -86,7 +88,7 @@ namespace DuneAiProbe
                                         + " events=" + ev.Count);
                     }
 
-                    return Compose(who);
+                    return Compose(playerKey);
                 }
             }
             catch (Exception e)
@@ -97,19 +99,18 @@ namespace DuneAiProbe
         }
 
         /// <summary>后台线程调用：把已经发出的建议记下来，明确标注"未确认执行"。</summary>
-        public static void NoteAdvice(string playerName, string answer, ManualLogSource log)
+        public static void NoteAdvice(long playerKey, string answer, ManualLogSource log)
         {
             try
             {
                 if (string.IsNullOrEmpty(answer)) return;
-                string who = string.IsNullOrEmpty(playerName) ? "?" : playerName;
                 string one = FirstLine(answer);
                 if (one.Length > 48) one = one.Substring(0, 48) + "…";
 
                 lock (_lock)
                 {
                     if (_s == null) return;
-                    var list = GetList(_s.Advice, who);
+                    var list = GetList(_s.Advice, playerKey);
                     // 带上轮次：让模型能判断"这是上一轮的建议，可能已经过时"
                     list.Add("第" + _s.Round + "轮：" + one);
                     while (list.Count > MaxAdvice) list.RemoveAt(0);
@@ -159,10 +160,10 @@ namespace DuneAiProbe
                 ev.Add(r + (b.Ally[i] ? "：获得 " : "：失去 ") + State.FactionName(i) + "同盟");
             }
 
-            // 牌组规模：不指名是哪张（手牌每轮换，差集不可靠），只报总数事实
-            int ta = a.Hand + a.Deck + a.Discard, tb = b.Hand + b.Deck + b.Discard;
-            if (ta != tb && ta > 0 && tb > 0)
-                ev.Add(r + "：牌组总张数 " + ta + "→" + tb + "（具体是哪张无法确认）");
+            // 牌组总张数刻意不报：实测把牌打出去时，牌从手牌移到"使用中"区域，
+            // 手牌+牌库+弃牌之和会 -1，看起来像"失去一张牌"，纯属误报（2026-11-01 实机验证）。
+            // 同理也不猜具体是哪张牌——手牌每轮全换，前后差集不可靠。
+            // 宁可少一条信息，也不要给模型一条会误导的"事实"。
 
             if (b.Intrigue != a.Intrigue && b.Intrigue >= 0 && a.Intrigue >= 0)
                 ev.Add(r + "：密谋手牌 " + a.Intrigue + "→" + b.Intrigue);
@@ -175,11 +176,11 @@ namespace DuneAiProbe
 
         // ---------- 组装 ----------
 
-        private static string Compose(string who)
+        private static string Compose(long playerKey)
         {
             List<string> ev, ad;
-            _s.Events.TryGetValue(who, out ev);
-            _s.Advice.TryGetValue(who, out ad);
+            _s.Events.TryGetValue(playerKey, out ev);
+            _s.Advice.TryGetValue(playerKey, out ad);
 
             bool hasEv = ev != null && ev.Count > 0;
             bool hasAd = ad != null && ad.Count > 0;
@@ -218,7 +219,7 @@ namespace DuneAiProbe
 
         // ---------- 小工具 ----------
 
-        private static List<string> GetList(Dictionary<string, List<string>> d, string k)
+        private static List<string> GetList(Dictionary<long, List<string>> d, long k)
         {
             List<string> v;
             if (!d.TryGetValue(k, out v)) { v = new List<string>(); d[k] = v; }

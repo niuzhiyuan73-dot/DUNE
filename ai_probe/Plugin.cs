@@ -41,7 +41,7 @@ namespace DuneAiProbe
         internal const string RootDir = Root;
 
         /// 每次改动手工递增：日志里能一眼确认加载的是哪份构建（DLL 被锁时会照旧版本跑）
-        internal const string BuildTag = "2026-11-01t";
+        internal const string BuildTag = "2026-11-01u";
         private const string DumpPath = Root + "/dump/ai_constants_runtime.json";
         private const string OverridePath = Root + "/mods/ai/ai_override.json";
         private const string ForceLevelPath = Root + "/mods/ai/force_level.txt";
@@ -261,7 +261,7 @@ namespace DuneAiProbe
                     pending = Targets.Rewrite(mt2, pending, L);
 
                     // ValidTargets 在原生 ToString 里只有数量，追加一份"可选目标"明细
-                    string detail = Targets.Detail(selection, mt2, L);
+                    string detail = Targets.Detail(selection, mt2, L, _wormChoices);
                     if (!string.IsNullOrEmpty(detail)) pending = pending + "\n" + detail;
                 }
                 catch (Exception e) { L.LogWarning("[TARGETS] " + e.Message); }
@@ -273,12 +273,15 @@ namespace DuneAiProbe
                 try { stateBlock = State.Render(asker, L); }
                 catch (Exception e) { L.LogInfo("[STATE] " + e.Message); }
 
-                // 本局记忆：在游戏线程做快照差分，失败即当作"没有记忆"，不影响决策
+                // 本局记忆：在游戏线程做快照差分，失败即当作"没有记忆"，不影响决策。
+                // 玩家键用对象指针而不是名字——出现过 "AI（困难）" 这类占位名，按名分桶会串味。
+                long pkey = 0;
+                try { pkey = asker != null ? asker.Pointer.ToInt64() : 0; } catch { }
                 string memoryBlock = null;
-                try { memoryBlock = Memory.Update(mt2, asker, name, L); }
+                try { memoryBlock = Memory.Update(mt2, asker, pkey, name, L); }
                 catch (Exception e) { L.LogWarning("[MEMORY] " + e.Message); }
 
-                Coach.Observe(name, _wormChoices, stateBlock, pending, memoryBlock);
+                Coach.Observe(name, _wormChoices, stateBlock, pending, memoryBlock, pkey);
             }
             catch (Exception e) { L.LogWarning("[COACH] worm: " + e.Message); }
         }

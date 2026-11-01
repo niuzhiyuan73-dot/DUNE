@@ -59,7 +59,7 @@ def main():
     check("明确声明只记已确认变化", "只含已确认发生的变化" in mem)
     check("建议标注为未确认执行", "未确认执行" in mem)
     check("建议带轮次前缀", '"第" + _s.Round + "轮："' in mem)
-    check("声明不猜具体牌名", "具体是哪张无法确认" in mem)
+    check("声明不猜具体牌名", "不猜具体是哪张牌" in mem or "具体是哪张无法确认" in mem)
     check("失败返回 null（不阻断决策）",
           re.search(r"catch\s*\(Exception e\)[\s\S]{0,220}?return null;", mem) is not None)
 
@@ -99,11 +99,16 @@ def main():
     if act:
         check("有 Begin/End/ResultFor 三入口",
               all(k in act for k in ("public static void Begin(", "public static void End(", "public static string ResultFor(")))
+        check("登记选项映射（供还原实体名）", "public static void NoteOption(" in act)
+        check("按具体类型解析返回值", "TryCast<Networking.selection.messages.outgoing.SelectionWithTargets>" in act
+              and "MultipleSelectionWithTargets" in act)
+        check("解析失败时标明接口代理", "接口代理，未解析到具体类型" in act)
         check("只记录不修改（无写操作）",
               not any(w in act for w in ("SetFactionInfluence", "CreateEntity", "SendResponse")))
-        check("结果有容量上限（长局不无限增长）", "_results.Count > 200" in act)
+        check("结果有容量上限（长局不无限增长）", "Trim()" in act and "200" in act)
     check("Plugin 挂了 postfix", "OnWormMakeChoicePost" in plugin and "postfix:" in plugin)
     check("prefix 登记决策序号", "Actual.Begin(_wormChoices)" in plugin)
+    check("Targets 生成明细时登记选项", "Actual.NoteOption(counter, kid, label)" in read(os.path.join(SRC, "Targets.cs")))
     check("Append 写入 actual 字段", "\\\"actual\\\":" in coach or '"\\"actual\\":"' in coach)
     agree = os.path.join(ROOT, "mods", "tools", "coach_agreement.py")
     check("离线比对脚本存在", os.path.exists(agree))
