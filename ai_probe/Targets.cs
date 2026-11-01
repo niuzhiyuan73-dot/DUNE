@@ -186,7 +186,8 @@ namespace DuneAiProbe
                         string one = Describe(list[i], match, log);
                         if (!string.IsNullOrEmpty(one))
                         {
-                            if (one.StartsWith("可选 ", StringComparison.Ordinal)) withTargets++;
+                            // 头部可能是「可选 」或「可选(需选 N 项) 」，都算取到了目标名单
+                            if (one.StartsWith("可选", StringComparison.Ordinal)) withTargets++;
                             parts.Add(one);
                         }
                     }

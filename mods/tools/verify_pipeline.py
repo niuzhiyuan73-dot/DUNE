@@ -106,8 +106,13 @@ def main():
               "非法: " + ", ".join(bad_cost[:3]) if bad_cost else "")
         n_cost = sum(1 for r in v3.values() if len(r) > 5 and r[5].strip())
         n_cond = sum(1 for r in v3.values() if len(r) > 6 and r[6].strip())
-        check("花费/条件已抽出", n_cost >= 100 and n_cond >= 100,
+        # 花费条数下限从 100 降到 40：卡面「费用：N 说服」是**招募费用**，属购买价，
+        # 抽出会让模型以为打出手牌要付这笔（实测因此不敢用哈德拉克），已刻意排除。
+        check("花费/条件已抽出", n_cost >= 40 and n_cond >= 100,
               "花费 %d 条 / 条件 %d 条" % (n_cost, n_cond))
+        bad_recruit = [k for k, r in v3.items() if len(r) > 5 and "说服" in r[5]]
+        check("花费列不含招募费用（说服）", not bad_recruit,
+              "误标: " + ", ".join(bad_recruit[:3]) if bad_recruit else "0 条")
 
         # 数量选择器：原文「选择两个：」必须已归一，且不能二次叠加
         left = [k for k, r in v3.items() if len(r) > 4 and _re.search(r"选(择)?[一二两三四五六]个\s*[:：]", r[4])]

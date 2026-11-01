@@ -127,7 +127,13 @@ def extract_cost(t):
     if m:
         hits.append("%s%s" % (m.group(1), m.group(2)))
     for mm in COST_RE.finditer(t):
-        if not COST_LEAD_RE.search(t[max(0, mm.start() - 6):mm.start()]):
+        lead = t[max(0, mm.start() - 6):mm.start()]
+        if not COST_LEAD_RE.search(lead):
+            continue
+        # 「费用：N说服」= 招募费用（把这张牌买进牌组时付），不是打出成本。
+        # 抽出来会变成「｜花费 8说服」，模型据此以为打出手牌要付 8 说服
+        # （实测因此不敢用魁萨茨·哈德拉克）。真正打出时才付的写作 支付/花费。
+        if mm.group(2) == "说服" and "费用" in lead:
             continue
         s = "%s%s" % (mm.group(1), mm.group(2))
         if s not in hits:
