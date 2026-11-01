@@ -440,6 +440,12 @@ namespace DuneAiProbe
                 Entity up = null;
                 try { up = cur.Parent; } catch { }
                 if (up == null) break;
+                // 只回退到「可打出的卡」这一层：能力实体若挂在版图空间下（DeployUnitsAbility
+                // 就挂在厄拉奇恩空间里），继续上溯会把**空间效果**当成能力效果，写进 prompt
+                // 会误导模型（实测出现过「DeployUnitsAbility〔征兵1次并抽1张牌.控制厄拉奇恩…〕」）。
+                string upName = null;
+                try { upName = up.EntityName; } catch { }
+                if (upName == null || upName.IndexOf("Playable") < 0) break;
                 cur = up;
 
                 string guid = null;

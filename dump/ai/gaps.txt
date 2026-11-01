@@ -1,4 +1,3 @@
 # 缺少效果文本的实体（按出现次数降序）
-# 行数: 2
+# 行数: 1
 1	Player
-1	FreighterAgentAbility
