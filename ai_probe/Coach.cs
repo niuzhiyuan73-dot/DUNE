@@ -38,16 +38,30 @@ namespace DuneAiProbe
 
         public static bool Enabled { get; private set; }
 
-        private const string SystemPrompt =
-            "你是《沙丘：帝国》(Dune: Imperium) 的资深教练。玩家会给你一份游戏原生导出的待选列表" +
+        /// 角色与输出格式要求。**只保留不变的部分**——具体规则、当前玩法、错误示例
+        /// 从 mods/ai/knowledge/ 读取后拼在后面（见 LoadKnowledge）。
+        private const string BaseSystemPrompt =
+            "你是《沙丘：帝国》(Dune: Imperium) 的教练，熟悉官方规则书与本次自定义剧本。" +
+            "玩家会给你一份游戏原生导出的待选列表" +
             "（Pending Selection，含有 Kind 与若干 Buttons，按钮里带标题、费用等属性）。" +
             "实体已译成「中文名(短ID)」的形式，短 ID 只用于区分同名实体，回答时直接用中文名即可。" +
             "请判断哪一项对最终胜利最有利，并给出 2-3 句理由。要求：" +
             "1) 只讨论给出的选项，不要发明新选项；2) 优先考虑胜利点与后期兑现能力，" +
             "而不是短期资源堆叠；3) 用中文，先给结论（选项标题或序号），再给理由。" +
-            "4) 若某项信息确实缺失（例如只给了 ID 没有名字），明确说缺什么，不要臆测牌名。" +
-            "5) 〔〕里是该牌/该目标的规则说明；选项与子目标都带〔〕。请据此比较，" +
-            "注意有些牌的费用、条件、次数限制会直接决定它此刻值不值得打。";
+            "4) 若某项信息确实缺失，明确说缺什么，不要臆测牌名或数值。" +
+            "5) 〔〕里是该牌/该目标的规则说明，｜后面是抽出来的花费与条件。" +
+            "6) 下面是本局生效的规则与已知错误示例；与你的先验冲突时，以下文为准。";
+
+        /// 组装后的系统提示（角色 + 基础规则 + 当前玩法 + 错误示例）。Init 时构建一次。
+        private static string _system = BaseSystemPrompt;
+
+        /// 机制索引：命中关键词时按需插入用户消息（不进系统提示，保持前缀稳定）。
+        private sealed class Mechanic
+        {
+            public string[] Keys;
+            public string Text;
+        }
+        private static readonly List<Mechanic> _mechanics = new List<Mechanic>();
 
         public static void Init(ManualLogSource log, string root)
         {
@@ -82,14 +96,127 @@ namespace DuneAiProbe
                 Directory.CreateDirectory(_outDir);
                 LoadNameMap(root);
                 LoadEffectMap(root);
+                LoadKnowledge(root);
                 Enabled = true;
                 _log.LogWarning("[COACH] enabled, quota=" + _max + "/session, names=" + _names.Count
-                                + ", effects=" + _effects.Count + ", out=" + _outDir);
+                                + ", effects=" + _effects.Count + ", system=" + _system.Length + "字"
+                                + ", mechanics=" + _mechanics.Count + ", out=" + _outDir);
             }
             catch (Exception e)
             {
                 _log.LogWarning("[COACH] init failed: " + e.GetType().Name + ": " + e.Message);
             }
+        }
+
+        /// 加载知识层：基础规则 + 当前玩法 + 错误示例进系统提示，机制索引留待按需命中。
+        /// 文件缺失时保持 BaseSystemPrompt 原样，不阻断观察器。
+        private static void LoadKnowledge(string root)
+        {
+            string dir = Path.Combine(root, "mods", "ai", "knowledge");
+            var sb = new StringBuilder(BaseSystemPrompt);
+
+            string core = ReadTextFile(Path.Combine(dir, "core_rules.md"));
+            if (!string.IsNullOrEmpty(core)) sb.Append("\n\n").Append(core.Trim());
+            else _log.LogWarning("[COACH] 缺少 core_rules.md，按旧提示词运行");
+
+            string mode = ReadTextFile(Path.Combine(dir, "current_mode.md"));
+            if (!string.IsNullOrEmpty(mode)) sb.Append("\n\n").Append(mode.Trim());
+
+            string ex = ReadTextFile(Path.Combine(dir, "examples.tsv"));
+            if (!string.IsNullOrEmpty(ex))
+            {
+                var eb = new StringBuilder("\n\n## 已知错误与正确判断（必须遵守）\n");
+                int n = 0;
+                foreach (var line in ex.Split('\n'))
+                {
+                    string t = line.TrimEnd('\r');
+                    if (t.Length == 0 || t.StartsWith("#", StringComparison.Ordinal)) continue;
+                    var c = t.Split('\t');
+                    if (c.Length < 4) continue;
+                    eb.Append("· ").Append(c[1]).Append(" → 错误说法：").Append(c[2])
+                      .Append("；正确：").Append(c[3]).Append('\n');
+                    n++;
+                }
+                if (n > 0) sb.Append(eb.ToString());
+            }
+
+            _system = sb.ToString();
+
+            // 机制索引：关键词至少 2 字，避免单字（水/牌）到处命中
+            string mp = Path.Combine(dir, "mechanics.tsv");
+            string mtxt = ReadTextFile(mp);
+            if (!string.IsNullOrEmpty(mtxt))
+            {
+                foreach (var line in mtxt.Split('\n'))
+                {
+                    string t = line.TrimEnd('\r');
+                    if (t.Length == 0 || t.StartsWith("#", StringComparison.Ordinal)) continue;
+                    var c = t.Split('\t');
+                    if (c.Length < 5) continue;
+                    var keys = new List<string>();
+                    foreach (var k in c[2].Split('|'))
+                    {
+                        string kk = k.Trim();
+                        if (kk.Length >= 2) keys.Add(kk);
+                    }
+                    if (keys.Count == 0) continue;
+                    // 一句话 + 细节（细节放括号里，太长就只留一句话）
+                    string text = c[3];
+                    if (!string.IsNullOrEmpty(c[4]) && c[4].Length <= 140)
+                        text = text + "（" + c[4] + "）";
+                    _mechanics.Add(new Mechanic { Keys = keys.ToArray(), Text = c[1] + "：" + text });
+                }
+            }
+            _log.LogWarning("[COACH] knowledge: system=" + _system.Length + "字, mechanics="
+                            + _mechanics.Count + " 条");
+        }
+
+        private static string ReadTextFile(string p)
+        {
+            try { return File.Exists(p) ? File.ReadAllText(p, Encoding.UTF8) : null; }
+            catch (Exception e) { _log.LogWarning("[COACH] 读取 " + Path.GetFileName(p) + " 失败: " + e.Message); return null; }
+        }
+
+        /// 按本次选项/局势命中的机制，最多带 MaxMechanics 条。
+        /// 命中的关键词越多越靠前；同样的局面每次命中顺序一致（便于比对日志）。
+        private const int MaxMechanics = 3;
+
+        private static string MatchMechanics(string haystack)
+        {
+            if (_mechanics.Count == 0 || string.IsNullOrEmpty(haystack)) return null;
+            var hits = new List<Mechanic>();
+            var scores = new List<int>();
+            foreach (var m in _mechanics)
+            {
+                int score = 0;
+                foreach (var k in m.Keys)
+                {
+                    if (haystack.IndexOf(k, StringComparison.Ordinal) >= 0) score++;
+                }
+                if (score == 0) continue;
+                hits.Add(m);
+                scores.Add(score);
+            }
+            if (hits.Count == 0) return null;
+            // 稳定插入排序：分数高的在前，同分保持文件顺序
+            for (int i = 1; i < hits.Count; i++)
+            {
+                var mh = hits[i];
+                int sc = scores[i];
+                int j = i - 1;
+                while (j >= 0 && scores[j] < sc)
+                {
+                    hits[j + 1] = hits[j];
+                    scores[j + 1] = scores[j];
+                    j--;
+                }
+                hits[j + 1] = mh;
+                scores[j + 1] = sc;
+            }
+            var sb = new StringBuilder();
+            int n = Math.Min(MaxMechanics, hits.Count);
+            for (int i = 0; i < n; i++) sb.Append("· ").Append(hits[i].Text).Append('\n');
+            return sb.ToString();
         }
 
         private static void LoadNameMap(string root)
@@ -393,6 +520,10 @@ namespace DuneAiProbe
             _log.LogInfo("[COACH] observe #" + seq + " len=" + pending.Length + " player=" + (playerName ?? "?"));
             string user = "AI 玩家：" + (playerName ?? "?") + "（第 " + counter + " 号选择）\n";
             if (!string.IsNullOrEmpty(stateBlock)) user += stateBlock + "\n";
+            // 按需机制：只带本次选项/局势涉及的机制，避免整本规则书重复发送。
+            // 放在系统提示之外 —— 系统提示是稳定前缀，才能吃到上下文缓存。
+            string mech = MatchMechanics(pending + "\n" + (stateBlock ?? ""));
+            if (!string.IsNullOrEmpty(mech)) user += "【相关机制】\n" + mech;
             user += "待选列表：\n" + pending;
 
             Task.Run(() => Send(seq, playerName, user, pending, stateBlock));
@@ -464,7 +595,7 @@ namespace DuneAiProbe
             try
             {
                 string body = "{\"model\":\"" + Model + "\",\"messages\":["
-                    + "{\"role\":\"system\",\"content\":" + Json.Str(SystemPrompt) + "},"
+                    + "{\"role\":\"system\",\"content\":" + Json.Str(_system) + "},"
                     + "{\"role\":\"user\",\"content\":" + Json.Str(user) + "}],"
                     + "\"max_tokens\":400,\"temperature\":0.3}";
 
