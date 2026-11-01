@@ -1,0 +1,73 @@
+﻿# 动作图标语义表：sprite 名 -> 中文
+#
+# 为什么需要：卡牌效果在数字版里大量用图标表达，本地化只给了两样东西：
+#   worm.canis.abilities.<能力>  = 「选择并弃一张牌。」（只有动作的前半句）
+#   button.<能力>                = <Discard> <IfThenArrow> <DrawCard>（完整序列）
+# 只有把后者翻译成中文，才能得到「弃1张牌→抽1张牌」这种完整效果。
+#
+# 格式：sprite 名 <TAB> 中文
+# 维护：只追加，不改已有行。
+
+IfThenArrow	→
+Discard	弃1张牌
+DrawCard	抽1张牌
+TrashCard	销毁1张牌
+Trash an Intrigue	销毁1张阴谋牌
+TrashTech	销毁1项技术
+IntrigueCard	抽1张阴谋牌
+Troop	部队1
+Strength	军力1
+VictoryPoint	胜利点1
+Water	水1
+Spice	香料1
+Spice_1	香料1
+Spice_2	香料2
+Spice_3	香料3
+Spice_4	香料4
+Spice_5	香料5
+Solari	太阳币1
+Solari_1	太阳币1
+Solari_2	太阳币2
+Solari_3	太阳币3
+Solari_4	太阳币4
+Solari_5	太阳币5
+Solari_6	太阳币6
+Persuasion	说服1
+Persuasion_3	说服3
+Persuasion_5	说服5
+Emperor	皇帝影响力+1
+SpacingGuild	宇航公会影响力+1
+BeneGesserit	贝尼·杰瑟里特影响力+1
+Fremen	弗雷曼影响力+1
+Tleilax	泰莱拉影响力+1
+EmperorRankUp	皇帝轨道前进
+SpacingGuildRankUp	宇航公会轨道前进
+BeneGesseritRankUp	贝尼·杰瑟里特轨道前进
+FremenRankUp	弗雷曼轨道前进
+Wild	任意派系影响力+1
+WildRankUp	任意派系轨道前进1
+WildRankUp2	任意派系轨道前进2
+WildRankDown	任意派系轨道后退1
+WildRankDown2	任意派系轨道后退2
+BuyTech	获取1项技术
+BuyTech_MinusOne	获取1项技术(-1香料)
+TechNegotiator	放置中间人(技术折扣)
+Research	研究前进1
+Specimen	标本1
+Contract	合约1
+CompleteContract	完成1个合约
+Combat	战斗
+Flip	翻面
+Freighter	运输舰前进/召回
+Dreadnought	无畏舰1
+InvasionShips	侵略舰队
+Spy	间谍
+RecallSpy	召回间谍
+RecallAgent	召回特使
+ShieldWallBreak	打破屏蔽场城墙
+SonicSnooper	声波探测器
+WarpSpaceCard	折叠空间牌1
+Worm	沙虫
+Destiny	命运
+ControlNeutral	中立控制标记
+GeneticMarker2	基因标记2
