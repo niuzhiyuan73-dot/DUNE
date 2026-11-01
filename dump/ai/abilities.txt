@@ -1,0 +1,251 @@
+# 实体总数 2694，命中名称表 248，其中带能力 148
+# 实体 -> 效果能力 导出
+# entityName	archetypeGUID	中文名	能力名列表
+Space	7f6ec1fa-acf6-41b8-a94f-b2d34a51cc43	沙漠腹地	
+Space	1d1dd0b7-76ff-46f9-b57e-0947366d57de	运送资源	
+Space	0610a0a1-f77c-4b37-8c02-82a103633a3e	沙漠战术	
+Space	68bcd7c4-c868-46e0-9ab3-4a0024a6cfd3	尽忠职守	
+Space	0fb7272c-17fe-4bf2-bfaa-5deebf9e147b	谍报	
+Space	04369de6-71fe-444c-8e0f-d44ca8f16038	弗雷曼工具包	
+Space	f0ef1efe-6b51-4464-bc11-455f1924f662	哈戈盆地	
+Space	22a94428-5dd8-4921-9792-8ed7a7d286af	远航机	
+Space	6d2e7819-8f36-405a-a9e1-ff7a74a6dd7f	最高委员会	
+Space	49642446-7880-4673-b6ff-5c110b20f21a	帝国特权	
+Space	3915c24d-7323-4a84-9990-5d36def9a735	萨多卡	
+Space	da28e33e-22cb-4c6b-b99f-faf8c89d03b0	泰布穴地	
+Space	9e61d73f-b703-4a93-9e4f-05d1ea6a71e1	香料加工厂	
+Space	55292b05-4d13-4eab-9e3d-36ce6578d2c6	剑术大师	
+Space	0b4226e8-9652-4add-9ed7-40af6246deb8	厄拉奇恩	
+Space	b8dd2667-3236-4005-bd8f-132b7d8c3e41	帝国盆地	
+Space	236abf7c-b043-40b4-84f4-34efe6ee3037	秘密	
+Space	a319489e-8ed7-449a-b6a4-b419fddc0585	无畏舰	AcquireTechAbility
+Space	9f109fcc-2f16-450c-93da-efb194d5ce73	星际运输	
+Space	a02d2fe5-5386-45d6-b111-47510845f11f	走私	
+Space	a0764fc9-8ab9-481d-ba21-c28205b8b13f	技术交流	TechNegotiationDeferredAbility
+ImperiumPlayable	5097f5e2-e8d4-4123-a316-5ea42a7aba9f	公会大使	AcquireAbility|GuildAmbassadorAgentAbility
+ImperiumPlayable	772456a8-05ea-44fd-b599-abc1e70a1e97	奢靡	AcquireAbility
+ImperiumPlayable	6a07ea0c-0070-4eb2-86d7-13de92579730	伊克斯工程师	AcquireAbility
+ImperiumPlayable	3aef5226-9993-485e-9b3c-2bdf057e3793	萨亚迪娜	AcquireAbility
+ImperiumPlayable	c82d38fa-0aa0-44d1-b1af-61efb35fb35e	科研突破	AcquireAbility
+ImperiumPlayable	db22f8b8-f11f-4ce2-9bbe-9c752145a4de	为了全人类	AcquireAbility
+ImperiumPlayable	929819d7-9297-4c57-b14c-8adda19e0071	科林斯城	AcquireAbility
+ImperiumPlayable	adc69b93-d5c7-4957-886d-b9659b03fa90	运输合约	AcquireAbility
+ImperiumPlayable	9a1969e3-5acb-4f5f-9a9d-da5b85b37f0f	枢纽中心	AcquireAbility
+ImperiumPlayable	b319a6cc-c2e4-4845-b738-c1e7776dc44f	重要合同	AcquireAbility
+ImperiumPlayable	60bb7c16-4d4a-4bd9-bc83-28b2680cec9b	走私港	AcquireAbility
+ImperiumPlayable	3944ddc1-b59b-4aab-bd87-21ba23aedd85	姐妹会手段	AcquireAbility
+ImperiumPlayable	3cc7f4ea-7524-4774-95d6-b72cd0980300	分叉道路	AcquireAbility
+ImperiumPlayable	3edb424e-e167-4d08-ae08-67784be929d6	权谋	AcquireAbility
+ImperiumPlayable	6cef1778-9276-4343-9c85-61467b08cede	门泰特俘虏	AcquireAbility
+ImperiumPlayable	71c02d55-4a93-44cc-b404-57b71cf5aa89	战术师契妮	AcquireAbility
+ImperiumPlayable	41ad4b91-b427-4bc4-8caf-7f90f71450ee	秘密行动	AcquireAbility
+ImperiumPlayable	488e65ff-00cd-4d66-a192-b08e9b9d2104	危险言辞	AcquireAbility
+ImperiumPlayable	9965c22a-cdab-4393-b432-2d4dcc1cecc3	沙漠力量	AcquireAbility
+ImperiumPlayable	125cfa0c-c686-429e-af5f-599fe0390dd1	沙漠生存	AcquireAbility
+ImperiumPlayable	48acf8d7-7c8f-40cd-9a3c-0ca7f8173b16	双面间谍	AcquireAbility
+ImperiumPlayable	4d9b5980-beb4-4e85-8aaf-d29144a0e49e	生态实验站	AcquireAbility
+ImperiumPlayable	152e21a0-975a-42d5-a286-afa8ce033b5a	蒸馏帐篷	AcquireAbility
+ImperiumPlayable	4dda6b6b-40e2-4c63-8939-53b23a15a740	公会使者	AcquireAbility
+ImperiumPlayable	5043c201-ce8b-451d-96fe-e6335901ddcb	公会间谍	AcquireAbility
+ImperiumPlayable	1ec69aad-3852-4c2f-ba2e-180768899d6f	密文	AcquireAbility
+ImperiumPlayable	25c2d2b1-b458-46c8-9c86-51b46a97b608	帝国间谍大师	AcquireAbility
+ImperiumPlayable	72d1f69b-da2b-4977-9d14-7c482b300ae6	身居高位	AcquireAbility
+ImperiumPlayable	74b3e24b-2291-4350-a4e8-55f3c33ef397	领导力	AcquireAbility
+ImperiumPlayable	9dbdb78e-a792-417b-b7cd-49173e0dfbd8	为勇士唱赞歌！	AcquireAbility
+ImperiumPlayable	26489e66-8921-4434-ad64-fbc25c79cc7f	造物主饲养员	AcquireAbility
+ImperiumPlayable	55f17457-a0e3-4ab4-b9af-47aa4b1b90cf	毛拉枪	AcquireAbility
+ImperiumPlayable	56b0147f-e7b6-4653-a700-9d61f3116ef5	北方司水员	AcquireAbility
+ImperiumPlayable	a18d5a46-539c-4c91-81b3-577b5335b351	推翻政权	AcquireAbility
+ImperiumPlayable	5e0c6e91-b7d4-4029-9fa1-3f7de45cc504	定位罗盘	AcquireAbility
+ImperiumPlayable	9afc5acf-3726-450d-892e-faed334ebf5c	一掷千金	AcquireAbility
+ImperiumPlayable	5ec5a82a-7447-4f55-b87c-7e32bf2a8b37	公开处刑	AcquireAbility
+ImperiumPlayable	5dae0f84-f39f-4401-a286-4886405736b3	叛军供货者	AcquireAbility
+ImperiumPlayable	2a669fcc-92de-451f-869e-ee71dc8e7f1b	可靠线人	AcquireAbility
+ImperiumPlayable	5f57324b-8d5d-43cf-99c7-ed018f01dde3	萨多卡协同作战	AcquireAbility
+ImperiumPlayable	00438c41-0a06-40f8-9fa3-b13106e78f85	萨多卡士兵	AcquireAbility
+ImperiumPlayable	5f8d8acd-6830-488e-8084-0c3e04961710	西萨克利	AcquireAbility
+ImperiumPlayable	012ad406-c96d-4857-b4c3-4fb6f3663352	走私者爬虫机车	AcquireAbility
+ImperiumPlayable	63528e8e-84c8-4bd0-9246-8d51fa030d5b	南方长老	AcquireAbility
+ImperiumPlayable	03d89b0d-2e06-4cf2-acc2-aa3573804541	时空折叠	AcquireAbility
+ImperiumPlayable	7bf8e095-41c3-4956-b3c3-6ad66376971f	宇航公会的青睐	AcquireAbility
+ImperiumPlayable	2bde7242-4945-4034-a6bf-5c5381960e59	间谍网络	AcquireAbility
+ImperiumPlayable	a3c2d1da-82e3-4e5d-bd42-bf70a61f5256	公会领航员	AcquireAbility
+ImperiumPlayable	9d1f3199-23f1-4921-be6c-61cd82a45d93	忠誓者斯第尔格	AcquireAbility
+ImperiumPlayable	7de5a28c-c722-4514-bf8a-36ab2ad87e26	突击舰队	AcquireAbility
+ImperiumPlayable	8046999f-b555-4b41-9059-3f60b0d603a5	激进顾问	AcquireAbility
+ImperiumPlayable	8f0721e8-4f73-4dc0-994c-a46e692707a0	诡计多端	AcquireAbility
+ImperiumPlayable	64cf4caa-3969-4d2b-a0ec-fd1adad6d701	暗中牵线	AcquireAbility
+ImperiumPlayable	692894d3-6f17-4c8f-99a5-dc5d79ec51e4	辨真灵态	AcquireAbility
+ImperiumPlayable	3804c3b4-76ce-4e5c-9c56-c25062323a31	卧底	AcquireAbility
+ImperiumPlayable	0417d673-da79-464a-b405-5045d176758c	赤胆忠心	AcquireAbility
+ImperiumPlayable	0f5fc1e6-3b30-480b-872e-c11d125b916e	奇异女士	AcquireAbility
+ImperiumPlayable	382f0246-d347-4686-9e8e-31393676e481	盘根错节	AcquireAbility
+ImperiumPlayable	57867817-d892-48a5-8b43-f78b10d477e4	合理诉求	AppropriateAbility|AcquireAbility
+ImperiumPlayable	0d504e17-0810-4b6f-b232-3c5d93c449ff	赏金猎人	AcquireAbility
+ImperiumPlayable	0e5e776c-c486-413a-9b80-ee25a2cf2dc5	宇联商会代表	AcquireAbility
+ImperiumPlayable	200aea90-f490-4923-b878-d85f2607be87	虔信执法者	CourtIntrigueAbility|AcquireAbility
+ImperiumPlayable	31e8ce63-7ce3-4cd3-a65f-e600c34dc6d1	沙漠伏击	DesertAmbushAbility|AcquireAbility
+ImperiumPlayable	5d44dbce-f274-4e6b-bc9a-10035a28801b	潜伏代理人	AcquireAbility
+ImperiumPlayable	65e9d067-c8e9-4867-81ee-eaeecc3b26f7	埃斯马·图克	AcquireAbility
+ImperiumPlayable	141e446c-0a66-40f8-aae6-9902cc9d830e	运输舰队	FreighterFleetOppTrackPositive|AcquireAbility
+ImperiumPlayable	76a4030f-1c98-4075-baa4-239434454588	全面进攻	AcquireAbility
+ImperiumPlayable	7314a8fa-564d-431a-a564-63658f4448fc	公会协约	AcquireAbility
+ImperiumPlayable	4c2cdda8-4e34-43ab-856a-8629e542a92e	公会首席管理员	GuildChiefAdministratorAbility|AcquireAbility
+ImperiumPlayable	4648ff0c-ddec-41a0-acb9-e19bae30bc33	霸撒统领	AcquireAbility
+ImperiumPlayable	3378b58e-84f1-4d3e-b6b3-7f1d6a879db1	帝国镇暴兵	AcquireAbility
+ImperiumPlayable	17818ff3-2e81-48d1-9ff0-75723859e033	藏于暗影	AcquireAbility
+ImperiumPlayable	3132b0e5-d0c2-4b10-9274-e3899d814e9b	伊克斯舰组	AcquireAbility
+ImperiumPlayable	12c54819-5594-4be4-b3a6-71af949d7cbc	詹米	AcquireAbility
+ImperiumPlayable	5608f37c-0690-4a3c-81a4-7713e3fa1fd6	降落许可	AcquireAbility
+ImperiumPlayable	32255d2b-3813-4d18-b49a-5891796924f5	地下交易	LocalFenceAbility|AcquireAbility
+ImperiumPlayable	3ed69bea-8faa-4e9b-8468-809920a43425	协议撤退	AcquireAbility
+ImperiumPlayable	66905223-8751-4d8e-837e-db27285052b7	卫星禁令	SatelliteBanAbility|AcquireAbility
+ImperiumPlayable	75fc2bf0-e355-4ba5-a4c6-c5bfe98f4717	巨沙虫夏胡鲁	AcquireAbility
+ImperiumPlayable	41434597-7c91-4c4c-af09-10dca2c13252	香料商	SpiceTraderAbility|AcquireAbility
+ImperiumPlayable	7018fd06-5ec0-45b3-8e2c-f239ec77aefe	背信弃义	AcquireAbility
+ImperiumPlayable	3cbb9ae1-30ad-4f55-b218-1078984bb755	真言师	TruthsayerAbility|AcquireAbility
+ImperiumPlayable	010a024b-f760-4bb2-b3f5-8f2f036436b2	水贩	AcquireAbility
+ImperiumPlayable	50613119-24ba-4166-a3c4-27391e40a16e	权利之网	WebOfPowerRevealAbility|AcquireAbility
+ImperiumPlayable	3ba1b3b0-d76f-4d33-aa44-9669edd61333	天神之技	WeirdingWayAbility|AcquireAbility
+ImperiumPlayable	13e91edf-27f3-47d1-93d4-7c94b9aef22e	贝尼·特莱拉实验室	AcquireAbility
+ImperiumPlayable	5d7b71ea-70cc-4751-a4fd-d8d14a14c4a4	贝尼·特莱拉研究员	AcquireAbility
+ImperiumPlayable	06329796-06ec-4ebf-b761-ea078935e080	空白模板	AcquireAbility
+ImperiumPlayable	60218267-2a5b-41fe-9b07-13b71603a4df	秘密会谈	AcquireAbility
+ImperiumPlayable	2f444481-853f-4dd3-8597-2eb7dde79d23	潜伏走私者	AcquireAbility
+ImperiumPlayable	146ebcb3-de04-41ec-8570-32e4bcf795bd	解剖工具包	AcquireAbility
+ImperiumPlayable	11440b93-75c5-4bc3-a5ce-1a74f9fb4c57	私人航班	AcquireAbility|HighPriorityTravelAbility
+ImperiumPlayable	ce6ea4e7-3490-4a72-b928-b85a70e1e0d4	登基大典	AcquireAbility
+ImperiumPlayable	62db12ac-01bb-46a3-869f-02efe2ca918b	星际阴谋	AcquireAbility
+ImperiumPlayable	8f947e0a-5d37-483d-959e-f82b7c1141ba	权利之钥	AcquireAbility
+ImperiumPlayable	65b36c1c-bcb5-4f40-9411-a8ee3952d7bc	李桑·阿尔-盖布	AcquireAbility
+ImperiumPlayable	dae605ae-6c52-4606-82b2-081e91a895da	长途跋涉	AcquireAbility
+ImperiumPlayable	e7dd7dc8-2e15-4706-98a6-8fce043d2257	占领	AcquireAbility
+ImperiumPlayable	3916c29f-100c-4429-8d6c-f4a5f963bac4	器官商人	AcquireAbility
+ImperiumPlayable	3d2907f5-b77a-4c15-b04f-e65a3eb2df3a	联姻计划	AcquireAbility
+ImperiumPlayable	93d39898-6a3e-4dd0-9624-874c92cf2a12	改造义眼	AcquireAbility
+ImperiumPlayable	1bc344ef-3a96-44d3-98dc-b80a396e527b	萨多卡军需官	AcquireAbility
+ImperiumPlayable	288376af-6180-4db5-9fec-a8aff8ded85d	夏道特梅帕丝	AcquireAbility
+ImperiumPlayable	4b671761-6a33-4d5e-b893-4c08111347b9	展示力量	AcquireAbility
+ImperiumPlayable	56df7890-dcdb-4dae-af0d-9786d146b344	狂热之心	AcquireAbility
+ImperiumPlayable	99e265af-b3ad-4d7a-afba-9a88b3fed4bb	蒸馏服生产商	AcquireAbility
+ImperiumPlayable	72909cc0-c3ce-4a95-920b-ec2a2f7a658d	王权政治	AcquireAbility
+ImperiumPlayable	abbe3ab3-507b-4cf4-bab8-42c2645021ee	特莱拉尊主	AcquireAbility|TleilaxuMasterAbility
+ImperiumPlayable	58608c6e-299d-46ec-b869-f70869a947e7	特莱拉医者	AcquireAbility|TleilaxuSurgeonRevealAbility
+ImperiumPlayable	c83f1b8e-9016-4e28-842c-912afa3ed28e	暗中准备	AcquireAbility
+ImperiumPlayable	9f444101-92c2-4897-8d5b-8e91bd62c1f8	折叠空间	
+ImperiumPlayable	ed9924f1-4296-48ed-b526-8ac52e0d4df7	实验	
+ImperiumPlayable	8cdce934-fa2e-4d87-9e5e-c59eb5ed8b5e	外交	
+ImperiumPlayable	98753757-bceb-4cf7-8a9c-f5a00ff99dcd	印章戒指	
+ImperiumPlayable	29a3e722-470a-48c8-9d2e-029d5ce7c294	基因操控	AcquireAbility
+ImperiumPlayable	86dea602-1c1e-4ad3-a1b1-eb3cb7fbab21	魁萨茨·哈德拉克	AcquireAbility|KwisatzHaderachAbility
+ImperiumPlayable	86b22d77-ed89-4a3c-885b-9ef09bbab8fd	杰西卡夫人	
+ImperiumPlayable	8312bf60-af37-42e4-b5e2-8ba5e43a95f4	圣母莫希阿姆	ReverendMotherMohiamAbility|AcquireAbility
+ImperiumPlayable	8a8ec96e-5c0e-48de-b90d-6ec17e855922	匕首	
+ImperiumPlayable	1fc48973-aac9-4a36-a830-5624b0a85033	晶牙匕	AcquireAbility
+ImperiumPlayable	86381358-e763-49fa-a5d3-0a50acc6be5d	沙虫骑士	AcquireAbility
+ImperiumPlayable	6179044e-13a7-4c3a-95bf-709f4fe0b259	斯第尔格	AcquireAbility
+ImperiumPlayable	20f16328-3e0e-4c2e-94c4-8fd14ac287ad	公会银行家	AcquireAbility
+IntriguePlayable	981d287f-83ac-4e35-a6dc-eeca8233a20b	特莱拉傀儡	
+IntriguePlayable	83078df7-122b-4c78-b5fa-a7cf0e1e2423	渗透	
+TechTilePlayable	db3857e8-8373-4f1a-8420-2669fc684204	霍兹曼引擎	
+TechTilePlayable	2ee0c66a-f610-4236-8220-b3e249b3efc4	思录机	MemocordersAcquiredAbility
+TechTilePlayable	190c7161-e1fa-4453-b311-4e8686e3b71e	捕风器	
+TechTilePlayable	4d5e182c-07af-4224-b718-75634e353ba1	缩微胶片	
+TechTilePlayable	0625a9d9-6fd0-47d0-93ae-bf71b0299507	掩护炮击	
+ConflictPlayable	fa49748c-0b90-4f5a-821a-7bf96d241250	宣传策略	
+ConflictPlayable	b4c07183-38d9-41df-a833-2ddb5580b00b	帝国盆地之战	
+ConflictPlayable	a5b5668a-706c-43dd-a6eb-a6b3abfb6907	厄拉奇恩之战	BattleForArrakeenSecondAbility
+ConflictPlayable	b409ad68-69c3-442c-b355-d671ca89ddd3	迦太格之战	
+IntriguePlayable	01d8ee96-5d6f-4381-8f35-60407b76ddde	买路钱	
+IntriguePlayable	0bd157db-6616-472d-af6e-e93d122b4b48	战斗召唤	
+IntriguePlayable	0f52cb99-3f6e-4aa0-b35c-f5a07efe9907	盟友变节	
+IntriguePlayable	0fff17bc-89fb-4398-b521-710f8a340185	应急计划	
+IntriguePlayable	1b57b7f3-0647-424d-b377-d74e1860baf0	政客野心	
+IntriguePlayable	1db40eaa-32cd-451a-b593-22bc0de22f33	晶牙匕	
+IntriguePlayable	2258403f-3b93-4df3-a529-61782403806e	狡诈	
+IntriguePlayable	241208c9-4ed5-4650-ae80-fc3b00887833	前往厄拉科斯	
+IntriguePlayable	25b1ccd0-e10d-46ce-b234-34b20379fe84	沙鼠	
+IntriguePlayable	2b43f621-2bef-40fb-ada8-04bb4fdfce1b	引爆	
+IntriguePlayable	2cea2f53-b91d-4273-b916-ef0b3dd8280a	吞噬	
+IntriguePlayable	2d63c21d-107e-4483-935a-a97fb69cff5e	佯攻	
+IntriguePlayable	4c902cab-1392-448c-940f-ebe35badcca0	寻找弱点	
+IntriguePlayable	55da24ed-e4fc-4d55-867f-7b531f92bdd5	当地渗透	
+IntriguePlayable	563f1ec9-af33-4183-994d-96924b4376b5	帝国政治	
+IntriguePlayable	578d5efe-9955-43cb-a606-31ee8371df44	争取	
+IntriguePlayable	5d1cdbbe-7ed1-45da-baa7-9049fbc3a337	心生敬畏	
+IntriguePlayable	6599b791-4232-436e-baf5-5913bdcd1273	情报	
+IntriguePlayable	710a0931-7703-456a-b7fc-dad31b35cc33	操纵	
+IntriguePlayable	715ef652-b22e-4580-940c-5e85e3edd2d2	市场机遇	
+IntriguePlayable	74da84da-a275-405f-87a0-fd516f4deb81	雇佣兵	
+IntriguePlayable	847704fd-75e5-4714-9463-1b5df2462fdf	机会主义	
+IntriguePlayable	8694d9f4-3029-4194-ba8a-2b2c79504d9d	扑翼机	
+IntriguePlayable	937b09f7-66ee-4f47-a991-d3ede76ee596	争议手段	
+IntriguePlayable	970054c7-0532-40d4-9c2a-f4e017df03b0	掌控香料贸易	
+IntriguePlayable	9a196fc1-f957-4cab-97a7-0e8fe04718b2	沙达姆的青睐	
+IntriguePlayable	9afad335-0c8b-42d8-bd08-2fe012ee7bfc	影中之盟	
+IntriguePlayable	a25675b4-81c3-417f-a16f-f5d4345455e7	穴地仪式	
+IntriguePlayable	a8100d0b-4d47-4132-a7ba-174e04c66d14	特殊任务	
+IntriguePlayable	abf424a0-b596-41b6-a453-75574fa00788	香料即力量	
+IntriguePlayable	b0dc9304-8fe1-48fe-b149-3d5f0cae49b4	触发陷阱	
+IntriguePlayable	bc6c9baa-8ff1-4e35-9d91-d9ff559481b7	战略储备	
+IntriguePlayable	bf22aeab-87d0-4362-82a3-3b1e0008777a	战术选择	
+IntriguePlayable	c3166ccc-04fd-4d0a-b766-23593c3e8a22	天降神兵	
+IntriguePlayable	c31b7bc9-d688-427d-8d2e-70a8e394bed8	奇特战术	
+IntriguePlayable	7d4b5fc9-f314-4c40-8caa-f8cd11037b32	陷阱武器	
+IntriguePlayable	927a933c-65ea-4916-9342-fe3a639f6c92	勒索	BlackmailAbility
+IntriguePlayable	7a182120-89f9-469e-8899-5c41d696547d	对空炮塔	
+IntriguePlayable	7ec499f7-3f1c-4793-b23a-8c9a694ab170	暗中剔除	
+IntriguePlayable	81a01de9-3fdd-410f-bce3-798c7700fd22	转移	
+IntriguePlayable	8788e550-34cc-462a-ae2e-45cf27f7eef9	加速前进	
+IntriguePlayable	7fece545-f627-4830-bb26-b97c88094711	精细操作	
+IntriguePlayable	8b1425a0-2e53-423d-a027-29438db3be0c	预示一瞥	
+IntriguePlayable	8ee66b75-4101-4d63-912c-436f8bd35790	远大计划	
+IntriguePlayable	82264825-4867-4181-999f-65a51d57b681	伊克斯探测器	IxianProbeAbility
+IntriguePlayable	84946de1-8b11-41a3-bfbd-ba1ed3b905a0	机械文明	
+IntriguePlayable	78686a86-7cb7-4b49-a736-9e07c5ca7a27	无私赠礼	
+IntriguePlayable	90d9365c-2de0-44d6-9b7f-93988f101ce9	卷土重来	
+IntriguePlayable	7e833e9a-e9d1-4d97-9a64-31df1fd2054f	秘密部队	
+IntriguePlayable	798d9d7f-ec18-47a0-a36f-e9b168d085a0	战略推进	
+IntriguePlayable	7903a503-2980-42b9-b8bd-5825cc6f8996	强势手段	StrongarmAbility
+IntriguePlayable	907c1608-444d-49da-bfbc-9a7d85a9da87	战略储备	
+IntriguePlayable	0544cbc0-6a39-4573-abea-c29fa6108921	突破	
+IntriguePlayable	20df8eeb-aedc-4a03-991f-0c2273ff015e	还击	
+IntriguePlayable	261bd079-d214-41b2-98d2-0bca873a3e61	变装渗透	
+IntriguePlayable	4aa2a9b4-d491-4b6b-b972-019e4c205871	经济发展	
+IntriguePlayable	4aba6d70-0089-4976-84c5-8698c95e8a37	残忍献祭	
+IntriguePlayable	60ca178f-3a59-4a57-808f-560e280f98e8	细胞收割	HarvestCellsAbility
+IntriguePlayable	73e46120-f305-47f6-9620-9f641240396b	非法交易	
+IntriguePlayable	7ab0afec-2c59-4567-9c68-f228eebb0272	暗中勾结	
+IntriguePlayable	813574ee-8a3e-4b0e-8490-7efbf1ece66b	美琅脂研究	
+IntriguePlayable	c4bd8ad7-9311-459c-8eec-5da032bf125a	邪恶天赋	
+TechTilePlayable	9fa0d1f6-fa85-48d3-a5d4-85a7ecd1df24	间谍卫星	
+TechTilePlayable	4d76876c-b588-4a78-b5f5-d8bb57789daa	部队运输	
+TechTilePlayable	6009240d-8255-4751-86c8-628b1472cb58	训练无人机	
+TechTilePlayable	5fd6a1bc-e4bc-4d44-a68f-7144016d7269	全息投影仪	HoloprojectorsAbility
+TechTilePlayable	9daba8f9-1cd8-42d8-961c-36907e14ee8b	麝毒	
+TechTilePlayable	c60d7d15-db1d-4e5b-b828-26783e667f70	侵入船	InvasionShipsAbility
+TechTilePlayable	550543c8-3fa8-4b3c-a907-f9189bb44133	垃圾处理	DisposalFacilityAbility
+TechTilePlayable	4a1b6e10-4040-4645-ae84-4198aa886778	声波探测器	SonicSnoopersAbility
+TechTilePlayable	ce6c7b78-6296-4cc8-a9c8-49ee8df3a7df	太空港	
+TechTilePlayable	f0969905-919c-43d9-8e6d-dc6b7cd127ee	旗舰	
+TechTilePlayable	aae7fdc9-dd0a-498a-8491-dddd6c6d583d	弹药制约	
+TechTilePlayable	67f7140a-94b5-4ef8-8128-0668a8df02e9	自爆装置	
+TechTilePlayable	d8148607-5404-4af8-a5cb-6117c9d72ff5	舰队	ShuttleFleetAcquiredAbility
+ImperiumPlayable	0965f73c-1010-4995-b463-53181c32193a	再生军队	ReclaimedForcesAcquireAbility
+ImperiumPlayable	becafe5d-5e5a-4658-af32-13ef550510c8	魅惑费洛蒙	AcquireAbility
+ImperiumPlayable	359274c5-5076-4cec-a47d-4aadb5b96137	犬椅	AcquireAbility
+ImperiumPlayable	0a2ceaa3-4228-4860-be2d-9d28592cbe81	暗中破坏	AcquireAbility
+ImperiumPlayable	0aeb6e0c-38c0-4a98-91a7-cf072ac02c74	科瑞诺基因组	AcquireAbility
+ImperiumPlayable	5cfba5eb-a497-43c6-ad11-6790673f4bdd	变脸者	AcquireAbility
+ImperiumPlayable	15b5cb5f-40bf-4fe2-8ba3-f0c12bd30516	变脸者渗透	AcquireAbility
+ImperiumPlayable	605e6604-86af-4f6c-a032-3de08dd20ccb	箱中诞生	AcquireAbility
+ImperiumPlayable	c39530b2-2afd-43d1-b825-633470a1b66a	死灵	AcquireAbility
+ImperiumPlayable	76b7e0b5-4352-4f4c-bb5f-38c86300b972	公会易容者	AcquireAbility
+ImperiumPlayable	34cb138e-040f-4603-801d-ae09b479fc7f	工业间谍	AcquireAbility
+ImperiumPlayable	7c8a7137-5814-4759-a1ac-e4ee983eaf4c	猪蝓农场	AcquireAbility
+ImperiumPlayable	ccd858b8-5942-4d9f-b623-cb9685e6b682	惊惧缝合兽	AcquireAbility|StitchedHorrorAbility
+ImperiumPlayable	a15e89a5-5719-47b2-88f0-129fef5189f2	实验体 X-137	AcquireAbility
+ImperiumPlayable	b6694c57-125d-4b1e-8a74-830e1bf4b70f	特莱拉渗透者	AcquireAbility
+ImperiumPlayable	deef5082-dcbc-48b0-a7bf-8f70c816708f	扭曲门泰特	AcquireAbility
+ImperiumPlayable	d120e2fc-d5d0-4f88-9008-31a7dbc4ecc0	强化反射	AcquireAbility
+ImperiumPlayable	ef0eeb3e-0e0b-487c-86cd-60b4515f66e6	篡夺	AcquireAbility

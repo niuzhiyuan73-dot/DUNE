@@ -1,12 +1,5 @@
 # 缺少效果文本的实体（按出现次数降序）
-# 行数: 10
-6	DeployUnitsAbility
-3	<sprite name=WildRankUp>
-2	为了全人类
-2	伊克斯舰组
-2	IxGuildCompactAgentAbility
-2	降落许可
-2	<sprite name="DrawCard">
+# 行数: 3
+2	Player
+1	FreighterAgentAbility
 1	巨沙虫夏胡鲁
-1	Player
-1	ForHumanityAgentAbility
