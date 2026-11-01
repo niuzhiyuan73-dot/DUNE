@@ -101,7 +101,17 @@ def build():
                 continue
             seen.add(t)
             parts.append(t)
-        text = "；".join(parts)
+        # 以「:」结尾的段是**前置条件**（阴谋牌的 text1/text2 常见），必须放到最前，
+        # 否则会拼成「获得1说服；若在最高委员会放有议员指示物:」这种断句。
+        conds = [p for p in parts if p.rstrip().endswith((":", "："))]
+        effs = [p for p in parts if p not in conds]
+        if conds and effs:
+            head = "，".join(c.rstrip(":：").strip() for c in conds)
+            text = head + "：" + "；".join(effs)
+        elif conds:
+            text = ""                     # 只有条件、没有效果，宁可不写
+        else:
+            text = "；".join(effs)
         if len(text) > EFFECT_MAX:
             text = text[:EFFECT_MAX] + "…"
         if text:

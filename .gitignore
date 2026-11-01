@@ -19,6 +19,8 @@ probe_plugin/bin/
 probe_plugin/obj/
 ai_probe/bin/
 ai_probe/obj/
+catalog_probe/bin/
+catalog_probe/obj/
 
 # 分析用的超大类型转储（可由 tools/TypeDump 重新导出）
 dump/api_boardgames.txt
