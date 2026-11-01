@@ -208,6 +208,7 @@ bc6c9baa-8ff1-4e35-9d91-d9ff559481b7	本地化自动提取	10	Uprising		[Spice_5
 bc6c9e3c-614e-4830-8319-e6d22c4664e5	本地化自动提取	10	BaseSet		召回你的1个特使。
 becafe5d-5e5a-4658-af32-13ef550510c8	本地化自动提取	10	Immortality		若本回合特使被派遣到某个派系位置，销毁本回合被改造的1张卡牌，额外获得该派系1影响力。；销毁一张已改造的卡牌
 bf22aeab-87d0-4362-82a3-3b1e0008777a	本地化自动提取	10	Uprising		军力军力；撤退任意数量的军队。
+button.DeployUnits	人工补充表kb_extra	30			部署部队（补充操作按钮）：按触发它的牌所规定的数量与费用，把部队从兵营部署到当前冲突；该按钮本身没有独立规则文本。
 c0f3e883-8540-40d6-a62e-101a69ecba0a	人工复核填表kb_todo_fill	40	BaseSet		1st：获得任意单一阵营影响力2、抽1张阴谋牌；2nd：抽1张阴谋牌、获得3香料；3rd：获得3香料
 c3166ccc-04fd-4d0a-b766-23593c3e8a22	本地化自动提取	10	Uprising		[Water][Water][ArrowDown][ShieldWallBreak] [Worm]
 c31b7bc9-d688-427d-8d2e-70a8e394bed8	本地化自动提取	10	Uprising		军力军力军力[BeneGesserit] 3 影响力:+军力军力
@@ -603,3 +604,6 @@ name:魅力	本地化自动提取	10			在你的这个回合的展示阶段获�
 name:魅惑费洛蒙	人工复核填表kb_todo_fill	40			特使可去：城市、香料贸易。费用：3标本；特使：城市、香料贸易；特使效果：若本回合特使被派遣到某个派系位置：销毁本回合被改造的1张卡牌→额外获得该派系1影响力；展示：说服1、军力1
 name:麝毒	人工复核填表kb_todo_fill	40			科技牌；费用：4香料；效果：终局：你赢得终局破平；获得此牌时：抽2张密谋牌
 name:龙伯·维尔涅斯王子	本地化自动提取	10			无畏舰提供4点战力而非3点。；[TechNegotiator] —或— [BuyTech]
+worm.canis.abilities.DeployUnitsAbility	人工补充表kb_extra	30			部署部队（补充操作按钮）：按触发它的牌所规定的数量与费用，把部队从兵营部署到当前冲突；本身没有独立规则文本。
+worm.canis.abilities.FamilyAtomicsAbility	人工补充表kb_extra	30			家族原子武器：每场游戏限一次，可在自己的阶段内使用（不占用特使行动）；移除并替换整个公共牌池。
+worm.canis.abilities.ForHumanityAgentAbility	人工补充表kb_extra	30			为了全人类（特使）：选择1个阵营，在该阵营轨道获得1点影响力。

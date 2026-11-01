@@ -158,3 +158,8 @@ a0764fc9-8ab9-481d-ba21-c28205b8b13f	特使：立法会；以1香料折扣获取
 a319489e-8ed7-449a-b6a4-b419fddc0585	特使：立法会；费用：3太阳币；建造一艘无畏舰进入兵营，并可获取一项技术。	游戏tooltip+空间GUID精确键（消歧名回退拦截修复）
 9f109fcc-2f16-450c-93da-efb194d5ce73	特使：香料贸易；要求宇航公会影响力至少2；移动你的运输船两次。	游戏tooltip+空间GUID精确键（消歧名回退拦截修复）
 a02d2fe5-5386-45d6-b111-47510845f11f	特使：香料贸易；获得1太阳币，并移动你的运输船一次。	游戏tooltip+空间GUID精确键（消歧名回退拦截修复）
+# 运行时能力文本缺口补充（2026-11-01）：键用 key: 前缀避免被加 name:
+key:worm.canis.abilities.FamilyAtomicsAbility	家族原子武器：每场游戏限一次，可在自己的阶段内使用（不占用特使行动）；移除并替换整个公共牌池。	官方 tooltip.familyatomics + tutorialimm.atomics02
+key:button.DeployUnits	部署部队（补充操作按钮）：按触发它的牌所规定的数量与费用，把部队从兵营部署到当前冲突；该按钮本身没有独立规则文本。	能力属性 Image=deployunits / GameText=button.DeployUnits / AbilityTiming=Agent
+key:worm.canis.abilities.DeployUnitsAbility	部署部队（补充操作按钮）：按触发它的牌所规定的数量与费用，把部队从兵营部署到当前冲突；本身没有独立规则文本。	同上
+key:worm.canis.abilities.ForHumanityAgentAbility	为了全人类（特使）：选择1个阵营，在该阵营轨道获得1点影响力。	用户确认 2026-11-01；Reveal 效果另见 card.reveal.forhumanity

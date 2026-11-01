@@ -88,6 +88,51 @@ def main():
         check("仍为两列格式（C# 可直接读）", bad == 0, "%d 条不是两列" % bad)
         check("条目数不小于修复前 587", len(em) >= 587, "%d" % len(em))
 
+    # 3b) v3：结构化字段与数量归一
+    print("\n[3b] effect_map_v3 结构化字段与数量归一")
+    v3 = read_tsv(os.path.join(AI, "effect_map_v3.tsv"))
+    if v3:
+        check("effect_map_v3.tsv 存在", True, "%d 条" % len(v3))
+        check("条数与 v2 一致（v3 只是重排，不增删）", len(v3) == len(v2),
+              "v3 %d / v2 %d" % (len(v3), len(v2)))
+        # v3 列：来源 / 优先级 / 扩展 / 歧义 / 正文 / 花费 / 条件
+        bad_cols = sum(1 for r in v3.values() if len(r) != 7)
+        check("每条 8 列（键+7 字段）", bad_cols == 0, "%d 条列数不对" % bad_cols)
+
+        import re as _re
+        cost_ok = _re.compile(r"^(\d+(说服|香料|太阳币|水))(/\d+(说服|香料|太阳币|水))*$")
+        bad_cost = [k for k, r in v3.items() if len(r) > 5 and r[5].strip() and not cost_ok.match(r[5].strip())]
+        check("花费列格式合法（数字+单位，可空）", not bad_cost,
+              "非法: " + ", ".join(bad_cost[:3]) if bad_cost else "")
+        n_cost = sum(1 for r in v3.values() if len(r) > 5 and r[5].strip())
+        n_cond = sum(1 for r in v3.values() if len(r) > 6 and r[6].strip())
+        check("花费/条件已抽出", n_cost >= 100 and n_cond >= 100,
+              "花费 %d 条 / 条件 %d 条" % (n_cost, n_cond))
+
+        # 数量选择器：原文「选择两个：」必须已归一，且不能二次叠加
+        left = [k for k, r in v3.items() if len(r) > 4 and _re.search(r"选(择)?[一二两三四五六]个\s*[:：]", r[4])]
+        check("数量选择器已归一（无「选择N个：」残留）", not left,
+              "残留: " + ", ".join(left[:3]) if left else "")
+        marked = [k for k, r in v3.items() if len(r) > 4 and "只选" in r[4]]
+        check("归一标记已写入（只选N个，不要全选）", len(marked) >= 5, "%d 条" % len(marked))
+        key = "name:宣传策略"
+        if key in v3:
+            check("「宣传策略」奖励写明只选2项", "只选2个" in v3[key][4],
+                  v3[key][4][:40])
+
+        # 幂等：v3 正文再过一次归一必须不变
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        try:
+            import normalize_effects as NE
+            drift = [k for k, r in list(v3.items())[:200]
+                     if len(r) > 4 and NE.normalize_text(r[4]) != r[4]]
+            check("归一化幂等（前 200 条复跑无变化）", not drift,
+                  "漂移: " + ", ".join(drift[:3]) if drift else "")
+        except Exception as e:
+            check("归一化脚本可导入", False, str(e))
+    else:
+        check("effect_map_v3.tsv 存在", False, "先跑 normalize_effects.py")
+
     # 4) 同名消歧：6 组已知串用冲突
     print("\n[4] 同名多版本消歧")
     conflicts = {

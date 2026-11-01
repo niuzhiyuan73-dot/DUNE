@@ -129,53 +129,51 @@ namespace DuneAiProbe
                 var map = sw.TargetMap;
                 if (map == null || map.Count == 0) return null;
 
-                var sb = new System.Text.StringBuilder();
-                int rows = 0, withTargets = 0, withEffect = 0;
+                // 两遍：先收集，再按「名字+效果+子目标」合并同名候选。
+                // 实测 78% 的请求里同一张牌有 2 个实例（渗透×2），除 8 位短 ID 外完全相同；
+                // 不合并时模型只能答"任选其一"（实测 21% 的答案是这种），决策信息被浪费。
+                var order = new List<string>();
+                var byKey = new Dictionary<string, Row>(StringComparer.Ordinal);
+                int withTargets = 0, withEffect = 0, scanned = 0;
                 int mapTotal = map.Count;
                 foreach (var kv in map)
                 {
-                    if (rows >= DetailRowMax)
-                    {
-                        // 显式标记截断：模型必须知道还有未列出的选项
-                        sb.Append("- 〔另有 " + (mapTotal - rows) + " 个选项未列出〕\n");
-                        break;
-                    }
-                    rows++;
+                    if (scanned++ >= DetailScanMax) break;
 
                     string kid = null;
                     try { if (kv.Key != null) kid = kv.Key.ToString(); } catch { }
-                    string key = kid != null ? Replace(kid, match) : "?";
+                    string label = kid != null ? Replace(kid, match) : "?";
+
                     // 选项侧补一句效果：模型反复说「没有效果文本，无法判断」，这一句就是给它判断依据
+                    string eff = null;
+                    string head = label;
                     if (kid != null)
                     {
-                        string eff = EffectFor(kid, match);
+                        eff = EffectFor(kid, match);
                         if (!string.IsNullOrEmpty(eff))
                         {
-                            key = key + "〔" + eff + "〕";
+                            head = label + "〔" + eff + "〕";
                             withEffect++;
                             if (eff == AMBIGUOUS_MARK)
                             {
                                 // 歧义不算"缺数据"，是"多版本待确认"，单独计数
-                                RecordGap(GapKind.Ambiguous, key.Split('(')[0].Trim());
+                                RecordGap(GapKind.Ambiguous, label.Split('(')[0].Trim());
                             }
                         }
                         else
                         {
                             // 关键：沉默会被模型误读成"这牌没效果"，标注出来它就知道是数据缺失。
                             // 这里记录的是"尚未采集到"，不是"确认没有该效果"。
-                            key = key + "〔效果待查〕";
+                            head = label + "〔效果待查〕";
                             // 记录缺口时先剥掉 <sprite name=...>：能力实体常以图标名作名字，
                             // 直接记会把整行变成标签，gaps.txt 不可读
-                            RecordGap(GapKind.Unknown, StripTags(key.Split('(')[0].Trim()));
+                            RecordGap(GapKind.Unknown, StripTags(label.Split('(')[0].Trim()));
                         }
                     }
-                    sb.Append("- ").Append(key);
 
                     var list = kv.Value;
-                    if (list == null || list.Count == 0) { sb.Append("：（无子目标）\n"); continue; }
-
                     var parts = new List<string>();
-                    for (int i = 0; i < list.Count; i++)
+                    for (int i = 0; list != null && i < list.Count; i++)
                     {
                         if (parts.Count >= SubTargetMax)
                         {
@@ -190,14 +188,48 @@ namespace DuneAiProbe
                             parts.Add(one);
                         }
                     }
-                    sb.Append("：").Append(parts.Count == 0 ? "（只能由按钮决定）" : string.Join("；", parts.ToArray()))
-                      .Append('\n');
+
+                    string sub;
+                    if (list == null || list.Count == 0) sub = "（无子目标）";
+                    else sub = parts.Count == 0 ? "（只能由按钮决定）" : string.Join("；", parts.ToArray());
+
+                    // 判重键：名字去掉短 ID（同名不同实例视为同一项）+ 效果 + 子目标
+                    string bas = ShortIdTail.Replace(label, "");
+                    string gk = bas + "\u0001" + (eff ?? "") + "\u0001" + sub;
+                    Row row;
+                    if (!byKey.TryGetValue(gk, out row))
+                    {
+                        row = new Row { Head = head, Sub = sub };
+                        byKey[gk] = row;
+                        order.Add(gk);
+                    }
+                    else
+                    {
+                        row.Count++;
+                    }
                 }
+
+                var sb = new System.Text.StringBuilder();
+                int shown = 0;
+                foreach (var gk in order)
+                {
+                    if (shown >= DetailRowMax) break;
+                    Row row = byKey[gk];
+                    shown++;
+                    sb.Append("- ").Append(row.Head);
+                    // 合并后必须说清"这是同一个东西的多个实例"，否则模型会以为少给了选项
+                    if (row.Count > 1)
+                        sb.Append(" ×").Append(row.Count).Append("（同名同效果，任选其一即可）");
+                    sb.Append("：").Append(row.Sub).Append('\n');
+                }
+                if (order.Count > shown)
+                    sb.Append("- 〔另有 ").Append(order.Count - shown).Append(" 组选项未列出〕\n");
 
                 if (sb.Length == 0) return null;
                 // 一行诊断：withTargets == 0 就说明 ValidTargets 还是没取到
                 DumpGaps();
-                log.LogInfo("[TARGETS] detail rows=" + rows + " withTargets=" + withTargets
+                log.LogInfo("[TARGETS] detail groups=" + shown + "/" + order.Count + " map=" + mapTotal
+                            + " withTargets=" + withTargets
                             + " withEffect=" + withEffect + " gaps=" + _gapCount.Count);
                 return "【目标明细】\n" + sb;
             }
@@ -365,6 +397,22 @@ namespace DuneAiProbe
         /// 超出部分一律显式标记"另有 N 项未列出"，不做静默截断。
         private const int DetailRowMax = 24;
         private const int SubTargetMax = 24;
+
+        /// 防御：TargetMap 正常只有几十项；异常大的（整手牌选择）跳过其余项，
+        /// 免得在 AI 决策线程里做过多反射。
+        private const int DetailScanMax = 200;
+
+        /// 行尾短 ID：Replace 会把实体写成「名字(1a2b3c4d)」，判重时要去掉，
+        /// 否则同名不同实例永远不会被认成同一项。
+        private static readonly Regex ShortIdTail = new Regex(@"\s*\([0-9a-f]{8}\)\s*$", RegexOptions.Compiled);
+
+        /// 明细的一行（合并后）。Count = 命中同名同效果的实例数。
+        private sealed class Row
+        {
+            public string Head;
+            public string Sub;
+            public int Count = 1;
+        }
 
         /// 缺口的三种状态。区分"确认没有该效果"与"该效果尚未采集到"，
         /// 否则一张只提取到半张效果的卡会被误判成信息齐全。

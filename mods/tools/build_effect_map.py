@@ -295,8 +295,17 @@ def build():
             if len(parts) < 2 or not parts[0].strip() or not parts[1].strip():
                 continue
             raw = parts[0].strip()
-            # 冲突牌同名跨扩展，必须用 GUID 作键；其余实体用中文名
-            key = raw if raw.count("-") == 4 else "name:" + raw
+            # 冲突牌同名跨扩展，必须用 GUID 作键；其余实体用中文名。
+            # key: 前缀 = 原样使用该键（用于 worm.canis.abilities.* 这类由运行时
+            # 直接以本地化键查询的能力文本，加 name: 前缀会永远命中不到）。
+            if raw.startswith("key:"):
+                key = raw[4:].strip()
+            elif raw.count("-") == 4:
+                key = raw
+            else:
+                key = "name:" + raw
+            if not key:
+                continue
             put(key, parts[1].strip(), "kb_extra")
             kb_added += 1
 

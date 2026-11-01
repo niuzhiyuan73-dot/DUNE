@@ -1,3 +1,11 @@
-# 缺少效果文本的实体（按出现次数降序）
-# 行数: 1
-1	Player
+# 效果文本缺口清单（按状态分组，组内按出现次数降序）
+# 说明：unknown=尚未采集到（可能有该效果）；ambiguous=同名多版本无法确定；absent=已确认没有该效果
+# [unknown] 行数: 6
+5	DeployUnitsAbility
+2	私人航班
+2	FreighterAgentAbility
+1	ForHumanityAgentAbility
+1	DeepDesertDeferredAbility
+1	IxGuildCompactAgentAbility
+# [ambiguous] 行数: 0
+# [absent] 行数: 0

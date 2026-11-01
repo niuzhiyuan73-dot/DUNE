@@ -194,12 +194,41 @@ namespace DuneAiProbe
             return 0;
         }
 
-        /// 加载效果表。优先读 effect_map_v2.tsv（含来源/优先级/歧义标记、长文本不截断）；
-        /// v2 不存在时回退到旧的两列 effect_map.tsv。
+        /// 加载效果表。优先级：v3（带花费/条件字段）> v2（纯文本，兼容旧部署）> 旧两列格式。
+        ///
+        /// v3 与 v2 的差别只有两列：花费、条件。运行时把它们拼成
+        /// 「正文｜花费 6香料｜条件 若与宇航公会同盟」，模型不必再从长句里找。
         private static void LoadEffectMap(string root)
         {
+            string v3 = Path.Combine(root, "mods", "ai", "effect_map_v3.tsv");
+            if (File.Exists(v3))
+            {
+                try
+                {
+                    foreach (var line in File.ReadAllLines(v3, Encoding.UTF8))
+                    {
+                        if (line.Length == 0) continue;
+                        // 键 来源 优先级 扩展 歧义标记 正文 花费 条件
+                        var cols = line.Split('\t');
+                        if (cols.Length < 6) continue;
+                        string key = cols[0];
+                        if (key.Length == 0) continue;
+                        string cost = cols.Length > 6 ? cols[6] : null;
+                        string cond = cols.Length > 7 ? cols[7] : null;
+                        _effects[key] = Compose(cols[5].Replace("\\n", " "), cost, cond);
+                        _effectSources[key] = cols[1];
+                        int prio;
+                        if (int.TryParse(cols[2], out prio)) _effectPriorities[key] = prio;
+                        if (!string.IsNullOrEmpty(cols[4])) _ambiguousNames.Add(cols[4]);
+                    }
+                    _log.LogWarning("[COACH] effect_map_v3: " + _effects.Count + " 条, 歧义 " +
+                                    _ambiguousNames.Count + " 个");
+                }
+                catch (Exception e) { _log.LogWarning("[COACH] effect_map_v3: " + e.Message); }
+            }
+
             string v2 = Path.Combine(root, "mods", "ai", "effect_map_v2.tsv");
-            if (File.Exists(v2))
+            if (_effects.Count == 0 && File.Exists(v2))
             {
                 try
                 {
@@ -217,7 +246,7 @@ namespace DuneAiProbe
                         if (int.TryParse(cols[2], out prio)) _effectPriorities[key] = prio;
                         if (!string.IsNullOrEmpty(cols[4])) _ambiguousNames.Add(cols[4]);
                     }
-                    _log.LogWarning("[COACH] effect_map_v2: " + _effects.Count + " 条, 歧义 " +
+                    _log.LogWarning("[COACH] effect_map_v2(回退): " + _effects.Count + " 条, 歧义 " +
                                     _ambiguousNames.Count + " 个");
                 }
                 catch (Exception e) { _log.LogWarning("[COACH] effect_map_v2: " + e.Message); }
@@ -257,6 +286,16 @@ namespace DuneAiProbe
                 }
                 catch (Exception e) { _log.LogWarning("[COACH] effect_map: " + e.Message); }
             }
+        }
+
+        /// 把正文与结构化字段拼成一句：正文｜花费 6香料｜条件 若与宇航公会同盟。
+        /// 用全角竖线分隔，避免和正文里的〔〕嵌套；字段为空则不出现。
+        private static string Compose(string text, string cost, string cond)
+        {
+            var sb = new StringBuilder(text ?? "");
+            if (!string.IsNullOrEmpty(cost)) sb.Append("｜花费 ").Append(cost);
+            if (!string.IsNullOrEmpty(cond)) sb.Append("｜条件 ").Append(cond);
+            return sb.ToString();
         }
 
         private static readonly Regex KeyRe = new Regex(
