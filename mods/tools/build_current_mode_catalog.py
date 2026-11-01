@@ -44,9 +44,15 @@ FIELD_LABELS = {"cost": "费用", "faction": "阵营", "spaces": "可进入空�
 # 直接决定卡牌可玩性的核心字段（缺口排序权重高）；conditions/limits 为派生字段。
 CORE_FIELDS = ["cost", "faction", "spaces", "agent_effect", "reveal_effect", "purchase_effect",
                "passive_effect", "card_effect"]
-SPACE_ICONS = {"Circle", "Triangle", "Pentagon"}
-FACTION_ICONS = {"Emperor", "SpacingGuild", "BeneGesserit", "Fremen", "Spy"}
+SPACE_ICONS = ("Circle", "Triangle", "Pentagon")
+FACTION_ICONS = ("Emperor", "SpacingGuild", "BeneGesserit", "Fremen", "Spy")
 REVEAL_RESOURCES = ("Spice", "Water", "Solari", "Troops", "Specimen", "Strength", "Persuasion")
+COST_KEYS = ("PersuasionCost", "SpiceCost", "WaterCost", "SolariCost", "SpecimenCost")
+# 完全没有费用概念的卡型（冲突/奖励/合约/领袖等不是"花影响力买"的牌）。
+COST_LESS_TYPES = ("Conflict", "ConflictReward", "Contract", "Leader", "LeaderUpgrade")
+# 不落在版图空间上的卡型（它们没有"可进入空间"这一维度）。
+SPACE_LESS_TYPES = ("Conflict", "ConflictReward", "Intrigue", "Contract", "Leader", "LeaderUpgrade",
+                    "TechTile")
 GENERIC_ABILITY_CLASSES = {"AgentAbility", "RevealAbility", "AcquireAbility", "ActiveAbility", "SpaceAbility"}
 
 _SLOT_RULES = (
@@ -78,6 +84,32 @@ def _slot_of(key):
     return None
 
 
+def _ability_slot(ability):
+    """按能力类名与存档阶段判断该能力驱动哪个效果槽位。
+
+    存档里的 AbilityTiming 是引擎自己的阶段标记；类名则直接写着这张能力
+    属于哪一栏（…RevealAbility / …AgentAbility / …AcquireAbility）。
+    两者结合比单看一个可靠。通用脚手架能力（AgentAbility 等）只说明
+    "这一栏存在"，其文本是交互提示，不作为规则正文。
+    """
+    classes = ability.get("classes") or []
+    timings = ability.get("observed_timings") or []
+    joined = " ".join(classes)
+    for marker, slot in (("Reveal", "reveal_effect"), ("Agent", "agent_effect"),
+                         ("Acquire", "purchase_effect"), ("Static", "passive_effect"),
+                         ("Signet", "passive_effect"), ("Bond", "passive_effect"),
+                         ("Discard", "passive_effect")):
+        if marker in joined:
+            return slot
+    if "Agent" in timings:
+        return "agent_effect"
+    if "Reveal" in timings:
+        return "reveal_effect"
+    if {"Combat", "CombatResolution", "Endgame"} & set(timings):
+        return "passive_effect"
+    return None
+
+
 def _field(status, value=None, text=None, source=None, note=None):
     item = {"status": status}
     if value is not None:
@@ -104,18 +136,26 @@ def assess_fields(typ, at, text_fields, ability_records, unresolved):
     out = {}
 
     # ---- 属性类：费用 / 阵营 / 可进入空间 / 可派遣图标 ----
-    cost_parts = []
-    for f in ("PersuasionCost", "SpiceCost", "WaterCost", "SolariCost", "SpecimenCost"):
+    cost_parts = {}
+    for f in COST_KEYS:
         if f in at:
-            cost_parts.append("%s=%s" % (f.replace("Cost", ""), json.dumps(at[f], ensure_ascii=False)))
-    out["cost"] = (_field("confirmed", value=json.dumps(at, ensure_ascii=False)[:0] or None,
-                          source="game_attribute", note="；".join(cost_parts))
-                   if cost_parts else _field("unknown", source="none",
-                                             note="原型属性里没有费用字段，未采集到"))
+            cost_parts[f] = at[f]
+    if cost_parts:
+        out["cost"] = _field("confirmed", value=cost_parts, source="game_attribute",
+                              note="；".join("%s=%s" % (k.replace("Cost", ""),
+                                                json.dumps(v, ensure_ascii=False))
+                                            for k, v in cost_parts.items()))
+    else:
+        # 原型属性表里没有费用字段。费用是该卡型的一等属性时判 absent，
+        # 否则只能判 unknown（无法区分"确实免费"与"尚未采集"）。
+        out["cost"] = _field("absent" if typ in COST_LESS_TYPES else "unknown",
+                              source="archetype" if typ in COST_LESS_TYPES else "none",
+                              note=("%s 类实体没有费用概念（原型属性表无任何费用字段）" % typ
+                                    if typ in COST_LESS_TYPES else "原型属性里没有费用字段，未采集到"))
 
-    faction_keys = ("Faction", "Factions", "FactionList", "DeployFactions")
+    # 阵营：卡牌的 FactionList / 领袖的 LeaderHouse / 版图位置的 Faction。
     faction_val = None
-    for f in faction_keys:
+    for f in ("FactionList", "LeaderHouse", "Faction", "Factions", "DeployFactions"):
         if f in at and at[f]:
             faction_val = at[f]
             break
@@ -130,13 +170,34 @@ def assess_fields(typ, at, text_fields, ability_records, unresolved):
         else:
             out["faction"] = _field("unknown", source="none", note="未采集到阵营信息")
 
-    if "IconList" in at and at["IconList"]:
-        icons = list(at["IconList"])
-        out["spaces"] = _field("confirmed", value=icons, source="game_attribute")
-        out["deploy_factions"] = _field("confirmed", value=icons, source="game_attribute")
+    # IconList 同时装了空间图标（Circle/Triangle/Pentagon）与派系图标
+    # （Emperor/SpacingGuild/…）。"可进入空间"和"可派遣派系"是两个不同的问题，
+    # 不能把同一份列表同时填进两个字段。
+    icons = list(at.get("IconList", []) or [])
+    space_icons = [i for i in icons if i in SPACE_ICONS]
+    deploy_icons = [i for i in icons if i in FACTION_ICONS]
+    if icons:
+        out["spaces"] = _field("confirmed", value=space_icons, source="game_attribute",
+                               note=("原型 IconList 中的空间图标" if space_icons
+                                     else "原型 IconList 只有派系图标，没有空间图标"))
+        out["deploy_factions"] = _field("confirmed", value=deploy_icons, source="game_attribute",
+                                        note=("原型 IconList 中的派系图标" if deploy_icons
+                                              else "原型 IconList 只有空间图标，没有派系图标"))
+    elif at.get("AgentIcon"):
+        # 版图位置用 AgentIcon 表示"可派遣的特使图标"。
+        out["spaces"] = _field("absent", source="archetype",
+                               note="版图位置实体本身不是可进入的空间")
+        out["deploy_factions"] = _field("confirmed", value=[at["AgentIcon"]], source="game_attribute",
+                                        note="原型 AgentIcon（该位置可部署的特使图标）")
     else:
-        out["spaces"] = _field("unknown", source="none", note="未采集到进入图标")
-        out["deploy_factions"] = _field("unknown", source="none", note="未采集到可派遣图标")
+        out["spaces"] = _field("absent" if typ in SPACE_LESS_TYPES else "unknown",
+                               source="archetype" if typ in SPACE_LESS_TYPES else "none",
+                               note=("%s 类实体不在版图空间上" % typ if typ in SPACE_LESS_TYPES
+                                     else "原型属性里没有空间图标字段，未采集到"))
+        out["deploy_factions"] = _field("absent" if typ in SPACE_LESS_TYPES else "unknown",
+                                        source="archetype" if typ in SPACE_LESS_TYPES else "none",
+                                        note=("%s 类实体没有可派遣特使图标" % typ if typ in SPACE_LESS_TYPES
+                                              else "原型属性里没有可派遣图标字段，未采集到"))
 
     # ---- 效果类：按本地化槽位归类 ----
     slot_text = {}
@@ -149,49 +210,63 @@ def assess_fields(typ, at, text_fields, ability_records, unresolved):
             continue
         slot_text.setdefault(slot, []).append((t["key"], zh))
 
+    # 存档里观察到的能力文本。通用脚手架能力（AgentAbility/RevealAbility/
+    # AcquireAbility…）的文本只是交互提示（例："把获取的那张牌放到什么位置？"），
+    # 不是规则正文，不能当效果证据；只有卡牌专属能力才算。
+    ability_text = {}
+    for ab in ability_records:
+        classes = ab.get("classes") or []
+        if not classes or set(classes) <= GENERIC_ABILITY_CLASSES:
+            continue
+        slot = _ability_slot(ab)
+        if not slot:
+            continue
+        for ev in ab.get("text_evidence", []):
+            zh = (ev.get("zh") or "").strip()
+            if zh:
+                ability_text.setdefault(slot, []).append((ev["key"], zh))
+
     def _joined(slot):
         items = slot_text.get(slot) or []
         if not items:
             return None
         return "；".join(z for _, z in items)
 
-    # 特使效果：.agent 槽；无 .agent 时看 AgentAbility 的文本证据
-    agent_text = _joined("agent")
-    if not agent_text:
-        for ab in ability_records:
-            if any(c in ("AgentAbility",) for c in ab["classes"]):
-                ev = "；".join(x["zh"] for x in ab["text_evidence"] if x.get("zh"))
-                if ev:
-                    agent_text = ev
-                    break
-    if agent_text:
-        out["agent_effect"] = _field("confirmed", text=agent_text, source="game_localization")
-    else:
-        out["agent_effect"] = _field("unknown", source="none",
-                                     note="未采集到特使效果文本（可能是纯数值牌，也可能尚未提取）")
+    def _joined_ability(slot):
+        items = ability_text.get(slot) or []
+        if not items:
+            return None
+        return "；".join(z for _, z in items)
 
-    reveal_text = _joined("reveal")
-    if not reveal_text:
-        for ab in ability_records:
-            if any(c in ("RevealAbility",) for c in ab["classes"]):
-                ev = "；".join(x["zh"] for x in ab["text_evidence"] if x.get("zh"))
-                if ev:
-                    reveal_text = ev
-                    break
-    if reveal_text:
-        out["reveal_effect"] = _field("confirmed", text=reveal_text, source="game_localization")
-    else:
-        out["reveal_effect"] = _field("unknown", source="none",
-                                      note="未采集到展示效果文本")
+    def _effect(slot, label):
+        """一个效果栏的判定：先看官方印刷文本，再看存档里的卡牌专属能力文本。"""
+        text = _joined(slot)
+        if text:
+            return _field("confirmed", text=text, source="game_localization",
+                          note="本地化键 " + slot_text[slot][0][0])
+        text = _joined_ability(slot)
+        if text:
+            return _field("confirmed", text=text, source="save_observation",
+                          note="存档中该卡专属能力的文本证据: " + ability_text[slot][0][0])
+        if slot in slot_text or slot in ability_text:
+            return _field("unknown", source="none", note="已定位到该栏文本但内容为空")
+        return _field("unknown", source="none",
+                      note="未采集到%s文本（可能是纯数值牌，也可能尚未提取）" % label)
 
-    purchase_text = _joined("ability") or None
-    if "AcquireEffectList" in at and at["AcquireEffectList"]:
-        purchase_text = ("购买效果图标：" + "、".join(at["AcquireEffectList"])) if not purchase_text else purchase_text
-    if purchase_text:
-        out["purchase_effect"] = _field("confirmed", text=purchase_text, source="game_localization")
-    elif typ in ("Conflict", "ConflictReward", "Space", "TechTile", "Contract"):
-        out["purchase_effect"] = _field("absent", source="archetype",
-                                        note="%s 类实体没有购买效果" % typ)
+    out["agent_effect"] = _effect("agent", "特使效果")
+    out["reveal_effect"] = _effect("reveal", "展示效果")
+
+    # 购买效果：卡面印刷的获取图标（AcquireEffectList），属于属性证据。
+    if at.get("AcquireEffectList"):
+        out["purchase_effect"] = _field("confirmed", value=list(at["AcquireEffectList"]),
+                                        source="game_attribute",
+                                        note="原型 AcquireEffectList（获取时附带的图标效果）")
+    else:
+        out["purchase_effect"] = _effect("ability", "购买效果")
+        if out["purchase_effect"]["status"] == "unknown" and typ in PURCHASE_LESS_TYPES:
+            out["purchase_effect"] = _field("absent", source="archetype",
+                                            note="%s 类实体没有购买效果" % typ)
+
     else:
         out["purchase_effect"] = _field("unknown", source="none",
                                         note="未采集到购买效果文本")

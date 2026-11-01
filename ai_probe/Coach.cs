@@ -140,7 +140,24 @@ namespace DuneAiProbe
         {
             if (string.IsNullOrEmpty(key)) return null;
             string e;
-            if (_effects.TryGetValue(key, out e)) return e;
+            if (_effects.TryGetValue(key, out e))
+            {
+                // GUID 命中时：若同名 name: 条目优先级更高且该名非歧义，
+                // 用更权威的那份（人工复核的完整文本 > 自动提取的残缺短文本）。
+                if (!key.StartsWith("name:", StringComparison.Ordinal))
+                {
+                    string nm = NameOf(key);
+                    if (!string.IsNullOrEmpty(nm) && !_ambiguousNames.Contains(nm))
+                    {
+                        string nkey = "name:" + nm;
+                        string e2;
+                        if (_effects.TryGetValue(nkey, out e2) &&
+                            EffectPriorityOf(nkey) > EffectPriorityOf(key))
+                            return e2;
+                    }
+                }
+                return e;
+            }
             // name: 兜底：排除歧义名
             if (key.StartsWith("name:", StringComparison.Ordinal)) return null;
             if (_ambiguousNames.Contains(key)) return null;
