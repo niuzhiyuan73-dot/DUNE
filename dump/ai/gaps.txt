@@ -1,26 +1,30 @@
 # 效果文本缺口清单（按状态分组，组内按出现次数降序）
 # 说明：unknown=尚未采集到（可能有该效果）；ambiguous=同名多版本无法确定；absent=已确认没有该效果
-# [unknown] 行数: 21
-65	ReturnSpecimenAbility
-35	DeployUnitsAbility
-16	FreighterAgentAbility
-12	暗中破坏
-7	私人航班
+# [unknown] 行数: 25
+94	ReturnSpecimenAbility
+72	DeployUnitsAbility
+21	FreighterAgentAbility
+17	暗中破坏
+8	私人航班
+7	GainResearchRevealAbility
+6	ShippingTrackAbility3
+5	SpacingGuildDiscardDrawAbility
+5	SietchTabrUprisingDeferredSpaceAbility
 4	CrysknifeAbility
-3	ShippingTrackAbility3
-3	TrashAgentAbility
+4	GainResearchAgentAbility
+4	Player
+4	TrashAgentAbility
 3	IxGuildCompactAgentAbility
-3	Player
-3	GainResearchAgentAbility
-2	潜伏走私者
+3	ShaiHuludAbility
+3	将此牌放回你的手牌
+3	伊克斯工程师
 2	DeepDesertDeferredAbility
+2	查看牌堆顶的三张牌。抽取其中一张，弃掉一张，并销毁一张
+2	RecallSpyIntelligenceAbility
+2	潜伏走私者
+2	LongLiveTheFightersStartAbility
+2	SpiceRefineryAbility
 1	DisposalFacilityAcquiredAbility
-1	SietchTabrUprisingDeferredSpaceAbility
 1	ForHumanityAgentAbility
-1	查看牌堆顶的三张牌。抽取其中一张，弃掉一张，并销毁一张
-1	LongLiveTheFightersStartAbility
-1	RecallSpyIntelligenceAbility
-1	ShaiHuludAbility
-1	SpiceRefineryAbility
 # [ambiguous] 行数: 0
 # [absent] 行数: 0
