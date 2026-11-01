@@ -65,7 +65,7 @@ def prompt_of(p):
 def classify(p):
     """与 Turn.cs 的 Classify 一致：Kind 可能为空串，Prompt 才是稳定判据。"""
     k, t = kind_of(p), prompt_of(p)
-    if k == "Combat" or "打出一张密牌" in t:
+    if k == "Combat" or "打出一张密牌" in t or "使用一项能力，或跳过" in t:
         return "combat"
     if "打出一张牌" in t:
         return "play"
@@ -103,7 +103,7 @@ def main():
     rows = sorted([r for r in load(args.since) if r.get("pending")],
                   key=lambda r: (r.get("ts") or "", counter_of(r)))
 
-    last_play = {}
+    last_play = {}       # (玩家, 冲突) -> 上次打出时的可用特使数；换冲突即重置
     asked_inner = set()
     asked_reveal = set()
     asked_leader = set()
@@ -124,8 +124,9 @@ def main():
 
         if sel == "play":
             now = agents_of(r.get("state"))
-            prev = last_play.get(who)
-            last_play[who] = now
+            k = (who, cf)
+            prev = last_play.get(k)
+            last_play[k] = now
             if prev is not None and now is not None and now >= prev:
                 merged["同一回合又弹出打出提示"] += 1
                 continue
@@ -203,7 +204,7 @@ def main():
     if merged:
         print("已合并：" + "、".join("%s %d" % (k, v) for k, v in merged.most_common()))
     print("期望：行动内 = 0，展示 ≤ 1/冲突，确认仅当 Prompt 点名哈德拉克，"
-          "打出 = 可用特使数（+1 为哈德拉克这类额外派遣）")
+          "打出 = 可用特使数（+1 为哈德拉克这类额外派遣）；战斗每次轮到你都要问（不设上限）")
     print("结论：%s" % ("全部符合" if bad == 0 else "%d 个冲突段不符合" % bad))
     return 0 if bad == 0 else 2
 

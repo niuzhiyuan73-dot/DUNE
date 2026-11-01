@@ -44,11 +44,12 @@ namespace DuneAiProbe
             public string Conflict;
             public int PlayNo;      // 本冲突第几次打出
             public int Agents;      // 本冲突的可用特使数（第 1 次打出时记录）
+            public int CombatNo;    // 本冲突战斗阶段第几次轮到我
+            public int LastPlayAgents = -1;   // 上一次「打出」提示时的可用特使数（-1 = 本冲突还没问过）
         }
 
         private static readonly Dictionary<long, Progress> _prog = new Dictionary<long, Progress>();
-        // 上一次「打出」提示时的可用特使数：用来判断这次是同一回合的重复提示还是新回合
-        private static readonly Dictionary<long, int> _lastPlayAgents = new Dictionary<long, int>();
+
 
         private static int _asked, _skipped;
         private static ManualLogSource _log;
@@ -86,11 +87,10 @@ namespace DuneAiProbe
                             // 判「是不是新回合」不看提示本身：同一回合内先打一张阴谋牌，
                             // 游戏会再弹一次「打出一张牌」（实测 #24/#25 同秒两条），
                             // 唯一可靠的判据是**可用特使数有没有减少**。
+                            Progress pg = ProgressOf(playerKey, stateBlock, out bool f1);
                             int now = AgentsOf(stateBlock);
-                            int prev;
-                            bool repeat = _lastPlayAgents.TryGetValue(playerKey, out prev)
-                                          && now >= 0 && prev >= 0 && now >= prev;
-                            _lastPlayAgents[playerKey] = now;
+                            bool repeat = pg.LastPlayAgents >= 0 && now >= 0 && now >= pg.LastPlayAgents;
+                            pg.LastPlayAgents = now;
                             if (repeat) { Merge(log, "同一回合内又弹出打出提示（未消耗特使）", pending); return false; }
 
                             _askedAgent.Add(playerKey);
@@ -118,9 +118,14 @@ namespace DuneAiProbe
                             return true;
 
                         case Sel.Combat:
-                            // 战斗阶段每步都有真选择（打哪张战斗密谋 / 过牌），不能合并
+                        {
+                            // 战斗阶段每步都必须单独问：轮到你时「打哪张 / 打几张 / 跳过」都要按当前战力重算。
+                            // 规则上"跳过不算退出"，所以每一次轮到你都是新的决定，绝不能合并。
+                            Progress pg = ProgressOf(playerKey, stateBlock, out bool fresh);
+                            pg.CombatNo++;
                             _asked++;
                             return true;
+                        }
 
                         case Sel.Leader:
                             if (_askedLeader.Contains(playerKey)) return false;
@@ -150,7 +155,11 @@ namespace DuneAiProbe
             string kind = KindOf(pending);
             string prompt = PromptOf(pending);
 
-            if (kind == "Combat" || prompt.IndexOf("打出一张密牌", StringComparison.Ordinal) >= 0)
+            // 战斗阶段两种提示都算战斗：主提示「打出一张密牌或过牌」、
+            // 卡牌结算时「使用一项能力，或跳过」（本地化 worm.combat.intrigue[.resolution]）。
+            if (kind == "Combat"
+                || prompt.IndexOf("打出一张密牌", StringComparison.Ordinal) >= 0
+                || prompt.IndexOf("使用一项能力，或跳过", StringComparison.Ordinal) >= 0)
                 return Sel.Combat;
             if (prompt.IndexOf("打出一张牌", StringComparison.Ordinal) >= 0)
                 return Sel.Play;
@@ -163,6 +172,29 @@ namespace DuneAiProbe
             if (kind == "AssignLeader") return Sel.Leader;
             if (kind == "PlayerTurn") return Sel.Play;      // 兜底：Kind 有值但 Prompt 没匹配上
             return Sel.Inner;
+        }
+
+        /// <summary>取（或新建）本玩家在当前冲突里的进度；换冲突自动重置。</summary>
+        private static Progress ProgressOf(long playerKey, string stateBlock, out bool fresh)
+        {
+            string conflict = ConflictOf(stateBlock);
+            Progress p;
+            fresh = false;
+            if (!_prog.TryGetValue(playerKey, out p) || p.Conflict != conflict)
+            {
+                int remain = AgentsOf(stateBlock);
+                p = new Progress
+                {
+                    Conflict = conflict,
+                    PlayNo = 0,
+                    Agents = remain > 0 ? remain : 0,
+                    CombatNo = 0
+                };
+                _prog[playerKey] = p;
+                fresh = true;
+                if (_prog.Count > 64) _prog.Clear();
+            }
+            return p;
         }
 
         /// <summary>
@@ -238,9 +270,16 @@ namespace DuneAiProbe
                     }
 
                     if (sel == Sel.Combat)
-                        return "【阶段】战斗阶段：每步只能「打出一张**战斗**密谋」或「过牌」。"
-                             + "阴谋牌（自己回合用的那类，如战略储备）在这里打不了；"
-                             + "过牌不等于退出，只要全员还没连续过牌，之后轮到你仍可再打。";
+                    {
+                        int k = p.CombatNo > 0 ? p.CombatNo : 1;
+                        return "【战斗】本冲突战斗阶段，第 " + k + " 次轮到你。\n"
+                             + "每次轮到你都可以：打出 **1 张或多张战斗密谋**，或者**跳过**。"
+                             + "「跳过」是界面上的独立按钮，不在待选列表里也算合法。\n"
+                             + "**跳过不是退出**：之后再次轮到你仍可打；只有**所有玩家连续跳过**才会结算。\n"
+                             + "判断方法：看【战力】那一行的本方数值与名次 → 打出后能否改变名次、换到第几栏奖励；"
+                             + "**改变不了名次就别浪费牌**（比如已经稳拿第二、且第一追不上）。"
+                             + "只有战斗密谋能在这里打，阴谋牌与终局密谋都不行。";
+                    }
 
                     if (sel == Sel.Leader)
                         return "【本回合】开局指派领袖，只做一次选择，没有行动链。";
@@ -260,7 +299,6 @@ namespace DuneAiProbe
             lock (_lock)
             {
                 _handled.Clear(); _askedAgent.Clear(); _askedReveal.Clear(); _askedLeader.Clear();
-                _lastPlayAgents.Clear();
                 _prog.Clear(); _asked = 0; _skipped = 0;
             }
         }
