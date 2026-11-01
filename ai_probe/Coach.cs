@@ -30,6 +30,7 @@ namespace DuneAiProbe
         private static int _max;
         private static int _sent;
         private static readonly object _lock = new object();
+        private static readonly object _fileLock = new object();
         private static readonly Dictionary<string, string> _names = new Dictionary<string, string>();
         private static readonly HashSet<string> _seen = new HashSet<string>();
         private static readonly Regex GuidRe = new Regex(
@@ -279,8 +280,25 @@ namespace DuneAiProbe
                     + ",\"pending\":" + Json.Str(pending)
                     + (http >= 200 && http < 300 ? "" : ",\"raw\":" + Json.Str(Short(raw, 500)))
                     + "}";
-                File.AppendAllText(Path.Combine(_outDir, "coach_" + DateTime.Now.ToString("yyyyMMdd") + ".jsonl"),
-                    line + "\n", new UTF8Encoding(false));
+                // 多个回答线程可能同时落盘，File.AppendAllText 会撞 "being used by another process"。
+                // 加锁 + 重试，宁可多等 100ms，也不要静默丢样本。
+                string path = Path.Combine(_outDir, "coach_" + DateTime.Now.ToString("yyyyMMdd") + ".jsonl");
+                lock (_fileLock)
+                {
+                    for (int attempt = 0; attempt < 4; attempt++)
+                    {
+                        try
+                        {
+                            File.AppendAllText(path, line + "\n", new UTF8Encoding(false));
+                            break;
+                        }
+                        catch (IOException)
+                        {
+                            if (attempt == 3) throw;
+                            System.Threading.Thread.Sleep(60);
+                        }
+                    }
+                }
             }
             catch (Exception e) { _log.LogWarning("[COACH] append: " + e.Message); }
         }
