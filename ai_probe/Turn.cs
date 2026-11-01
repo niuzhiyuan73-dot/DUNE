@@ -59,16 +59,19 @@ namespace DuneAiProbe
                         if (_askedThisTurn.Contains(playerKey))
                         {
                             _skipped++;
-                            if (log != null && _skipped % 20 == 1)
-                                log.LogInfo("[TURN] 回合内追问已合并（累计跳过 " + _skipped + " 次）");
+                            if (log != null && _skipped % 5 == 1)
+                                log.LogInfo("[TURN] 同阶段追问已合并（累计跳过 " + _skipped + " 次，已问 " + _asked + " 次）");
                             return false;
                         }
                         return true;   // 回合首问不是 PlayerTurn 的少见情形，照问
                     }
 
-                    if (kind == "PlayerTurn")
+                    // PlayerTurn / RevealTurn 都是"阶段起点"：开新阶段并标记已问，
+                    // 否则同阶段的后续 AgentTurn 会继续追问（上一版就是漏了 Add）。
+                    if (kind == "PlayerTurn" || kind == "RevealTurn")
                     {
                         _askedThisTurn.Remove(playerKey);
+                        _askedThisTurn.Add(playerKey);
                         _asked++;
                         return true;
                     }

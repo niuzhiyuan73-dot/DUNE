@@ -124,7 +124,8 @@ def main():
     check("Plugin 调用 Turn.ShouldAsk", "Turn.ShouldAsk(" in plugin)
     check("人类入口默认关闭（只观察 AI）", "h.Patch(selM" not in plugin)
     check("只观察一个 AI（IsTarget 锁定）", "IsTarget(" in coach and "_targetKey" in coach)
-    check("换局重置观察对象", "OnNewMatch" in coach and "Coach.OnNewMatch" in mem)
+    check("换局重置观察对象（按 match 指针）", "_targetMatch" in coach and "_targetMatch != matchPtr" in coach)
+    check("揭示回合不能派特使（阶段提示）", "RevealTurn" in plugin and "不能派特使" in plugin)
     check("多 key 轮询", "NextKey()" in coach and "LoadKeys" in coach)
     check("不再用全局 Authorization", "DefaultRequestHeaders.Add" not in coach)
 

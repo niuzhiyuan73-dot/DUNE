@@ -30,6 +30,7 @@ namespace DuneAiProbe
         private static int _keyCursor;
         // 只观察一个 AI：锁定第一个做决策的 AI；换局时由 Memory 通知重置。
         private static long _targetKey;
+        private static long _targetMatch;
         private static string _targetName;
         private static string _targetPattern;   // coach_target.txt 指定的名字片段（可选）
         private static string _outDir;
@@ -156,10 +157,13 @@ namespace DuneAiProbe
         }
 
         /// <summary>是否观察这个玩家。第一次命中后锁定，其余 AI 一律忽略。</summary>
-        public static bool IsTarget(long key, string name, ManualLogSource log)
+        public static bool IsTarget(long matchPtr, long key, string name, ManualLogSource log)
         {
             lock (_lock)
             {
+                // 换局才重置：match 指针变了说明是新对局，重新挑一个 AI
+                if (_targetMatch != 0 && _targetMatch != matchPtr) { _targetKey = 0; _targetName = null; }
+                if (matchPtr != 0) _targetMatch = matchPtr;
                 if (_targetKey != 0) return _targetKey == key;
                 if (!string.IsNullOrEmpty(_targetPattern))
                 {
@@ -579,7 +583,7 @@ namespace DuneAiProbe
 
         /// 在游戏线程里调用：pending 必须是已经转成托管字符串的文本。
         public static void Observe(string playerName, int counter, string stateBlock, string pending,
-            string memoryBlock = null, long playerKey = 0)
+            string memoryBlock = null, long playerKey = 0, string stageHint = null)
         {
             if (!Enabled || string.IsNullOrEmpty(pending)) return;
 
@@ -606,6 +610,7 @@ namespace DuneAiProbe
             }
             _log.LogInfo("[COACH] observe #" + seq + " len=" + pending.Length + " player=" + (playerName ?? "?"));
             string user = "AI 玩家：" + (playerName ?? "?") + "（第 " + counter + " 号选择）\n";
+            if (!string.IsNullOrEmpty(stageHint)) user += stageHint + "\n";
             if (!string.IsNullOrEmpty(stateBlock)) user += stateBlock + "\n";
             // 本局记忆：只含已确认发生的变化 + 明确标注的建议，紧贴局势，便于对照"刚发生了什么"。
             if (!string.IsNullOrEmpty(memoryBlock)) user += memoryBlock + "\n";
