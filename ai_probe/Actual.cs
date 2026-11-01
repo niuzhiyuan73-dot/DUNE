@@ -186,7 +186,42 @@ namespace DuneAiProbe
             }
             catch { }
 
-            // 走到这里说明三种具体类型都没命中——把真实类型打一次，下次照它补分支，
+            // 带子目标的实体选择：EntityIDEntityTargetsResponse（entityID + targets[]）
+            try
+            {
+                var er = bo.TryCast<Networking.selection.messages.outgoing.EntityIDEntityTargetsResponse>();
+                if (er != null)
+                {
+                    string head = null;
+                    try { if (er.entityID != null) head = LabelOf(counter, er.entityID.ToString()); } catch { }
+                    var subs = new List<string>();
+                    try
+                    {
+                        var arr = er.targets;
+                        if (arr != null)
+                            for (int i = 0; i < arr.Length; i++)
+                            {
+                                string kid = null;
+                                try { if (arr[i] != null) kid = arr[i].ToString(); } catch { }
+                                if (!string.IsNullOrEmpty(kid)) subs.Add(LabelOf(counter, kid));
+                            }
+                    }
+                    catch { }
+                    if (!string.IsNullOrEmpty(head))
+                        return subs.Count > 0 ? head + " → " + string.Join("/", subs.ToArray()) : head;
+                }
+            }
+            catch { }
+
+            // 结束选择：跳过 / 过牌 / 放弃，都走这条
+            try
+            {
+                var fin = bo.TryCast<Networking.selection.messages.outgoing.SelectionFinished>();
+                if (fin != null) return "（跳过／结束选择）";
+            }
+            catch { }
+
+            // 走到这里说明已知类型都没命中——把真实类型打一次，下次照它补分支，
             // 不要继续只记接口名（战斗/部分展示选择一直卡在这里）。
             DiagOnce(bo, result);
             return SafeToString(result);
@@ -203,8 +238,16 @@ namespace DuneAiProbe
                 {
                     if (!_diagTypes.Add(tn) || _diagTypes.Count > 20) return;
                 }
-                if (_log != null) _log.LogInfo("[ACTUAL] 未识别的返回值类型=" + tn +
-                                              " ToString=" + SafeToString(result));
+                string il2 = "?";
+                try
+                {
+                    var cls = Il2CppInterop.Runtime.IL2CPP.il2cpp_object_get_class(bo.Pointer);
+                    var np = Il2CppInterop.Runtime.IL2CPP.il2cpp_class_get_name(cls);
+                    il2 = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(np);
+                }
+                catch { }
+                if (_log != null) _log.LogInfo("[ACTUAL] 未识别的返回值 托管类型=" + tn +
+                                              " 原生类型=" + il2 + " ToString=" + SafeToString(result));
             }
             catch { }
         }

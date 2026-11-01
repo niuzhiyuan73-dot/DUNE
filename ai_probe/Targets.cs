@@ -549,7 +549,7 @@ namespace DuneAiProbe
         private static bool _spaceLogged;
 
         /// <summary>只打一次：版图位置实体的原型 GUID / 子节点名，用于补「位置名」映射。</summary>
-        private static void DumpSpaceOnce(string archGuid, Entity ent)
+        private static void DumpSpaceOnce(string archGuid, Entity ent, string resolved)
         {
             if (_spaceLogged || _log == null) return;
             _spaceLogged = true;
@@ -566,6 +566,7 @@ namespace DuneAiProbe
                 int idx = -1;
                 try { idx = ent != null ? ent.PositionInParent : -1; } catch { }
                 parts.Add("pos=" + idx);
+                parts.Add("resolved=" + (resolved ?? "null"));
                 _log.LogInfo("[TARGETS] 版图位置未识别：" + string.Join(" ", parts.ToArray()));
             }
             catch { }
@@ -726,9 +727,11 @@ namespace DuneAiProbe
                 // 版图位置实体在存档里只有类名 "Space"，原型也没进名字表。
                 // 直接写 "Space" 会让模型自己编位置名（实测编出了"皇帝位置"，进而说"效果待查"）。
                 // 这里改成显式的"名称未解析"，并打一次诊断，便于下次补原型映射。
-                if (en == "Space")
+                // 只有"原型也解析不出名字"时才退回占位：多数位置的原型 GUID 在 name_map 里
+                // （实测 archetype=0610a0a1… → 沙漠战术），上一版无条件覆盖把它们全盖掉了。
+                if (en == "Space" && (human == null || human == "Space"))
                 {
-                    DumpSpaceOnce(archGuid, ent);
+                    DumpSpaceOnce(archGuid, ent, human);
                     human = "某位置（名称未解析，勿猜）";
                 }
 

@@ -1,0 +1,648 @@
+================================================================
+TYPE Networking.selection.targetresponse.EntityListTargetResponse
+  BASE Networking.selection.targetresponse.TargetResponse
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID> EntityList
+  PROP String name
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.IEnumerable<Canis.utils.ids.EntityID> EntityIDs)
+  METHOD Void .ctor(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID> entityIds)
+  METHOD Boolean Equals(Il2CppSystem.Object obj)
+  METHOD Int32 GetHashCode()
+  METHOD String ToString()
+  METHOD Void .ctor(Canis.utils.ids.EntityID[] entityIds)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID> get_EntityList()
+  METHOD Void set_EntityList(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID>)
+  METHOD String get_name()
+  METHOD Void set_name(String)
+
+================================================================
+TYPE Networking.selection.targetresponse.EntityOrientationTargetResponse
+  BASE Networking.selection.targetresponse.TargetResponse
+  PROP Canis.utils.ids.EntityID Entity
+  PROP Int32 Orientation
+  PROP Boolean Flipped
+  PROP String name
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Canis.utils.ids.EntityID entity, Int32 orientation, Boolean flipped)
+  METHOD Boolean Equals(Il2CppSystem.Object obj)
+  METHOD Int32 GetHashCode()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.utils.ids.EntityID get_Entity()
+  METHOD Void set_Entity(Canis.utils.ids.EntityID)
+  METHOD Int32 get_Orientation()
+  METHOD Void set_Orientation(Int32)
+  METHOD Boolean get_Flipped()
+  METHOD Void set_Flipped(Boolean)
+  METHOD String get_name()
+  METHOD Void set_name(String)
+
+================================================================
+TYPE Networking.selection.targetresponse.HexCoordsWithOrientationTargetResponse
+  BASE Networking.selection.targetresponse.TargetResponse
+  PROP Int32 RCoord
+  PROP Int32 SCoord
+  PROP Int32 Orientation
+  PROP String name
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Int32 rCoord, Int32 sCoord, Int32 orientation)
+  METHOD Boolean Equals(Il2CppSystem.Object obj)
+  METHOD Int32 GetHashCode()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Int32 get_RCoord()
+  METHOD Void set_RCoord(Int32)
+  METHOD Int32 get_SCoord()
+  METHOD Void set_SCoord(Int32)
+  METHOD Int32 get_Orientation()
+  METHOD Void set_Orientation(Int32)
+  METHOD String get_name()
+  METHOD Void set_name(String)
+
+================================================================
+TYPE Networking.selection.targetresponse.IntListTargetResponse
+  BASE Networking.selection.targetresponse.TargetResponse
+  PROP Il2CppSystem.Collections.Generic.List<Int32> Choices
+  PROP String name
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Int32 singleChoice)
+  METHOD Void .ctor(Il2CppSystem.Collections.Generic.List<Int32> choices)
+  METHOD Boolean Equals(Il2CppSystem.Object obj)
+  METHOD Int32 GetHashCode()
+  METHOD String ToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.List<Int32> get_Choices()
+  METHOD Void set_Choices(Il2CppSystem.Collections.Generic.List<Int32>)
+  METHOD String get_name()
+  METHOD Void set_name(String)
+
+================================================================
+TYPE Networking.selection.targetresponse.IntTargetResponse
+  BASE Networking.selection.targetresponse.TargetResponse
+  PROP Int32 Amount
+  PROP String name
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Int32 a)
+  METHOD Boolean Equals(Il2CppSystem.Object obj)
+  METHOD Int32 GetHashCode()
+  METHOD String ToString()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Int32 get_Amount()
+  METHOD Void set_Amount(Int32)
+  METHOD String get_name()
+  METHOD Void set_name(String)
+
+================================================================
+TYPE Networking.selection.targetresponse.SquareCoordsWithOrientationTargetResponse
+  BASE Networking.selection.targetresponse.TargetResponse
+  PROP Int32 XCoord
+  PROP Int32 YCoord
+  PROP Int32 Orientation
+  PROP String name
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(Int32 xCoord, Int32 yCoord, Int32 orientation)
+  METHOD Boolean Equals(Il2CppSystem.Object obj)
+  METHOD Int32 GetHashCode()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Int32 get_XCoord()
+  METHOD Void set_XCoord(Int32)
+  METHOD Int32 get_YCoord()
+  METHOD Void set_YCoord(Int32)
+  METHOD Int32 get_Orientation()
+  METHOD Void set_Orientation(Int32)
+  METHOD String get_name()
+  METHOD Void set_name(String)
+
+================================================================
+TYPE Networking.selection.targetresponse.TargetResponse
+  BASE Il2CppSystem.Object
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Networking.selection.messages.CustomChoiceRequired
+  BASE Networking.selection.messages.SelectionMessage
+  PROP String SortType
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.localization.LocalizableText> Buttons
+  PROP Canis.utils.ids.EntityID SourceEntity
+  PROP String Kind
+  PROP String Networking.selection.messages.outgoing.IHasKind.Kind
+  PROP Boolean isForced
+  METHOD [Static] Void .cctor()
+  METHOD String Networking_selection_messages_outgoing_IHasKind_get_Kind()
+  METHOD Boolean get_isForced()
+  METHOD String ToString()
+  METHOD Boolean Validate(Networking.selection.messages.outgoing.ISelectionCounter responseMessage)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD String get_SortType()
+  METHOD Void set_SortType(String)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.localization.LocalizableText> get_Buttons()
+  METHOD Void set_Buttons(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.localization.LocalizableText>)
+  METHOD Canis.utils.ids.EntityID get_SourceEntity()
+  METHOD Void set_SourceEntity(Canis.utils.ids.EntityID)
+  METHOD String get_Kind()
+  METHOD Void set_Kind(String)
+
+================================================================
+TYPE Networking.selection.messages.SelectionMessage
+  BASE Canis.messages.GameMessage
+  PROP Canis.utils.ids.AccountID _PlayerAccountID_k__BackingField
+  PROP Int32 Counter
+  PROP Canis.utils.localization.LocalizableTextVariables Prompt
+  PROP Int64 OfferLength
+  PROP Canis.attributes.ReadOnlyAttributes Attributes
+  PROP Canis.utils.ids.AccountID PlayerAccountID
+  PROP Canis.attributes.IHasAttributes Networking.selection.messages.outgoing.ISelectionMessage.Attributes
+  PROP Canis.utils.localization.LocalizableTextVariables Networking.selection.messages.outgoing.ISelectionMessage.Prompt
+  PROP Boolean Networking.selection.messages.outgoing.ISelectionMessage.Forced
+  PROP Boolean isForced
+  METHOD [Static] Void .cctor()
+  METHOD Canis.utils.ids.AccountID get_PlayerAccountID()
+  METHOD Void set_PlayerAccountID(Canis.utils.ids.AccountID value)
+  METHOD Canis.attributes.IHasAttributes Networking_selection_messages_outgoing_ISelectionMessage_get_Attributes()
+  METHOD Canis.utils.localization.LocalizableTextVariables Networking_selection_messages_outgoing_ISelectionMessage_get_Prompt()
+  METHOD Int32 GetCounter()
+  METHOD Boolean Networking_selection_messages_outgoing_ISelectionMessage_get_Forced()
+  METHOD Boolean get_isForced()
+  METHOD String ToString()
+  METHOD Boolean Validate(Networking.selection.messages.outgoing.ISelectionCounter responseMessage)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.utils.ids.AccountID get__PlayerAccountID_k__BackingField()
+  METHOD Void set__PlayerAccountID_k__BackingField(Canis.utils.ids.AccountID)
+  METHOD Int32 get_Counter()
+  METHOD Void set_Counter(Int32)
+  METHOD Canis.utils.localization.LocalizableTextVariables get_Prompt()
+  METHOD Void set_Prompt(Canis.utils.localization.LocalizableTextVariables)
+  METHOD Int64 get_OfferLength()
+  METHOD Void set_OfferLength(Int64)
+  METHOD Canis.attributes.ReadOnlyAttributes get_Attributes()
+  METHOD Void set_Attributes(Canis.attributes.ReadOnlyAttributes)
+
+================================================================
+TYPE Networking.selection.messages.SelectionWithTargetsRequired
+  BASE Networking.selection.messages.SelectionMessage
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetinformation.TargetInformation>> TargetMap
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Il2CppSystem.Tuple<Canis.utils.ids.EntityID, Networking.selection.targetinformation.TargetPreference>> TargetPreferences
+  PROP Boolean Forced
+  PROP String TargetType
+  PROP Boolean IgnoreFirst
+  PROP Il2CppSystem.Collections.Generic.Dictionary<String, Il2CppSystem.Object> SelectionParams
+  PROP Canis.utils.ids.EntityID SourceID
+  PROP Boolean isForced
+  PROP String Networking.selection.messages.outgoing.IHasKind.Kind
+  METHOD [Static] Void .cctor()
+  METHOD String ToString()
+  METHOD Boolean Validate(Networking.selection.messages.outgoing.ISelectionCounter responseMessage)
+  METHOD Boolean get_isForced()
+  METHOD String Networking_selection_messages_outgoing_IHasKind_get_Kind()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetinformation.TargetInformation>> get_TargetMap()
+  METHOD Void set_TargetMap(Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Networking.selection.targetinformation.TargetInformation>>)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Il2CppSystem.Tuple<Canis.utils.ids.EntityID, Networking.selection.targetinformation.TargetPreference>> get_TargetPreferences()
+  METHOD Void set_TargetPreferences(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Il2CppSystem.Tuple<Canis.utils.ids.EntityID, Networking.selection.targetinformation.TargetPreference>>)
+  METHOD Boolean get_Forced()
+  METHOD Void set_Forced(Boolean)
+  METHOD String get_TargetType()
+  METHOD Void set_TargetType(String)
+  METHOD Boolean get_IgnoreFirst()
+  METHOD Void set_IgnoreFirst(Boolean)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<String, Il2CppSystem.Object> get_SelectionParams()
+  METHOD Void set_SelectionParams(Il2CppSystem.Collections.Generic.Dictionary<String, Il2CppSystem.Object>)
+  METHOD Canis.utils.ids.EntityID get_SourceID()
+  METHOD Void set_SourceID(Canis.utils.ids.EntityID)
+
+================================================================
+TYPE Networking.selection.targetinformation.TargetPreference
+  BASE System.Enum
+  FIELD Int32 value__   [Public, SpecialName, RTSpecialName, HasDefault]
+  FIELD Networking.selection.targetinformation.TargetPreference Optimal   [Public, Static, Literal, HasDefault]   = 0
+  FIELD Networking.selection.targetinformation.TargetPreference Suboptimal   [Public, Static, Literal, HasDefault]   = 1
+  FIELD Networking.selection.targetinformation.TargetPreference ForcedAttacker   [Public, Static, Literal, HasDefault]   = 2
+  FIELD Networking.selection.targetinformation.TargetPreference Depleted   [Public, Static, Literal, HasDefault]   = 3
+  FIELD Networking.selection.targetinformation.TargetPreference Super   [Public, Static, Literal, HasDefault]   = 4
+
+================================================================
+TYPE Networking.selection.targetinformation.ArchetypeCustomChoiceTargetInformation
+  BASE Networking.selection.targetinformation.TargetInformation
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.attributes.SerializableAttributes> Choices
+  PROP Int32 NumberToSelect
+  PROP Boolean Forced
+  PROP Int32 MinimumToSelect
+  PROP Boolean ForcedSelection
+  METHOD [Static] Void .cctor()
+  METHOD Boolean get_ForcedSelection()
+  METHOD String ToString()
+  METHOD Boolean Validate(Networking.selection.targetresponse.TargetResponse response)
+  METHOD Void .ctor()
+  METHOD Boolean _Validate_b__7_0(Int32 c)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.attributes.SerializableAttributes> get_Choices()
+  METHOD Void set_Choices(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.attributes.SerializableAttributes>)
+  METHOD Int32 get_NumberToSelect()
+  METHOD Void set_NumberToSelect(Int32)
+  METHOD Boolean get_Forced()
+  METHOD Void set_Forced(Boolean)
+  METHOD Int32 get_MinimumToSelect()
+  METHOD Void set_MinimumToSelect(Int32)
+
+================================================================
+TYPE Networking.selection.targetinformation.CompositeTargetInformationListTargetInformation
+  BASE Networking.selection.targetinformation.TargetInformation
+  PROP Il2CppSystem.Collections.Generic.List<TargetInformationList> TargetInfoLists
+  METHOD [Static] Void .cctor()
+  METHOD String ToString()
+  METHOD Boolean Validate(Networking.selection.targetresponse.TargetResponse response)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.List<TargetInformationList> get_TargetInfoLists()
+  METHOD Void set_TargetInfoLists(Il2CppSystem.Collections.Generic.List<TargetInformationList>)
+
+================================================================
+TYPE Networking.selection.targetinformation.CustomChoiceResultTargetInformation
+  BASE Networking.selection.targetinformation.TargetInformation
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Int32, Networking.selection.targetinformation.TargetInformation> ChoiceInformation
+  METHOD [Static] Void .cctor()
+  METHOD Boolean Validate(Networking.selection.targetresponse.TargetResponse response)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Int32, Networking.selection.targetinformation.TargetInformation> get_ChoiceInformation()
+  METHOD Void set_ChoiceInformation(Il2CppSystem.Collections.Generic.Dictionary<Int32, Networking.selection.targetinformation.TargetInformation>)
+
+================================================================
+TYPE Networking.selection.targetinformation.CustomChoiceTargetInformation
+  BASE Networking.selection.targetinformation.TargetInformation
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.localization.LocalizableText> Choices
+  METHOD [Static] Void .cctor()
+  METHOD String ToString()
+  METHOD Boolean Validate(Networking.selection.targetresponse.TargetResponse response)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.localization.LocalizableText> get_Choices()
+  METHOD Void set_Choices(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.localization.LocalizableText>)
+
+================================================================
+TYPE Networking.selection.targetinformation.EntityGroupingTargetInformation
+  BASE Networking.selection.targetinformation.TargetInformation
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Grouping> ValidTargets
+  PROP Int32 NumberToSelect
+  PROP Boolean Forced
+  PROP Int32 MinimumToSelect
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Networking.selection.TargetStrength, Il2CppSystem.Collections.Generic.List<Canis.utils.ids.EntityID>> HintTargetMap
+  METHOD [Static] Void .cctor()
+  METHOD Boolean Validate(Networking.selection.targetresponse.TargetResponse response)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Grouping> get_ValidTargets()
+  METHOD Void set_ValidTargets(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Grouping>)
+  METHOD Int32 get_NumberToSelect()
+  METHOD Void set_NumberToSelect(Int32)
+  METHOD Boolean get_Forced()
+  METHOD Void set_Forced(Boolean)
+  METHOD Int32 get_MinimumToSelect()
+  METHOD Void set_MinimumToSelect(Int32)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Networking.selection.TargetStrength, Il2CppSystem.Collections.Generic.List<Canis.utils.ids.EntityID>> get_HintTargetMap()
+  METHOD Void set_HintTargetMap(Il2CppSystem.Collections.Generic.Dictionary<Networking.selection.TargetStrength, Il2CppSystem.Collections.Generic.List<Canis.utils.ids.EntityID>>)
+
+================================================================
+TYPE Networking.selection.targetinformation.EntityListTargetInformation
+  BASE Networking.selection.targetinformation.TargetInformation
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID> ValidTargets
+  PROP Int32 NumberToSelect
+  PROP Boolean Forced
+  PROP Int32 MinimumToSelect
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Networking.selection.TargetStrength, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID>> HintTargetMap
+  PROP Boolean ForcedSelection
+  METHOD [Static] Void .cctor()
+  METHOD Boolean get_ForcedSelection()
+  METHOD Networking.selection.targetinformation.EntityListTargetInformation Clone()
+  METHOD String ToString()
+  METHOD Boolean Validate(Networking.selection.targetresponse.TargetResponse response)
+  METHOD Void .ctor()
+  METHOD Boolean _Validate_b__9_0(Canis.utils.ids.EntityID eid)
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID> get_ValidTargets()
+  METHOD Void set_ValidTargets(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID>)
+  METHOD Int32 get_NumberToSelect()
+  METHOD Void set_NumberToSelect(Int32)
+  METHOD Boolean get_Forced()
+  METHOD Void set_Forced(Boolean)
+  METHOD Int32 get_MinimumToSelect()
+  METHOD Void set_MinimumToSelect(Int32)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Networking.selection.TargetStrength, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID>> get_HintTargetMap()
+  METHOD Void set_HintTargetMap(Il2CppSystem.Collections.Generic.Dictionary<Networking.selection.TargetStrength, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID>>)
+
+================================================================
+TYPE Networking.selection.targetinformation.EntityListTargetInformationExtensions
+  BASE Il2CppSystem.Object
+  METHOD [Static] Void .cctor()
+  METHOD [Static] Boolean HasValidTargets(Networking.selection.targetinformation.EntityListTargetInformation elti)
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Networking.selection.targetinformation.EntityOrientationTargetInformation
+  BASE Networking.selection.targetinformation.TargetInformation
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Int32>> SpacesAndOrientations
+  PROP Boolean Forced
+  PROP Boolean ForcedSelection
+  PROP Boolean HasValidTarget
+  METHOD [Static] Void .cctor()
+  METHOD Boolean get_ForcedSelection()
+  METHOD Boolean get_HasValidTarget()
+  METHOD String ToString()
+  METHOD Boolean Validate(Networking.selection.targetresponse.TargetResponse response)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Int32>> get_SpacesAndOrientations()
+  METHOD Void set_SpacesAndOrientations(Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Int32>>)
+  METHOD Boolean get_Forced()
+  METHOD Void set_Forced(Boolean)
+
+================================================================
+TYPE Networking.selection.targetinformation.FlippableTarget
+  BASE Il2CppSystem.Object
+  PROP Canis.utils.ids.EntityID Space
+  PROP Int32 Orientation
+  PROP Int32 Flip
+  METHOD [Static] Void .cctor()
+  METHOD Void Deconstruct(ref Canis.utils.ids.EntityID spaceid, ref Int32 orientation, ref Boolean flip)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Canis.utils.ids.EntityID get_Space()
+  METHOD Void set_Space(Canis.utils.ids.EntityID)
+  METHOD Int32 get_Orientation()
+  METHOD Void set_Orientation(Int32)
+  METHOD Int32 get_Flip()
+  METHOD Void set_Flip(Int32)
+
+================================================================
+TYPE Networking.selection.targetinformation.FlippableOrientation
+  BASE Il2CppSystem.Object
+  PROP Int32 Orientation
+  PROP Int32 Flip
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Int32 get_Orientation()
+  METHOD Void set_Orientation(Int32)
+  METHOD Int32 get_Flip()
+  METHOD Void set_Flip(Int32)
+
+================================================================
+TYPE Networking.selection.targetinformation.FlippableEntityOrientationTargetInformation
+  BASE Networking.selection.targetinformation.TargetInformation
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Il2CppSystem.Collections.Generic.List<Networking.selection.targetinformation.FlippableOrientation>> MappedFTs
+  PROP Boolean HasValidTarget
+  METHOD [Static] Void .cctor()
+  METHOD Il2CppSystem.Collections.Generic.List<Networking.selection.targetinformation.FlippableTarget> FlippableTargets()
+  METHOD Boolean get_HasValidTarget()
+  METHOD String ToString()
+  METHOD Boolean Validate(Networking.selection.targetresponse.TargetResponse response)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Il2CppSystem.Collections.Generic.List<Networking.selection.targetinformation.FlippableOrientation>> get_MappedFTs()
+  METHOD Void set_MappedFTs(Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Il2CppSystem.Collections.Generic.List<Networking.selection.targetinformation.FlippableOrientation>>)
+
+================================================================
+TYPE Networking.selection.targetinformation.HexGridWithOrientationTargetInformation
+  BASE Networking.selection.targetinformation.TargetInformation
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Networking.selection.targetinformation.HexCoords> ValidCoords
+  PROP Boolean Forced
+  PROP Boolean ForcedSelection
+  METHOD [Static] Void .cctor()
+  METHOD Boolean get_ForcedSelection()
+  METHOD Networking.selection.targetinformation.HexGridWithOrientationTargetInformation Clone()
+  METHOD String ToString()
+  METHOD Boolean Validate(Networking.selection.targetresponse.TargetResponse response)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Networking.selection.targetinformation.HexCoords> get_ValidCoords()
+  METHOD Void set_ValidCoords(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Networking.selection.targetinformation.HexCoords>)
+  METHOD Boolean get_Forced()
+  METHOD Void set_Forced(Boolean)
+
+================================================================
+TYPE Networking.selection.targetinformation.HexCoords
+  BASE System.ValueType
+  FIELD Int32 RCoord   [Public, InitOnly]
+  FIELD Int32 SCoord   [Public, InitOnly]
+  PROP Il2CppSystem.Text.RegularExpressions.Regex coordsRegex
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor(Int32 rcoord, Int32 scoord)
+  METHOD Void .ctor(String s)
+  METHOD [Static] Networking.selection.targetinformation.HexCoords op_Addition(Networking.selection.targetinformation.HexCoords a, Networking.selection.targetinformation.HexCoords b)
+  METHOD [Static] Networking.selection.targetinformation.HexCoords op_Subtraction(Networking.selection.targetinformation.HexCoords a, Networking.selection.targetinformation.HexCoords b)
+  METHOD Boolean Equals(Il2CppSystem.Object obj)
+  METHOD Int32 GetHashCode()
+  METHOD String ToString()
+  METHOD Boolean Equals(Networking.selection.targetinformation.HexCoords other)
+  METHOD [Static] Boolean op_Equality(Networking.selection.targetinformation.HexCoords left, Networking.selection.targetinformation.HexCoords right)
+  METHOD [Static] Boolean op_Inequality(Networking.selection.targetinformation.HexCoords left, Networking.selection.targetinformation.HexCoords right)
+  METHOD Il2CppSystem.Object BoxIl2CppObject()
+  METHOD [Static] Il2CppSystem.Text.RegularExpressions.Regex get_coordsRegex()
+  METHOD [Static] Void set_coordsRegex(Il2CppSystem.Text.RegularExpressions.Regex)
+
+================================================================
+TYPE Networking.selection.targetinformation.HexCoordsWithOrientation
+  BASE System.ValueType
+  FIELD Int32 RCoord   [Public, InitOnly]
+  FIELD Int32 SCoord   [Public, InitOnly]
+  FIELD Int32 Orientation   [Public, InitOnly]
+  PROP Networking.selection.targetinformation.HexCoords HexCoords
+  METHOD [Static] Void .cctor()
+  METHOD Networking.selection.targetinformation.HexCoords get_HexCoords()
+  METHOD Void .ctor(Int32 rcoord, Int32 scoord, Int32 orientation)
+  METHOD Boolean Equals(Il2CppSystem.Object obj)
+  METHOD Int32 GetHashCode()
+  METHOD String ToString()
+  METHOD Boolean Equals(Networking.selection.targetinformation.HexCoordsWithOrientation other)
+  METHOD [Static] Boolean op_Equality(Networking.selection.targetinformation.HexCoordsWithOrientation left, Networking.selection.targetinformation.HexCoordsWithOrientation right)
+  METHOD [Static] Boolean op_Inequality(Networking.selection.targetinformation.HexCoordsWithOrientation left, Networking.selection.targetinformation.HexCoordsWithOrientation right)
+  METHOD Il2CppSystem.Object BoxIl2CppObject()
+
+================================================================
+TYPE Networking.selection.targetinformation.IHasTargetValidity
+  BASE Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+  PROP Boolean HasValidTarget
+  METHOD [Static] Void .cctor()
+  METHOD Boolean get_HasValidTarget()
+  METHOD Void .ctor(IntPtr pointer)
+
+================================================================
+TYPE Networking.selection.targetinformation.KnapsackEntityListTargetInformation
+  BASE Networking.selection.targetinformation.TargetInformation
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Int32> ValidTargets
+  PROP Int32 TargetWeight
+  PROP Networking.selection.targetinformation.KnapsackSelectionMode knapsackSelectionMode
+  PROP Boolean Forced
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Networking.selection.TargetStrength, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID>> HintTargetMap
+  PROP Boolean ForcedSelection
+  METHOD [Static] Void .cctor()
+  METHOD Boolean get_ForcedSelection()
+  METHOD Networking.selection.targetinformation.KnapsackEntityListTargetInformation Clone()
+  METHOD String ToString()
+  METHOD Boolean Validate(Networking.selection.targetresponse.TargetResponse response)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Int32> get_ValidTargets()
+  METHOD Void set_ValidTargets(Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Int32>)
+  METHOD Int32 get_TargetWeight()
+  METHOD Void set_TargetWeight(Int32)
+  METHOD Networking.selection.targetinformation.KnapsackSelectionMode get_knapsackSelectionMode()
+  METHOD Void set_knapsackSelectionMode(Networking.selection.targetinformation.KnapsackSelectionMode)
+  METHOD Boolean get_Forced()
+  METHOD Void set_Forced(Boolean)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Networking.selection.TargetStrength, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID>> get_HintTargetMap()
+  METHOD Void set_HintTargetMap(Il2CppSystem.Collections.Generic.Dictionary<Networking.selection.TargetStrength, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID>>)
+
+================================================================
+TYPE Networking.selection.targetinformation.KnapsackSelectionMode
+  BASE System.Enum
+  FIELD Int32 value__   [Public, SpecialName, RTSpecialName, HasDefault]
+  FIELD Networking.selection.targetinformation.KnapsackSelectionMode AsMuchAsPossibleButNoMoreThan   [Public, Static, Literal, HasDefault]   = 0
+  FIELD Networking.selection.targetinformation.KnapsackSelectionMode AsLittleAsPossibleButNoLessThan   [Public, Static, Literal, HasDefault]   = 1
+  FIELD Networking.selection.targetinformation.KnapsackSelectionMode NoMoreThan   [Public, Static, Literal, HasDefault]   = 2
+  FIELD Networking.selection.targetinformation.KnapsackSelectionMode NoLessThan   [Public, Static, Literal, HasDefault]   = 3
+
+================================================================
+TYPE Networking.selection.targetinformation.RevealDetailedEntityListTargetInformation
+  BASE Networking.selection.targetinformation.EntityListTargetInformation
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.messages.SerializedEntity> RevealEntities
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Int32> ValidTargetCounts
+  METHOD [Static] Void .cctor()
+  METHOD String ToString()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.messages.SerializedEntity> get_RevealEntities()
+  METHOD Void set_RevealEntities(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.messages.SerializedEntity>)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Int32> get_ValidTargetCounts()
+  METHOD Void set_ValidTargetCounts(Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Int32>)
+
+================================================================
+TYPE Networking.selection.targetinformation.RevealEntityListTargetInformation
+  BASE Networking.selection.targetinformation.EntityListTargetInformation
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID> AllTargets
+  PROP Canis.utils.ids.EntityID UndoTarget
+  PROP Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Canis.attributes.ReadOnlyAttributes> RevealEntities
+  METHOD [Static] Void .cctor()
+  METHOD String ToString()
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID> get_AllTargets()
+  METHOD Void set_AllTargets(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Canis.utils.ids.EntityID>)
+  METHOD Canis.utils.ids.EntityID get_UndoTarget()
+  METHOD Void set_UndoTarget(Canis.utils.ids.EntityID)
+  METHOD Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Canis.attributes.ReadOnlyAttributes> get_RevealEntities()
+  METHOD Void set_RevealEntities(Il2CppSystem.Collections.Generic.Dictionary<Canis.utils.ids.EntityID, Canis.attributes.ReadOnlyAttributes>)
+
+================================================================
+TYPE Networking.selection.targetinformation.SquareGridWithOrientationTargetInformation
+  BASE Networking.selection.targetinformation.TargetInformation
+  PROP Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Networking.selection.targetinformation.SquareCoords> ValidCoords
+  PROP Boolean Forced
+  PROP Boolean ForcedSelection
+  METHOD [Static] Void .cctor()
+  METHOD Boolean get_ForcedSelection()
+  METHOD Networking.selection.targetinformation.SquareGridWithOrientationTargetInformation Clone()
+  METHOD String ToString()
+  METHOD Boolean Validate(Networking.selection.targetresponse.TargetResponse response)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Networking.selection.targetinformation.SquareCoords> get_ValidCoords()
+  METHOD Void set_ValidCoords(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Networking.selection.targetinformation.SquareCoords>)
+  METHOD Boolean get_Forced()
+  METHOD Void set_Forced(Boolean)
+
+================================================================
+TYPE Networking.selection.targetinformation.SquareCoords
+  BASE System.ValueType
+  FIELD Int32 XCoord   [Public, InitOnly]
+  FIELD Int32 YCoord   [Public, InitOnly]
+  PROP Il2CppSystem.Text.RegularExpressions.Regex coordsRegex
+  METHOD [Static] Void .cctor()
+  METHOD Void .ctor(Int32 xcoord, Int32 ycoord)
+  METHOD Void .ctor(String s)
+  METHOD [Static] Networking.selection.targetinformation.SquareCoords op_Addition(Networking.selection.targetinformation.SquareCoords a, Networking.selection.targetinformation.SquareCoords b)
+  METHOD Boolean Equals(Il2CppSystem.Object obj)
+  METHOD Int32 GetHashCode()
+  METHOD String ToString()
+  METHOD Il2CppSystem.Object BoxIl2CppObject()
+  METHOD [Static] Il2CppSystem.Text.RegularExpressions.Regex get_coordsRegex()
+  METHOD [Static] Void set_coordsRegex(Il2CppSystem.Text.RegularExpressions.Regex)
+
+================================================================
+TYPE Networking.selection.targetinformation.SquareCoordsWithOrientation
+  BASE System.ValueType
+  FIELD Int32 XCoord   [Public, InitOnly]
+  FIELD Int32 YCoord   [Public, InitOnly]
+  FIELD Int32 Orientation   [Public, InitOnly]
+  PROP Networking.selection.targetinformation.SquareCoords SquareCoords
+  METHOD [Static] Void .cctor()
+  METHOD Networking.selection.targetinformation.SquareCoords get_SquareCoords()
+  METHOD Void .ctor(Int32 xcoord, Int32 ycoord, Int32 orientation)
+  METHOD Boolean Equals(Il2CppSystem.Object obj)
+  METHOD Int32 GetHashCode()
+  METHOD Il2CppSystem.Object BoxIl2CppObject()
+
+================================================================
+TYPE Networking.selection.targetinformation.TargetInformation
+  BASE Il2CppSystem.Object
+  PROP Boolean Selected
+  PROP Canis.utils.ids.AccountID AccountID
+  PROP String OverrideKind
+  PROP Canis.attributes.ReadOnlyAttributes Attributes
+  PROP Canis.utils.localization.LocalizableTextVariables TargetPrompt
+  PROP Boolean ForcedSelection
+  PROP Canis.attributes.IHasAttributes Networking.selection.messages.outgoing.ISelectionMessage.Attributes
+  PROP Canis.utils.localization.LocalizableTextVariables Networking.selection.messages.outgoing.ISelectionMessage.Prompt
+  PROP Boolean Networking.selection.messages.outgoing.ISelectionMessage.Forced
+  PROP String Kind
+  METHOD [Static] Void .cctor()
+  METHOD Boolean get_ForcedSelection()
+  METHOD Canis.attributes.IHasAttributes Networking_selection_messages_outgoing_ISelectionMessage_get_Attributes()
+  METHOD Canis.utils.localization.LocalizableTextVariables Networking_selection_messages_outgoing_ISelectionMessage_get_Prompt()
+  METHOD Boolean Networking_selection_messages_outgoing_ISelectionMessage_get_Forced()
+  METHOD String get_Kind()
+  METHOD String GetKind()
+  METHOD Boolean Validate(Networking.selection.targetresponse.TargetResponse response)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Boolean get_Selected()
+  METHOD Void set_Selected(Boolean)
+  METHOD Canis.utils.ids.AccountID get_AccountID()
+  METHOD Void set_AccountID(Canis.utils.ids.AccountID)
+  METHOD String get_OverrideKind()
+  METHOD Void set_OverrideKind(String)
+  METHOD Canis.attributes.ReadOnlyAttributes get_Attributes()
+  METHOD Void set_Attributes(Canis.attributes.ReadOnlyAttributes)
+  METHOD Canis.utils.localization.LocalizableTextVariables get_TargetPrompt()
+  METHOD Void set_TargetPrompt(Canis.utils.localization.LocalizableTextVariables)
+
+================================================================
+TYPE Networking.selection.targetinformation.XTargetInformation
+  BASE Networking.selection.targetinformation.TargetInformation
+  PROP Boolean Forced
+  PROP Int32 Min
+  PROP Int32 Max
+  PROP Boolean ForcedSelection
+  METHOD [Static] Void .cctor()
+  METHOD Boolean get_ForcedSelection()
+  METHOD String ToString()
+  METHOD Boolean Validate(Networking.selection.targetresponse.TargetResponse response)
+  METHOD Void .ctor()
+  METHOD Void .ctor(IntPtr pointer)
+  METHOD Boolean get_Forced()
+  METHOD Void set_Forced(Boolean)
+  METHOD Int32 get_Min()
+  METHOD Void set_Min(Int32)
+  METHOD Int32 get_Max()
+  METHOD Void set_Max(Int32)
+
