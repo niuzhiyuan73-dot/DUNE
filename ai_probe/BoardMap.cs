@@ -83,13 +83,13 @@ namespace DuneAiProbe
                 sb.Append("# 版图结构（每局一次）\n");
                 sb.Append("# 位置名来自 archetype GUID → name_map.tsv；空表示原型也解析不出\n\n");
 
-                int nSpaces = DumpList(sb, wb, "Spaces", "版图位置", log, true);
-                DumpList(sb, wb, "TechTileStacks", "科技市场", log, false);
-                DumpList(sb, wb, "TechNegotiationArea", "科技谈判区", log, false);
-                DumpList(sb, wb, "ResearchTrack", "研究轨", log, false);
-                DumpList(sb, wb, "TleilaxuTrack", "泰莱拉轨", log, false);
-                DumpList(sb, wb, "TleilaxuTank", "泰莱拉槽", log, false);
-                DumpList(sb, wb, "ShippingTrack", "运输轨", log, false);
+                int nSpaces = DumpSpaces(sb, wb, log);
+                DumpArea(sb, wb, "TechTileStacks", "科技市场", log);
+                DumpArea(sb, wb, "TechNegotiationArea", "科技谈判区", log);
+                DumpArea(sb, wb, "ResearchTrack", "研究轨", log);
+                DumpArea(sb, wb, "TleilaxuTrack", "泰莱拉轨", log);
+                DumpArea(sb, wb, "TleilaxuTank", "泰莱拉槽", log);
+                DumpArea(sb, wb, "ShippingTrack", "运输轨", log);
 
                 string path = Path.Combine(root, "dump", "ai", "board.txt");
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
@@ -100,50 +100,27 @@ namespace DuneAiProbe
             catch (Exception e) { log.LogWarning("[BOARD] " + e.GetType().Name + ": " + e.Message); }
         }
 
-        /// <summary>把一个区域属性当集合摊开：序号 | 类型 | entityName | 原型GUID | 名字 | 占用/子项数。</summary>
-        private static int DumpList(StringBuilder sb, object board, string prop, string label,
-                                    ManualLogSource log, bool recordSpaces)
+        /// <summary>版图位置：WormBoard.Spaces 是 Il2Cpp 的 IEnumerable&lt;WormSpace&gt;，要强类型包一层。</summary>
+        private static int DumpSpaces(StringBuilder sb, worm.canis.entities.WormBoard wb, ManualLogSource log)
         {
-            object val = null;
+            sb.Append("## 版图位置（Spaces）\n");
+            sb.Append("# idx\ttype\tentityName\tarchetype\tname\tchildren\n");
+            int n = 0, named = 0;
             try
             {
-                var pi = board.GetType().GetProperty(prop);
-                if (pi == null) { sb.Append("## ").Append(label).Append("（属性 ").Append(prop).Append(" 不存在）\n"); return 0; }
-                val = pi.GetValue(board);
-            }
-            catch (Exception e)
-            {
-                sb.Append("## ").Append(label).Append("（读取失败: ").Append(e.GetType().Name).Append("）\n");
-                return 0;
-            }
-            if (val == null) { sb.Append("## ").Append(label).Append("（null）\n"); return 0; }
-
-            var en = val as System.Collections.IEnumerable;
-            if (en == null)
-            {
-                sb.Append("## ").Append(label).Append("（非集合: ").Append(val.GetType().Name).Append("）\n");
-                return 0;
-            }
-
-            sb.Append("## ").Append(label).Append("（").Append(prop).Append("）\n");
-            sb.Append("# idx\ttype\tentityName\tarchetype\tname\tchildren\n");
-
-            int n = 0, named = 0;
-            var lastNames = new List<string>();
-            foreach (object o in en)
-            {
-                if (o == null) continue;
-                string typeName = null, entityName = null, arch = null, nm = null;
-                int kids = 0;
-                string id = null;
-                try { typeName = o.GetType().Name; } catch { }
-                try
+                var src = wb.Spaces;
+                if (src == null) { sb.Append("（Spaces 为 null）\n"); return 0; }
+                var list = new Il2CppSystem.Collections.Generic.List<worm.canis.entities.WormSpace>(src);
+                for (int i = 0; i < list.Count; i++)
                 {
-                    var bo = o as Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase;
-                    var ent = bo != null ? bo.TryCast<Entity>() : null;
+                    var sp = list[i];
+                    if (sp == null) continue;
+                    var ent = sp.TryCast<Entity>();
+                    string nm = null, arch = null, id = null, en = null;
+                    int kids = 0;
                     if (ent != null)
                     {
-                        try { entityName = ent.EntityName; } catch { }
+                        try { en = ent.EntityName; } catch { }
                         try { kids = ent.Children != null ? ent.Children.Count : 0; } catch { }
                         try
                         {
@@ -153,40 +130,90 @@ namespace DuneAiProbe
                         catch { }
                         try { id = ent.EntityID != null ? ent.EntityID.ToString() : null; } catch { }
                     }
+                    if (!string.IsNullOrEmpty(arch)) nm = Coach.NameOf(arch);
+                    if (!string.IsNullOrEmpty(nm)) named++;
+                    if (!string.IsNullOrEmpty(id))
+                        lock (_lock) { _byId[id] = string.IsNullOrEmpty(nm) ? "位置" : nm; }
+
+                    sb.Append(n).Append("\tSpace\t").Append(en ?? "")
+                      .Append('\t').Append(arch ?? "").Append('\t').Append(nm ?? "")
+                      .Append('\t').Append(kids).Append('\n');
+                    n++;
                 }
-                catch { }
-
-                if (!string.IsNullOrEmpty(arch)) nm = Coach.NameOf(arch);
-                if (string.IsNullOrEmpty(nm) && !string.IsNullOrEmpty(entityName) && entityName != "Space")
-                    nm = Coach.NameOf(entityName);
-                if (!string.IsNullOrEmpty(nm)) named++;
-                lastNames.Add(nm);
-
-                if (recordSpaces && !string.IsNullOrEmpty(id))
-                {
-                    lock (_lock) { _byId[id] = string.IsNullOrEmpty(nm) ? "位置" : nm; }
-                }
-
-                sb.Append(n).Append('\t').Append(typeName)
-                  .Append('\t').Append(entityName ?? "")
-                  .Append('\t').Append(arch ?? "")
-                  .Append('\t').Append(nm ?? "")
-                  .Append('\t').Append(kids).Append('\n');
-                n++;
             }
-
-            sb.Append("# 共 ").Append(n).Append(" 项，其中 ").Append(named).Append(" 项解析出名字\n\n");
-            if (prop == "TechTileStacks")
+            catch (Exception e)
             {
-                lock (_lock)
-                {
-                    for (int i = 0; i < lastNames.Count; i++)
-                        if (!string.IsNullOrEmpty(lastNames[i]) && !_tech.Contains(lastNames[i]))
-                            _tech.Add(lastNames[i]);
-                }
+                sb.Append("（枚举失败: ").Append(e.GetType().Name).Append(": ").Append(e.Message).Append("）\n");
             }
-            if (log != null) log.LogInfo("[BOARD] " + label + "：" + n + " 项（解析出名字 " + named + "）");
+            sb.Append("# 共 ").Append(n).Append(" 个位置，其中 ").Append(named).Append(" 个解析出名字\n\n");
+            if (log != null) log.LogInfo("[BOARD] 版图位置：" + n + " 个（解析出名字 " + named + "）");
             return n;
         }
+
+        /// <summary>
+        /// 其余区域（科技市场/研究轨/泰莱拉轨/运输轨）都是 Entity 子类，
+        /// 没有集合接口，靠 Children 摊开；子项名同样按原型 GUID → name_map 解析。
+        /// </summary>
+        private static void DumpArea(StringBuilder sb, object board, string prop, string label, ManualLogSource log)
+        {
+            sb.Append("## ").Append(label).Append("（").Append(prop).Append("）\n");
+            object val = null;
+            try
+            {
+                var pi = board.GetType().GetProperty(prop);
+                if (pi == null) { sb.Append("（属性不存在）\n\n"); return; }
+                val = pi.GetValue(board);
+            }
+            catch (Exception e) { sb.Append("（读取失败: ").Append(e.GetType().Name).Append("）\n\n"); return; }
+            if (val == null) { sb.Append("（null）\n\n"); return; }
+
+            var bo = val as Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase;
+            var ent = bo != null ? bo.TryCast<Entity>() : null;
+            if (ent == null)
+            {
+                sb.Append("（不是 Entity: ").Append(val.GetType().Name).Append("）\n\n");
+                return;
+            }
+
+            string ownName = null;
+            try { ownName = Coach.NameOf(ent.EntityName); } catch { }
+            sb.Append("# ").Append(prop).Append(" 自身=").Append(ent.EntityName ?? "")
+              .Append(" 名字=").Append(ownName ?? "-").Append('\n');
+            sb.Append("# idx\ttype\tentityName\tarchetype\tname\n");
+
+            int n = 0, named = 0;
+            try
+            {
+                var kids = ent.Children;
+                if (kids != null)
+                    for (int i = 0; i < kids.Count; i++)
+                    {
+                        var c = kids[i];
+                        if (c == null) continue;
+                        string cn = null, ca = null, cnm = null;
+                        try { cn = c.EntityName; } catch { }
+                        try
+                        {
+                            var a = c.GetArchetype();
+                            if (a != null && a.ArchetypeID != null) ca = a.ArchetypeID.ToString();
+                        }
+                        catch { }
+                        if (!string.IsNullOrEmpty(ca)) cnm = Coach.NameOf(ca);
+                        if (string.IsNullOrEmpty(cnm) && !string.IsNullOrEmpty(cn)) cnm = Coach.NameOf(cn);
+                        if (!string.IsNullOrEmpty(cnm)) named++;
+                        sb.Append(n).Append('\t').Append(c.GetType().Name)
+                          .Append('\t').Append(cn ?? "").Append('\t').Append(ca ?? "")
+                          .Append('\t').Append(cnm ?? "").Append('\n');
+                        if (prop == "TechTileStacks" && !string.IsNullOrEmpty(cnm))
+                            lock (_lock) { if (!_tech.Contains(cnm)) _tech.Add(cnm); }
+                        n++;
+                    }
+            }
+            catch (Exception e) { sb.Append("（children 失败: ").Append(e.Message).Append("）\n"); }
+
+            sb.Append("# 共 ").Append(n).Append(" 项，其中 ").Append(named).Append(" 项解析出名字\n\n");
+            if (log != null) log.LogInfo("[BOARD] " + label + "：" + n + " 项（解析出名字 " + named + "）");
+        }
+
     }
 }

@@ -13,7 +13,7 @@ internal static class Native
     private static readonly Dictionary<string, Type> Types = new();
     internal static string TypeName(object v)
     {
-        try { return v is Il2CppObjectBase b ? b.GetIl2CppType().FullName : v?.GetType().FullName; }
+        try { return v is Il2CppObjectBase b ? b.TryCast<Il2CppSystem.Object>()?.GetIl2CppType().FullName ?? v.GetType().FullName : v?.GetType().FullName; }
         catch { return v?.GetType().FullName; }
     }
     internal static object Concrete(object v)

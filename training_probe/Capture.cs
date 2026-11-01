@@ -82,7 +82,8 @@ internal static class Capture
         void Put(JsonObject to, string label, string key)
         { if (attrs[key] != null) to[label] = new JsonObject { ["value"] = Native.Copy(attrs[key]), ["attribute_id"] = key }; }
         if (type == "Imperium" || type == "Tleilaxu" || type == "TechTile")
-        { Put(purchase, "persuasion", "920006"); Put(purchase, "tech_spice", "960004"); }
+        { Put(purchase, "persuasion", "920006"); Put(purchase, "specimen", "920026");
+            if (type == "TechTile") Put(purchase, "spice", "900010"); }
         if (type == "Space")
         { Put(space, "spice", "900010"); Put(space, "water", "900011"); Put(space, "solari", "900012"); }
         if (type == "Intrigue")
@@ -241,17 +242,18 @@ internal static class Capture
             foreach (var faction in new[] { Factions.Emperor, Factions.SpacingGuild, Factions.BeneGesserit, Factions.Fremen })
             { Value(influence, faction.ToString(), () => wp.GetFactionInfluence(faction));
                 try { alliances[faction.ToString()] = wp.InAlliance(faction); } catch { alliances[faction.ToString()] = null; } }
-            row["discard"] = Cards(wp.Discard.Children);
-            row["play_area"] = Cards(wp.PlayArea.Children);
-            row["tech_tiles"] = Cards(wp.TechTileArea.Children);
+            row["discard"] = Cards(wp.Discard?.Children);
+            row["play_area"] = Cards(wp.PlayArea?.Children);
+            row["tech_tiles"] = Cards(wp.TechTileArea?.Children);
             if (me)
-            { row["hand"] = Cards(wp.Hand.Children); row["intrigue_hand"] = Cards(wp.IntrigueHand.Children);
-                row["supply"] = Cards(wp.Supply.Children); }
+            { row["hand"] = Cards(wp.Hand?.Children); row["intrigue_hand"] = Cards(wp.IntrigueHand?.Children);
+                row["supply"] = Cards(wp.Supply?.Children); }
         }
         var wm = m.TryCast<WormMatch>();
         if (wm != null)
         {
-            var board = wm.WormPlaymat.Board;
+            var board = wm.WormPlaymat?.Board;
+            if (board == null) { result["board_status"] = "not_initialized"; return result; }
             result["current_conflict"] = board.CurrentConflict == null ? null : Resolve(m, board.CurrentConflict.EntityID.ToString());
             var spaces = new JsonArray(); result["spaces"] = spaces;
             foreach (var e in board.Descendents)

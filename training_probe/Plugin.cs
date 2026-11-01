@@ -23,7 +23,7 @@ public sealed class Plugin : BasePlugin
     public override void Load()
     {
         Logger = Log;
-        Root = Path.GetFullPath(Path.Combine(Paths.GameRootPath, ".."));
+        Root = Path.GetFullPath(Path.Combine(BepInEx.Paths.GameRootPath, ".."));
         Recorder.Init(Root, Log);
         var h = new Harmony("local.dune.human-training.hooks");
         Hook(h, typeof(PlayerEntity), "SelectFrom", nameof(Select), null);
@@ -32,6 +32,7 @@ public sealed class Plugin : BasePlugin
         Hook(h, typeof(Match), "SetActiveSelectionOfPlayer", null, nameof(Active));
         Hook(h, typeof(HasExecutionStack), "ConsumeCounter", nameof(ConsumeBefore), nameof(ConsumeAfter));
         Hook(h, typeof(HasExecutionStack), "Run", null, nameof(Paused));
+        Hook(h, typeof(HasExecutionStack), "RunAIResponses", nameof(BeforeAI), null);
         Hook(h, typeof(Match), "SaveOnPause", null, nameof(Saved));
         Hook(h, typeof(Match), "Dispose", nameof(Closing), null);
         StartDocuments();
@@ -83,6 +84,8 @@ public sealed class Plugin : BasePlugin
     { if (__state != null) Recorder.AfterSubmit(__state, __result); }
     private static void Paused(HasExecutionStack __instance)
     { try { Recorder.Boundary(__instance.Match, "execution_pause"); } catch (Exception e) { Recorder.Warn("pause", e); } }
+    private static void BeforeAI(HasExecutionStack __instance)
+    { Recorder.Boundary(__instance.Match, "before_ai_responses"); }
     private static void Saved(Match __instance)
     { Recorder.Boundary(__instance, "save_pause"); }
     private static void Closing(Match __instance)

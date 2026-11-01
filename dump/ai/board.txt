@@ -1,0 +1,10 @@
+﻿# 版图结构（每局一次）
+# 位置名来自 archetype GUID → name_map.tsv；空表示原型也解析不出
+
+## 版图位置（非集合: IEnumerable`1）
+## 科技市场（非集合: WormPlayArea）
+## 科技谈判区（非集合: WormTechNegotiationArea）
+## 研究轨（非集合: WormResearchTrack）
+## 泰莱拉轨（非集合: WormTleilaxuTrack）
+## 泰莱拉槽（非集合: WormPlayArea）
+## 运输轨（非集合: WormShippingTrack）
