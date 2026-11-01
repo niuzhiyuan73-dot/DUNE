@@ -28,9 +28,216 @@ RESOURCE = {"Spice": "香料", "Water": "水", "Solari": "太阳币", "Troops": 
 ICONS = {"Emperor": "皇帝", "SpacingGuild": "宇航工会", "BeneGesserit": "姐妹会", "Fremen": "弗雷曼",
          "Pentagon": "兰兹拉德", "Circle": "城市", "Triangle": "香料贸易"}
 
+# ---------------------------------------------------------------------------
+# 字段级完整度（field-level completeness）
+# 三态：confirmed 已从可靠来源取到内容；absent 有结构证据证明确实没有该效果；
+#       unknown 该效果可能存在但尚未采集到内容。
+# 来源分层：game_localization 官方本地化；game_attribute 原型属性值；
+#           archetype 原型结构证据；save_observation 存档能力实体/阶段；
+#           legacy_unverified 旧补充表（只作待核对线索，不足以确认）；none 无来源。
+FIELD_KEYS = ["cost", "faction", "spaces", "deploy_factions", "agent_effect", "reveal_effect",
+              "purchase_effect", "passive_effect", "card_effect", "conditions", "limits"]
+FIELD_LABELS = {"cost": "费用", "faction": "阵营", "spaces": "可进入空间", "deploy_factions": "可派遣特使图标",
+                "agent_effect": "特使效果", "reveal_effect": "展示效果", "purchase_effect": "购买效果",
+                "passive_effect": "被动/触发效果", "card_effect": "卡面主效果文本", "conditions": "条件",
+                "limits": "次数限制"}
+# 直接决定卡牌可玩性的核心字段（缺口排序权重高）；conditions/limits 为派生字段。
+CORE_FIELDS = ["cost", "faction", "spaces", "agent_effect", "reveal_effect", "purchase_effect",
+               "passive_effect", "card_effect"]
+SPACE_ICONS = {"Circle", "Triangle", "Pentagon"}
+FACTION_ICONS = {"Emperor", "SpacingGuild", "BeneGesserit", "Fremen", "Spy"}
+REVEAL_RESOURCES = ("Spice", "Water", "Solari", "Troops", "Specimen", "Strength", "Persuasion")
+GENERIC_ABILITY_CLASSES = {"AgentAbility", "RevealAbility", "AcquireAbility", "ActiveAbility", "SpaceAbility"}
+
+_SLOT_RULES = (
+    ("agent", re.compile(r"\.agent\d*(?:\.hagal)?$")),
+    ("reveal", re.compile(r"\.reveal\d*(?:\.hagal)?$")),
+    ("static", re.compile(r"\.static$")),
+    ("ability", re.compile(r"\.ability$")),
+    # 规则正文：.text / .text1 / .text2 以及领袖能力的 .desc
+    # （实测本地化后缀分布：title 362 / agent 108 / reveal 82 / desc 49 / text 48，
+    #   .desc 是领袖戒指能力等规则文本的主要来源，不能漏掉。）
+    ("text", re.compile(r"\.text\d*(?:\.hagal)?$")),
+    ("leader", re.compile(r"\.(?:staticability|signetability)\.desc$")),
+    ("desc", re.compile(r"\.desc$")),
+    ("reward", re.compile(r"\.reward\.\d+$")),
+)
+_CONDITION_CLAUSE = re.compile(r"[^。；;]{0,50}?(?:若|如果|假如|除非|前提|要求|需要|每当|当[^。；;]{0,12}时)[^。；;]{0,60}")
+_LIMIT_CLAUSE = re.compile(r"[^。；;]{0,50}?(?:最多|至多|不超过|仅能|只能|一次|每局游戏|每回合|每轮|每次|每名|每个)[^。；;]{0,50}")
+
 
 def read_json(path):
     return json.loads(path.read_text(encoding="utf-8-sig"))
+
+
+def _slot_of(key):
+    """判断本地化键属于哪个规则槽位（特使/展示/主效果/被动…）。"""
+    for slot, rx in _SLOT_RULES:
+        if rx.search(key):
+            return slot
+    return None
+
+
+def _field(status, value=None, text=None, source=None, note=None):
+    item = {"status": status}
+    if value is not None:
+        item["value"] = value
+    if text is not None:
+        item["text"] = text
+    item["source"] = source or "none"
+    if note:
+        item["note"] = note
+    return item
+
+
+def assess_fields(typ, at, text_fields, ability_records, unresolved):
+    """逐字段判定完整度。
+
+    三态语义（用户明确要求，务必区分）：
+      confirmed —— 已从可靠来源（游戏本地化 / 原型属性）取到内容，确认存在。
+      absent    —— 已确认确实没有该效果，且能举出结构性依据。
+      unknown   —— 尚未采集到：既没找到文本，也无法确认其不存在。
+
+    效果类字段找不到文本时**默认 unknown**，不武断标 absent；
+    只有能由原型结构证明该效果不存在时才标 absent。
+    """
+    out = {}
+
+    # ---- 属性类：费用 / 阵营 / 可进入空间 / 可派遣图标 ----
+    cost_parts = []
+    for f in ("PersuasionCost", "SpiceCost", "WaterCost", "SolariCost", "SpecimenCost"):
+        if f in at:
+            cost_parts.append("%s=%s" % (f.replace("Cost", ""), json.dumps(at[f], ensure_ascii=False)))
+    out["cost"] = (_field("confirmed", value=json.dumps(at, ensure_ascii=False)[:0] or None,
+                          source="game_attribute", note="；".join(cost_parts))
+                   if cost_parts else _field("unknown", source="none",
+                                             note="原型属性里没有费用字段，未采集到"))
+
+    faction_keys = ("Faction", "Factions", "FactionList", "DeployFactions")
+    faction_val = None
+    for f in faction_keys:
+        if f in at and at[f]:
+            faction_val = at[f]
+            break
+    if faction_val is not None:
+        out["faction"] = _field("confirmed", value=faction_val, source="game_attribute")
+    else:
+        # 无阵营属性的原型（冲突/空间/科技等）确实没有"阵营"这一维度 —— 但只有当
+        # 该类型本就不属于"有阵营的卡"时才判 absent，否则判 unknown。
+        if typ in ("Conflict", "ConflictReward", "Space", "TechTile", "Contract", "Tleilaxu"):
+            out["faction"] = _field("absent", source="archetype",
+                                    note="%s 类实体本身没有阵营属性" % typ)
+        else:
+            out["faction"] = _field("unknown", source="none", note="未采集到阵营信息")
+
+    if "IconList" in at and at["IconList"]:
+        icons = list(at["IconList"])
+        out["spaces"] = _field("confirmed", value=icons, source="game_attribute")
+        out["deploy_factions"] = _field("confirmed", value=icons, source="game_attribute")
+    else:
+        out["spaces"] = _field("unknown", source="none", note="未采集到进入图标")
+        out["deploy_factions"] = _field("unknown", source="none", note="未采集到可派遣图标")
+
+    # ---- 效果类：按本地化槽位归类 ----
+    slot_text = {}
+    for t in text_fields:
+        slot = _slot_of(t["key"])
+        if not slot:
+            continue
+        zh = (t.get("zh") or "").strip()
+        if not zh:
+            continue
+        slot_text.setdefault(slot, []).append((t["key"], zh))
+
+    def _joined(slot):
+        items = slot_text.get(slot) or []
+        if not items:
+            return None
+        return "；".join(z for _, z in items)
+
+    # 特使效果：.agent 槽；无 .agent 时看 AgentAbility 的文本证据
+    agent_text = _joined("agent")
+    if not agent_text:
+        for ab in ability_records:
+            if any(c in ("AgentAbility",) for c in ab["classes"]):
+                ev = "；".join(x["zh"] for x in ab["text_evidence"] if x.get("zh"))
+                if ev:
+                    agent_text = ev
+                    break
+    if agent_text:
+        out["agent_effect"] = _field("confirmed", text=agent_text, source="game_localization")
+    else:
+        out["agent_effect"] = _field("unknown", source="none",
+                                     note="未采集到特使效果文本（可能是纯数值牌，也可能尚未提取）")
+
+    reveal_text = _joined("reveal")
+    if not reveal_text:
+        for ab in ability_records:
+            if any(c in ("RevealAbility",) for c in ab["classes"]):
+                ev = "；".join(x["zh"] for x in ab["text_evidence"] if x.get("zh"))
+                if ev:
+                    reveal_text = ev
+                    break
+    if reveal_text:
+        out["reveal_effect"] = _field("confirmed", text=reveal_text, source="game_localization")
+    else:
+        out["reveal_effect"] = _field("unknown", source="none",
+                                      note="未采集到展示效果文本")
+
+    purchase_text = _joined("ability") or None
+    if "AcquireEffectList" in at and at["AcquireEffectList"]:
+        purchase_text = ("购买效果图标：" + "、".join(at["AcquireEffectList"])) if not purchase_text else purchase_text
+    if purchase_text:
+        out["purchase_effect"] = _field("confirmed", text=purchase_text, source="game_localization")
+    elif typ in ("Conflict", "ConflictReward", "Space", "TechTile", "Contract"):
+        out["purchase_effect"] = _field("absent", source="archetype",
+                                        note="%s 类实体没有购买效果" % typ)
+    else:
+        out["purchase_effect"] = _field("unknown", source="none",
+                                        note="未采集到购买效果文本")
+
+    # 被动/触发效果：.static / 领袖戒指能力 / 其它 .desc 能力描述
+    passive = _joined("static") or _joined("leader") or _joined("desc") or None
+    if passive:
+        out["passive_effect"] = _field("confirmed", text=passive, source="game_localization")
+    elif typ in ("Conflict", "ConflictReward", "Space", "Contract"):
+        out["passive_effect"] = _field("absent", source="archetype",
+                                       note="%s 类实体没有被动/触发效果" % typ)
+    else:
+        out["passive_effect"] = _field("unknown", source="none",
+                                       note="未采集到被动/触发效果文本")
+
+    # 卡面主效果文本：.text 槽（阴谋牌等）
+    card_text = _joined("text")
+    if card_text:
+        out["card_effect"] = _field("confirmed", text=card_text, source="game_localization")
+    elif typ in ("Leader", "LeaderUpgrade"):
+        # 领袖没有 .text 槽，规则写在 .desc 能力描述里
+        out["card_effect"] = _field("confirmed", text=_joined("leader") or _joined("desc") or "",
+                                    source="game_localization")
+    else:
+        out["card_effect"] = _field("unknown", source="none", note="未采集到卡面主效果文本")
+
+    # ---- 派生类：条件 / 次数限制（从已确认的效果文本里识别）----
+    all_text = "；".join([agent_text or "", reveal_text or "", purchase_text or "",
+                           passive or "", card_text or ""]).strip()
+    if all_text:
+        cond = _CONDITION_CLAUSE.search(all_text)
+        lim = _LIMIT_CLAUSE.search(all_text)
+        out["conditions"] = (_field("confirmed", text=cond.group(0), source="game_localization")
+                             if cond else _field("absent", source="archetype",
+                                                 note="已确认的规则文本里没有条件子句"))
+        out["limits"] = (_field("confirmed", text=lim.group(0), source="game_localization")
+                         if lim else _field("absent", source="archetype",
+                                            note="已确认的规则文本里没有次数/上限子句"))
+    else:
+        out["conditions"] = _field("unknown", source="none", note="无可用文本，条件未采集到")
+        out["limits"] = _field("unknown", source="none", note="无可用文本，次数限制未采集到")
+
+    # 未解析能力会拉低整体可信度，标注在 note 上但不改变字段状态
+    if unresolved:
+        out["_unresolved_abilities"] = len(unresolved)
+    return out
 
 
 def write_json(path, value):
@@ -256,6 +463,7 @@ def build():
                 unresolved.append({"id": aid, "classes": classes, "reason": "未观察到能力实体" if not classes else "缺完整语义证据"})
         legacy = [x for x in extra if x["key"] in (gid, zh, en, namekey)]
         rules = []
+        field_completeness = assess_fields(typ, at, text_fields, ability_records, unresolved)
         if typ in ("Imperium", "Tleilaxu"):
             agent = [RESOURCE[k] + str(at["Agent" + k]) for k in RESOURCE if "Agent" + k in at]
             if at.get("SignetIcons"):
@@ -297,7 +505,8 @@ def build():
                                   "pool_membership": "fixed" if gid in core_ids else "enabled_set_candidate"},
                         "attributes": at, "localized_fields": text_fields, "abilities": ability_records,
                         "structured_summary": rules, "legacy_evidence_unverified": legacy,
-                        "unresolved_abilities": unresolved, "notes": notes})
+                        "unresolved_abilities": unresolved, "field_completeness": field_completeness,
+                        "notes": notes})
     records.sort(key=lambda r: (not r["scope"]["core"], r["type"], r["name"], r["id"]))
     record_ids = {r["id"] for r in records}
     assert core_ids <= record_ids, "Missing installed starting/conflict archetypes"
@@ -330,7 +539,96 @@ def build():
     write_json(RAW / "localization.json", loc)
     write_json(RAW / "ability_observations.json", ability_map)
     report(catalog)
+    field_report(catalog)
     print(json.dumps(catalog["statistics"], ensure_ascii=False, indent=2))
+
+
+def field_report(catalog):
+    """按卡、按字段统计完整度，产出缺口清单。
+
+    旧 gaps.txt 只检查"有没有文本"，既不代表全卡库完整度，也无法区分
+    "确认没有该效果"与"该效果尚未采集到"。这里按字段重建口径。
+    """
+    records = catalog["records"]
+
+    # 按类型统计完整率
+    by_type = {}
+    for r in records:
+        fc = r.get("field_completeness") or {}
+        d = by_type.setdefault(r["type"], collections.defaultdict(int))
+        for f in FIELD_KEYS:
+            st = (fc.get(f) or {}).get("status", "unknown")
+            d[st] += 1
+            d["total"] += 1
+
+    # 逐条缺失（只列 unknown / absent）
+    gaps = []
+    for r in records:
+        fc = r.get("field_completeness") or {}
+        missing = []
+        for f in FIELD_KEYS:
+            st = (fc.get(f) or {}).get("status", "unknown")
+            if st == "confirmed":
+                continue
+            item = fc.get(f) or {}
+            missing.append({"field": f, "label": FIELD_LABELS.get(f, f),
+                            "status": st, "note": item.get("note", "")})
+        if missing:
+            gaps.append({"id": r["id"], "name": r["name"], "type": r["type"],
+                         "sets": r["sets"], "core": r["scope"]["core"],
+                         "missing": missing})
+
+    # 缺口排序：核心条目优先、核心字段缺失多的优先
+    def _rank(g):
+        core_missing = sum(1 for m in g["missing"]
+                           if m["status"] == "unknown" and m["field"] in CORE_FIELDS)
+        return (0 if g["core"] else 1, -core_missing, g["type"], g["name"])
+
+    gaps.sort(key=_rank)
+
+    payload = {"schema_version": 1,
+               "field_labels": FIELD_LABELS,
+               "status_meaning": {"confirmed": "已确认存在（有可靠来源）",
+                                  "absent": "已确认没有该效果（有结构证据）",
+                                  "unknown": "尚未采集到（无法确认存在与否）"},
+               "statistics": {"records": len(records),
+                              "records_with_missing": len(gaps),
+                              "by_type": {k: dict(v) for k, v in by_type.items()}},
+               "gaps": gaps}
+    write_json(ROOT / "mods/ai/field_gaps.json", payload)
+
+    # 人类可读文档
+    lines = ["# 当前玩法字段完整度盘点", "",
+             "来源：只读原型导出 + 官方本地化 + 现有存档。字段状态三态严格区分：", "",
+             "- `confirmed` 已确认存在（有可靠来源）",
+             "- `absent` 已确认没有该效果（有结构证据）",
+             "- `unknown` 尚未采集到（无法确认存在与否）", "",
+             "> 旧 gaps.txt 只统计运行时遇到的「有没有文本」，不能代表全卡库完整度；",
+             "> 本表按卡、按字段重建口径，数字全部来自本次重新统计。", "",
+             "## 按类型的字段完整率", "",
+             "| 类型 | 条目 | confirmed | absent | unknown | 完整率 |", "|---|---:|---:|---:|---:|---:|"]
+    for typ in sorted(by_type):
+        d = by_type[typ]
+        total = d["total"] or 1
+        rate = 100.0 * d["confirmed"] / total
+        lines.append("| %s | %d | %d | %d | %d | %.0f%% |"
+                     % (LABELS.get(typ, typ), total // max(1, len(FIELD_KEYS)),
+                        d["confirmed"], d["absent"], d["unknown"], rate))
+    lines += ["", "## 待采集清单", "",
+              "按「固定开局/冲突的核心条目优先、核心字段缺失多的优先」排序。", "",
+              "| 名称 | 类型 | 扩展 | 核心 | 缺失字段（状态） |", "|---|---|---|---|---|"]
+    for g in gaps:
+        detail = "；".join("%s(%s)" % (m["label"], m["status"]) for m in g["missing"])
+        lines.append("| %s | %s | %s | %s | %s |"
+                     % (g["name"], LABELS.get(g["type"], g["type"]),
+                        "/".join(g["sets"]) or "-", "是" if g["core"] else "", detail))
+    lines += ["", "## 说明", "",
+              "- `absent` 只在能举出结构性依据时标注（例如冲突/空间/科技类实体本就没有购买效果）。",
+              "- 效果类字段找不到文本时一律标 `unknown`，不武断标 `absent` ——",
+              "  一张只提取到半张效果的卡必须显示为不完整，不能被误判成信息齐全。",
+              "- 机器可读数据：`mods/ai/field_gaps.json`。",
+              "- 重建：`python -X utf8 -B mods/tools/build_current_mode_catalog.py`。", ""]
+    (ROOT / "docs/当前玩法字段完整度.md").write_text("\n".join(lines), encoding="utf-8")
 
 
 def report(catalog):

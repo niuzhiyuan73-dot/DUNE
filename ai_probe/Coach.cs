@@ -45,7 +45,9 @@ namespace DuneAiProbe
             "请判断哪一项对最终胜利最有利，并给出 2-3 句理由。要求：" +
             "1) 只讨论给出的选项，不要发明新选项；2) 优先考虑胜利点与后期兑现能力，" +
             "而不是短期资源堆叠；3) 用中文，先给结论（选项标题或序号），再给理由。" +
-            "4) 若某项信息确实缺失（例如只给了 ID 没有名字），明确说缺什么，不要臆测牌名。";
+            "4) 若某项信息确实缺失（例如只给了 ID 没有名字），明确说缺什么，不要臆测牌名。" +
+            "5) 〔〕里是该牌/该目标的规则说明；选项与子目标都带〔〕。请据此比较，" +
+            "注意有些牌的费用、条件、次数限制会直接决定它此刻值不值得打。";
 
         public static void Init(ManualLogSource log, string root)
         {
@@ -117,30 +119,127 @@ namespace DuneAiProbe
         private static readonly Dictionary<string, string> _effects =
             new Dictionary<string, string>(StringComparer.Ordinal);
 
-        /// 效果摘要查询（mods/ai/effect_map.tsv）：先按 GUID，再按 "name:<中文名>"。
+        // 效果来源与优先级（来自 effect_map_v2.tsv）。
+        // 用于让模型知道某段文本是"游戏官方原文"还是"人工补充"，以及人工补充是否已核对。
+        private static readonly Dictionary<string, string> _effectSources =
+            new Dictionary<string, string>(StringComparer.Ordinal);
+        private static readonly Dictionary<string, int> _effectPriorities =
+            new Dictionary<string, int>(StringComparer.Ordinal);
+
+        // 同名多版本的歧义表（来自 ambiguous_names.tsv）。
+        // 这些中文名对应多个 GUID 且规则不同 —— 按中文名兜底取效果必然串用别的扩展的规则，
+        // 因此这些键禁止用于兜底查询。
+        private static readonly HashSet<string> _ambiguousNames = new HashSet<string>(StringComparer.Ordinal);
+
+        /// 效果摘要查询：先按 GUID，再按 "name:<中文名>"。
+        ///
+        /// 注意 name: 兜底只在**该中文名唯一对应一个原型**时才允许：
+        /// 同名跨扩展的卡（如"厄拉奇恩之战" BaseSet/Uprising 各一张）规则完全不同，
+        /// 按名兜底会把另一张牌的规则搬过来，模型据此判断必然出错。
         public static string EffectOf(string key)
         {
             if (string.IsNullOrEmpty(key)) return null;
             string e;
             if (_effects.TryGetValue(key, out e)) return e;
+            // name: 兜底：排除歧义名
+            if (key.StartsWith("name:", StringComparison.Ordinal)) return null;
+            if (_ambiguousNames.Contains(key)) return null;
             if (_effects.TryGetValue("name:" + key, out e)) return e;
             return null;
         }
 
+        /// 该中文名是否因多版本而歧义（禁止按名兜底）。
+        public static bool IsAmbiguousName(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return false;
+            return _ambiguousNames.Contains(name);
+        }
+
+        /// 某键的效果来源标签（本地化自动提取 / 人工补充表…）；没有记录返回 null。
+        public static string EffectSourceOf(string key)
+        {
+            if (string.IsNullOrEmpty(key)) return null;
+            string s;
+            if (_effectSources.TryGetValue(key, out s)) return s;
+            if (!key.StartsWith("name:", StringComparison.Ordinal) &&
+                _effectSources.TryGetValue("name:" + key, out s)) return s;
+            return null;
+        }
+
+        /// 某键的效果优先级（越大越权威：自动提取 10 < 人工补充 20/30 < 人工复核 40）。
+        public static int EffectPriorityOf(string key)
+        {
+            if (string.IsNullOrEmpty(key)) return 0;
+            int p;
+            if (_effectPriorities.TryGetValue(key, out p)) return p;
+            if (!key.StartsWith("name:", StringComparison.Ordinal) &&
+                _effectPriorities.TryGetValue("name:" + key, out p)) return p;
+            return 0;
+        }
+
+        /// 加载效果表。优先读 effect_map_v2.tsv（含来源/优先级/歧义标记、长文本不截断）；
+        /// v2 不存在时回退到旧的两列 effect_map.tsv。
         private static void LoadEffectMap(string root)
         {
+            string v2 = Path.Combine(root, "mods", "ai", "effect_map_v2.tsv");
+            if (File.Exists(v2))
+            {
+                try
+                {
+                    foreach (var line in File.ReadAllLines(v2, Encoding.UTF8))
+                    {
+                        if (line.Length == 0) continue;
+                        // 键 来源 优先级 扩展 歧义标记 文本
+                        var cols = line.Split('\t');
+                        if (cols.Length < 6) continue;
+                        string key = cols[0];
+                        if (key.Length == 0) continue;
+                        _effects[key] = cols[5].Replace("\\n", " ");
+                        _effectSources[key] = cols[1];
+                        int prio;
+                        if (int.TryParse(cols[2], out prio)) _effectPriorities[key] = prio;
+                        if (!string.IsNullOrEmpty(cols[4])) _ambiguousNames.Add(cols[4]);
+                    }
+                    _log.LogWarning("[COACH] effect_map_v2: " + _effects.Count + " 条, 歧义 " +
+                                    _ambiguousNames.Count + " 个");
+                }
+                catch (Exception e) { _log.LogWarning("[COACH] effect_map_v2: " + e.Message); }
+            }
+
+            // 歧义清单：覆盖 v2 标记之外的情况（人工填表按中文名填、无 GUID 可选）
+            string amb = Path.Combine(root, "mods", "ai", "ambiguous_names.tsv");
             try
             {
-                string p = Path.Combine(root, "mods", "ai", "effect_map.tsv");
-                if (!File.Exists(p)) { _log.LogWarning("[COACH] 没有 effect_map.tsv，选项不带效果文本"); return; }
-                foreach (var line in File.ReadAllLines(p, Encoding.UTF8))
+                if (File.Exists(amb))
                 {
-                    int tab = line.IndexOf('\t');
-                    if (tab <= 0) continue;
-                    _effects[line.Substring(0, tab)] = line.Substring(tab + 1).Replace("\\n", " ");
+                    foreach (var line in File.ReadAllLines(amb, Encoding.UTF8))
+                    {
+                        if (line.Length == 0 || line.StartsWith("#", StringComparison.Ordinal)) continue;
+                        int tab = line.IndexOf('\t');
+                        if (tab <= 0) continue;
+                        _ambiguousNames.Add(line.Substring(0, tab));
+                    }
                 }
             }
-            catch (Exception e) { _log.LogWarning("[COACH] effect_map: " + e.Message); }
+            catch (Exception e) { _log.LogWarning("[COACH] ambiguous_names: " + e.Message); }
+
+            // 回退：旧的两列格式
+            if (_effects.Count == 0)
+            {
+                try
+                {
+                    string p = Path.Combine(root, "mods", "ai", "effect_map.tsv");
+                    if (!File.Exists(p)) { _log.LogWarning("[COACH] 没有 effect_map.tsv，选项不带效果文本"); return; }
+                    foreach (var line in File.ReadAllLines(p, Encoding.UTF8))
+                    {
+                        int tab = line.IndexOf('\t');
+                        if (tab <= 0) continue;
+                        _effects[line.Substring(0, tab)] = line.Substring(tab + 1).Replace("\\n", " ");
+                    }
+                    _log.LogWarning("[COACH] effect_map(旧格式回退): " + _effects.Count + " 条");
+                }
+                catch (Exception e) { _log.LogWarning("[COACH] effect_map: " + e.Message); }
+            }
         }
 
         private static readonly Regex KeyRe = new Regex(
@@ -227,13 +326,79 @@ namespace DuneAiProbe
 
             pending = human;
 
-            if (pending.Length > 9000) pending = pending.Substring(0, 9000) + " …(截断)";
+            // 按需组织：规则在数据层已完整保存，这里只决定"这一条 prompt 能放多少"。
+            // 实测 prompt 平均 955 字、最长 2016 字，9000 上限从未触发过真正的信息丢失；
+            // 真正的截断发生在生成侧与明细行数上限上。发送侧超限时按效果条目逐个裁剪，
+            // 并显式标记省略了多少条 —— 不能让模型以为看到的就是全部。
+            if (pending.Length > PromptBudget)
+            {
+                pending = TrimByEntries(pending, PromptBudget);
+            }
             _log.LogInfo("[COACH] observe #" + seq + " len=" + pending.Length + " player=" + (playerName ?? "?"));
             string user = "AI 玩家：" + (playerName ?? "?") + "（第 " + counter + " 号选择）\n";
             if (!string.IsNullOrEmpty(stateBlock)) user += stateBlock + "\n";
             user += "待选列表：\n" + pending;
 
             Task.Run(() => Send(seq, playerName, user, pending, stateBlock));
+        }
+
+        /// 单次 prompt 的字符预算。
+        private const int PromptBudget = 9000;
+
+        /// 超预算时按"效果条目"粒度裁剪：逐条缩短〔…〕里的效果文本，
+        /// 保留全部选项与子目标的**存在性**，只压缩细节，并显式标记省略了多少。
+        private static string TrimByEntries(string pending, int budget)
+        {
+            // 找出所有〔...〕块，逐个压缩到给定上限
+            int perEntry = 120;
+            for (int attempt = 0; attempt < 6 && pending.Length > budget; attempt++)
+            {
+                pending = ShortenEffectBlocks(pending, perEntry);
+                if (pending.Length > budget) perEntry = Math.Max(20, perEntry / 2);
+            }
+            if (pending.Length > budget)
+            {
+                pending = pending.Substring(0, budget) + " …(内容超长，已截断)";
+            }
+            return pending;
+        }
+
+        /// 把 prompt 里所有〔…〕块的内容压缩到 maxLen 字。
+        private static string ShortenEffectBlocks(string text, int maxLen)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            var sb = new System.Text.StringBuilder(text.Length);
+            int i = 0;
+            int trimmed = 0;
+            while (i < text.Length)
+            {
+                int open = text.IndexOf('〔', i);
+                if (open < 0) { sb.Append(text, i, text.Length - i); break; }
+                int close = text.IndexOf('〕', open + 1);
+                if (close < 0) { sb.Append(text, i, text.Length - i); break; }
+
+                sb.Append(text, i, open - i);
+                string body = text.Substring(open + 1, close - open - 1);
+                if (body.Length > maxLen)
+                {
+                    // 保留条件前缀：条件对"能不能用"比效果数值更关键
+                    string kept = body.Substring(0, maxLen);
+                    int cut = kept.LastIndexOf('；');
+                    if (cut > maxLen / 2) kept = kept.Substring(0, cut);
+                    sb.Append("〔").Append(kept).Append("…（细节已省略）〕");
+                    trimmed++;
+                }
+                else
+                {
+                    sb.Append(text, open, close - open + 1);
+                }
+                i = close + 1;
+            }
+            if (trimmed > 0)
+            {
+                sb.Append("\n〔另有 ").Append(trimmed).Append(" 处效果细节因长度限制被省略〕");
+            }
+            return sb.ToString();
         }
 
         /// 在后台线程同步完成一次请求（不能用 async lambda：本工程引用的 Il2Cppmscorlib 缺 NullableAttribute）。

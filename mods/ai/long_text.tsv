@@ -1,0 +1,190 @@
+button.BranchingPathAbility	<sprite name="Trash an Intrigue"> <sprite name="IfThenArrow"> <sprite name="IntrigueCard"> <sprite name="Spice_2">
+button.CalculusofPowerEmperorAbility	销毁你另一张使用中的皇帝牌 <sprite name="IfThenArrow"> <sprite name="Strength"><sprite name="Strength"><sprite name="Strength">
+button.CapturedMentatAgentAbility	<sprite name="Discard"> <sprite name="IfThenArrow"> <sprite name="IntrigueCard"><sprite name="DrawCard">
+button.CapturedMentatRevealAbility	<sprite name="WildRankDown"> <sprite name="IfThenArrow"> <sprite name="WildRankUp">
+button.CarefulObservationBeneGesseritAbility.0	<sprite name=BeneGesserit> <sprite name=Discard> <sprite name=IfThenArrow> <sprite name=Spice_1>
+button.CarefulObservationBeneGesseritAbility.3	<sprite name=BeneGesserit> <sprite name=IntrigueCard><sprite name=BeneGesseritRankUp>
+button.CarefulObservationEmperorAbility.0	<sprite name=Emperor> <sprite name=Discard> <sprite name=IfThenArrow> <sprite name=Spice_1>
+button.CarefulObservationEmperorAbility.3	<sprite name=Emperor> <sprite name=Troop><sprite name=Troop><sprite name=EmperorRankUp>
+button.CarefulObservationEmperorAbility.Up.0	<sprite name=Emperor> <sprite name=Discard> <sprite name=IfThenArrow> <sprite name=Spice_1>
+button.CarefulObservationEmperorAbility.Up.3	<sprite name=Emperor> <sprite name=Troop><sprite name=Troop><sprite name=EmperorRankUp>
+button.CarefulObservationFremenAbility.0	<sprite name=Fremen> <sprite name=Discard> <sprite name=IfThenArrow> <sprite name=Spice_1>
+button.CarefulObservationSpacingGuildAbility.0	<sprite name=SpacingGuild> <sprite name=Discard> <sprite name=IfThenArrow> <sprite name=Spice_1>
+button.CarefulObservationSpacingGuildAbility.3	<sprite name=SpacingGuild> <sprite name=Solari_3><sprite name=SpacingGuildRankUp>
+button.ChaniCleverTacticianRevealAbility	撤回2支部队 <sprite name="IfThenArrow"> <sprite name="Strength"><sprite name="Strength"><sprite name="Strength"><sprite name="Strength">
+button.ControlTheSpiceAbility	<sprite name=Spice_1> <sprite name=IfThenArrow> <sprite name=TrashCard><sprite name=Troop>
+button.CorrinthCityAgentAbility	<sprite name="Discard"><sprite name="Discard"> <sprite name="Solari_5"> <sprite name="IfThenArrow"> <sprite name="VictoryPoint">
+button.DemandAttentionAbilityBeneGesserit	<sprite name="Spice_4"> <sprite name="IfThenArrow"> <sprite name="BeneGesseritRankUp2">
+button.DemandAttentionAbilityEmperor	<sprite name="Spice_4"> <sprite name="IfThenArrow"> <sprite name="EmperorRankUp2">
+button.DemandAttentionAbilityFremen	<sprite name="Spice_4"> <sprite name="IfThenArrow"> <sprite name="FremenRankUp2">
+button.DemandAttentionAbilitySpacingGuild	<sprite name="Spice_4"> <sprite name="IfThenArrow"> <sprite name="SpacingGuildRankUp2">
+button.DeviousStrengthAbility	<sprite name="RecallSpy"> <sprite name="IfThenArrow"> <sprite name="Strength"><sprite name="Strength">
+button.Draw2ContractAbility	<sprite name="CompleteContract"> <sprite name="DrawCard"><sprite name="DrawCard">
+button.DuncanIdahoAbility	<sprite name=Water> <sprite name=IfThenArrow> <sprite name=Troop><sprite name=DrawCard>
+button.EcologicalTestingStationAbility	<sprite name="Water"><sprite name="Water"> <sprite name="IfThenArrow"> <sprite name="DrawCard"><sprite name="DrawCard">
+button.EsmarTuekAbility	<sprite name=Spice_1> <sprite name=IfThenArrow> <sprite name=SpacingGuildRankUp><sprite name=DrawCard>
+button.FirmGripAgentAbility.2	选择一个：<br><sprite name=SpacingGuildRankUp><sprite name=BeneGesseritRankUp><sprite name=FremenRankUp>
+button.FlagshipAbility	<sprite name=Flip> <sprite name=Solari_4> <sprite name=IfThenArrow> <sprite name=Troop><sprite name=Troop><sprite name=Troop>
+button.FremenCampAbility	<sprite name=Spice_2> <sprite name=IfThenArrow> <sprite name=Troop><sprite name=Troop><sprite name=Troop>
+button.GatherSupportAbility.1	<sprite name="Solari_[x]"> <sprite name="IfThenArrow"> <sprite name="Troop"><sprite name="Troop"><sprite name="Water">
+button.GurneyHalleckAbility	<sprite name=Solari_3> <sprite name=IfThenArrow> <sprite name=Troop><sprite name=Troop>
+button.HoloprojectorsAbility	<sprite name=Flip> <sprite name=Discard> <sprite name=IfThenArrow> <sprite name=DrawCard>
+button.ImperialPrivilegeAbility	<sprite name="Trash an Intrigue"> <sprite name="IfThenArrow"> <sprite name="IntrigueCard">
+button.InHighPlacesPersuasionAbility	<sprite name="RecallSpy"><sprite name="RecallSpy"><sprite name="IfThenArrow"> +<sprite name="Persuasion_3">
+button.InTheShadowsAgentAbility.2	选择一个：<br><sprite name=EmperorRankUp><sprite name=SpacingGuildRankUp><sprite name=FremenRankUp>
+button.InvasionShipsAbility	<sprite name=Flip> <sprite name=Discard> <sprite name=IfThenArrow> <sprite name=InvasionShips>
+button.IxGuildCompactAgentAbility	<sprite name=Discard><sprite name=Discard> <sprite name=IfThenArrow> <sprite name=Dreadnought>
+button.IxianEngineerAbility	<size=60%>拥有3个或更多科技板块：</size><br>销毁此牌 <sprite name=IfThenArrow> <sprite name=VictoryPoint>
+button.JunctionHeadquartersAbility	<sprite name="Trash an Intrigue"> <sprite name="Spice_2"> <sprite name="IfThenArrow"> <sprite name="VictoryPoint">
+button.LongReachAgentAbility	<size=60%>选择两项：</size><br><sprite name=EmperorRankUp><sprite name=SpacingGuildRankUp><sprite name=BeneGesseritRankUp><sprite name=FremenRankUp>
+button.PaySolariForTleilaxuInfluence	<sprite name=Solari_7> <sprite name=IfThenArrow> <sprite name=Tleilax><sprite name=Tleilax>
+button.PivotalGambitAbility	销毁此牌 <sprite name="IfThenArrow"> <sprite name="Troop"> —并且— 为本次冲突的第1名奖励添加<sprite name="WildRankUp">。
+button.ROIContractAbility.negotiator	<sprite name="CompleteContract"> <sprite name="Negotiator"> <sprite name="Contract">
+button.ROIContractAbility.solari1	<sprite name="CompleteContract"> <sprite name="Solari_1"> <sprite name="Contract">
+button.ROIContractAbility.solari2	<sprite name="CompleteContract"> <sprite name="Solari_2"> <sprite name="Contract">
+button.ROIContractAbility.solari3	<sprite name="CompleteContract"> <sprite name="Solari_3"> <sprite name="Contract">
+button.Recall2SpiesVPAbility	<sprite name="RecallSpy"><sprite name="RecallSpy"> <sprite name="IfThenArrow"> <sprite name="VictoryPoint">
+button.ReverendMotherAbility.deserttactics	<sprite name="Water"> <sprite name="IfThenArrow"> <sprite name="Troop"><sprite name="TrashCard">
+button.ReverendMotherAbility.espionage	<sprite name="Water"> <sprite name="IfThenArrow"> <sprite name="DrawCard"><sprite name="Spy">
+button.ReverendMotherAbility.secrets	<sprite name="Water"> <sprite name="IfThenArrow"> <sprite name="IntrigueCard"><sprite name="IntrigueTrash">
+button.SatelliteBanAbility	<sprite name=Discard> <sprite name=IfThenArrow> <sprite name=Spice_1><sprite name=Water>
+button.SayyadinaAbility	<sprite name=Water><sprite name=Water><sprite name=Water> <sprite name=IfThenArrow> <sprite name=VictoryPoint>
+button.ScientificBreakthroughAbility	<sprite name="GeneticMarker2">：销毁此牌 <sprite name=IfThenArrow> <sprite name=VictoryPoint>
+button.SelectiveBreedingDeferredAbility	<sprite name=TrashCard> <sprite name=IfThenArrow> <sprite name=DrawCard><sprite name=DrawCard>
+button.ShaiHuludAbility	<sprite name=TrashCard> <sprite name=IfThenArrow> <sprite name=Troop><sprite name=Troop>
+button.ShiftingAllegiancesAbility	<sprite name=WildRankDown><sprite name=Spice_2> <sprite name=IfThenArrow> <sprite name=WildRankUp2>
+button.SmugglingOperationFulfilledAbility	<sprite name=Destiny> <sprite name=Solari_5> <sprite name=IfThenArrow> <sprite name=Spice_5>
+button.SpacingGuildsFavorRevealAbilityBeneGesserit	<sprite name="Spice_3"> <sprite name="IfThenArrow"> <sprite name="BeneGesseritRankUp">
+button.SpacingGuildsFavorRevealAbilityEmperor	<sprite name="Spice_3"> <sprite name="IfThenArrow"> <sprite name="EmperorRankUp">
+button.SpacingGuildsFavorRevealAbilitySpacingGuild	<sprite name="Spice_3"> <sprite name="IfThenArrow"> <sprite name="SpacingGuildRankUp">
+button.SpiceAgonyAbility	<sprite name="Spice_1"> <sprite name="IfThenArrow"> <sprite name="IntrigueCard">并形成一份记忆。
+button.SpiceSmugglersAbility	<sprite name=Spice_2> <sprite name=IfThenArrow> <sprite name=SpacingGuildRankUp><sprite name=Solari_3>
+button.SpyNetworkAbility	<sprite name="RecallSpy"> <sprite name="IfThenArrow"> <sprite name="IntrigueCard">
+button.SpySatellitesAbility	<sprite name=Spice_3> 销毁此牌 <sprite name="IfThenArrow"> <sprite name="VictoryPoint">
+button.StitchedHorrorAbility	<size=60%>选择两项：</size><br><sprite name=Water><sprite name=Troop><sprite name=TrashCard><sprite name=Tleilax>
+button.TSMFContractAbility	<sprite name="CompleteContract"> <sprite name="SpacingGuildRankUp"><sprite name="Solari_3">
+button.TleilaxuSurgeonAgentAbility	<sprite name=Specimen><sprite name=Specimen> <sprite name=IfThenArrow> <sprite name=Tleilax><sprite name=Tleilax>
+button.TrashIntrigueForDrawAndIntrigue	<sprite name="Trash an Intrigue"> <sprite name=IfThenArrow> <sprite name=DrawCard><sprite name=IntrigueCard>
+button.UnseenNetworkInfluenceAbility	<sprite name="Solari_2"> <sprite name="IfThenArrow"> <sprite name="IntrigueCard">
+card.conflict.battleforarrakeenup.reward.1	<sprite name="VictoryPoint"> <sprite name="ControlNeutral"><br><sprite name="RecallSpy"><sprite name="RecallSpy"> <sprite name="IfThenArrow"> <sprite name="VictoryPoint">
+card.conflict.battleforimperialbasinup.reward.1	<sprite name="VictoryPoint"> <sprite name="ControlNeutral"><br><sprite name="Spice_4"> <sprite name="IfThenArrow"> <sprite name="VictoryPoint">
+card.conflict.battleforspicerefineryup.reward.1	<sprite name="VictoryPoint"> <sprite name="ControlNeutral"><br><sprite name="Solari_6"> <sprite name="IfThenArrow"> <sprite name="VictoryPoint">
+card.conflict.choamsecuritychoam.reward.1	<sprite name="SpacingGuildRankUp"> <sprite name="Contract"> <sprite name="Troop">
+card.conflict.choamsecuritychoam.reward.2	<sprite name="Water"> <sprite name="Solari_2"> <sprite name="Troop"> <sprite name="Troop">
+card.conflict.choamsecurityup.reward.1	<sprite name="SpacingGuildRankUp"> <sprite name="Solari_2"> <sprite name="Troop">
+card.conflict.choamsecurityup.reward.2	<sprite name="Water"> <sprite name="Solari_2"> <sprite name="Troop"> <sprite name="Troop">
+card.conflict.propagandaup.reward.1	选择两个： <sprite name="EmperorRankUp"> <sprite name="SpacingGuildRankUp"> <sprite name="BeneGesseritRankUp"> <sprite name="FremenRankUp">
+card.conflict.siegeofarrakeenup.reward.1	<sprite name="ControlNeutral"> <sprite name="Solari_2"> <sprite name="Troop"> <sprite name="Troop">
+card.conflict.spicefreightersup.reward.1	<sprite name="WildRankUp"><br><sprite name="Spice_3"> <sprite name="IfThenArrow"> <sprite name="VictoryPoint">
+card.imperium.appropriate.agent	<sprite name=Emperor> 2 影响力: <size=175%><sprite name=BuyTech></size><br>本回合可选择改为使用宇宙<br>索支付技术板块的香料费用。
+card.imperium.arrakisrevolt.agent	<sprite name="Hooks">: <sprite name="Spice_2"> <sprite name="IfThenArrow"> <sprite name="BlowWall"> <sprite name="Worm">
+card.imperium.arrakisrevolt.reveal	<sprite name="Persuasion_1"> <sprite name="Strength"><sprite name="Strength"><sprite name="Strength">
+card.imperium.benegesseritoperative.reveal	<sprite name="Persuasion_1">\\n贝尼·杰瑟里特姐妹会若你在版图上派遣了至少2名间谍: +<sprite name="Persuasion_2">
+card.imperium.blankslate.agent	若被改造:<br>此牌获得 <sprite name="Emperor">， <sprite name="SpacingGuild">， <sprite name="BeneGesserit">， 与 <sprite name="Fremen">。
+card.imperium.branchingpath.agent	<sprite name="BeneGesserit"> 结盟: <sprite name="Trash an Intrigue"> <sprite name="IfThenArrow"> <sprite name="IntrigueCard"> <sprite name="Spice_2">
+card.imperium.calculusofpower.reveal	<sprite name="Persuasion_2">\\n销毁你已打出的另一张皇帝卡牌 <sprite name="IfThenArrow"> <sprite name="Strength"><sprite name="Strength"><sprite name="Strength">
+card.imperium.capturedmentat.agent	<size=150%><sprite name="Discard"> <sprite name="IfThenArrow"> <sprite name="IntrigueCard"><sprite name="DrawCard">
+card.imperium.capturedmentat.reveal	<sprite name="Persuasion_1">\\n<sprite name="WildRankDown"> <sprite name="IfThenArrow"> <sprite name="WildRankUp">
+card.imperium.cargorunner.agent	若你已完成了至少2个合约: <sprite name="DrawCard"><line-height=35><br><nobr>若你已完成了至少4个合约: <sprite name="DrawCard"></nobr>
+card.imperium.chaniclevertactician.reveal	撤退2支军队 <sprite name="IfThenArrow"> <sprite name="Strength"><sprite name="Strength"><sprite name="Strength"><sprite name="Strength">\\n弗雷曼羁绊: <sprite name="Persuasion_2">
+card.imperium.corrinthcity.agent	<size=150%><sprite name="Discard"><sprite name="Discard"> <sprite name="Solari_5"> <sprite name="IfThenArrow"> <sprite name="VictoryPoint">
+card.imperium.corrinthcity.reveal	<sprite name="Solari_5"> —或— <sprite name="Solari_5"> <sprite name="IfThenArrow"> 放置议员指示物（若还未放置） 。
+card.imperium.deliveryagreement.agent	<size=150%><sprite name="Discard"> <sprite name="IfThenArrow"> <sprite name="Contract">
+card.imperium.deliveryagreement.reveal	<sprite name="Spice_1"> —或— 若你已经完成了至少4个合约: 销毁本牌 <sprite name="IfThenArrow"> <sprite name="VictoryPoint">
+card.imperium.desertcall.agent	<sprite name="MakerHook">: <sprite name="Water"> <sprite name="IfThenArrow"> <sprite name="Worm">，然后销毁本牌。
+card.imperium.desertpower.reveal	<sprite name="Persuasion_2"> <size=70%>—或—</size> <sprite name="MakerHook">: <sprite name="Water"> <sprite name="IfThenArrow"> <sprite name="Worm">
+card.imperium.duncanloyalblade.reveal	<size=30><sprite name="Persuasion_1"><sprite name="Strength"><sprite name="Strength"></size><br>销毁该牌<sprite name="IfThenArrow">从你的兵营部署任意数量的部队，或将任意数量的部队撤回你的兵营。
+card.imperium.ecologicaltestingstation.agent	<size=150%><sprite name="Water"><sprite name="Water"> <sprite name="IfThenArrow"> <sprite name="DrawCard"><sprite name="DrawCard">
+card.imperium.fullscaleassault.reveal	玩家在冲突区域中<br>每部署了1艘无畏舰就获得<sprite name=Strength><sprite name=Strength><sprite name=Strength>。
+card.imperium.guildenvoy.agent	<size=180%><sprite name="Discard"></size><br>若弃置了1张宇航公会卡牌: <size=150%><sprite name="DrawCard"><sprite name="DrawCard">
+card.imperium.guildspy.agent	<sprite name="Discard"> <sprite name="IfThenArrow"> <sprite name="DrawCard"> 若弃置了1张宇航公会卡牌: <sprite name="IntrigueCard">
+card.imperium.hiddenmissive.agent	<sprite name="BeneGesserit"> 2 影响力: <sprite name="Troop"><sprite name="DrawCard">
+card.imperium.inhighplaces.reveal	<sprite name="Persuasion_2"><br><size=70%><sprite name="RecallSpy"><sprite name="RecallSpy"></size><sprite name="IfThenArrow"> +<sprite name="Persuasion_3">
+card.imperium.junctionheadquarters.agent	<sprite name="SpacingGuild"> 同盟: <sprite name="Trash an Intrigue"> <sprite name="Spice_2"> <sprite name="IfThenArrow"> <sprite name="VictoryPoint">
+card.imperium.leadership.reveal	<sprite name="Persuasion_2"> <sprite name="Strength"> 本回合你每揭示一张其他提供 <sprite name="Strength"> 的卡牌，都可以额外 +<sprite name="Strength">。
+card.imperium.longlivethefighters.reveal	<sprite name="Persuasion_2"> <sprite name="Strength"><sprite name="Strength"><sprite name="Strength">
+card.imperium.longreach.agent1	若玩家已打出了另一张贝尼．杰瑟里特姐妹会卡牌: 此牌拥有 <sprite name="Landsraad">， <sprite name="PopulationCenter">， 与   <sprite name="Commerce">。
+card.imperium.makerkeeper.agent	<sprite name="BeneGesserit"> 2 影响力: <size=85%><sprite name="Water"></size><br><sprite name="Fremen"> 2 影响力: <size=85%><sprite name="Spice_1">
+card.imperium.overthrow.reveal	<sprite name="Persuasion_2"> <sprite name="Strength"><sprite name="Strength"> <sprite name="Troop">
+card.imperium.paracompass.reveal	若你放置了议员指示物: <sprite name="Persuasion_2">\\n若你同时也持有剑术大师: +<sprite name="Persuasion_1">
+card.imperium.pitergeniusadvisor.agent	失去1支军队 <sprite name="IfThenArrow"> <sprite name="DrawCard"> <sprite name="DrawCard"> <sprite name="Research">
+card.imperium.pivotalgambit.agent	销毁此牌 <sprite name="IfThenArrow"> <sprite name="Troop"> —并且— 为本次冲突的第一名奖励添加<sprite name="WildRankUp">。
+card.imperium.prioritycontracts.reveal	<sprite name="Spice_2">—或— 若你已经完成了至少4个合约: 销毁本牌 <sprite name="IfThenArrow"> <sprite name="VictoryPoint">
+card.imperium.reliableinformant.agent	<sprite name="Spy"> 派遣至 <sprite name="Emperor">/<sprite name="BeneGesserit">/<sprite name="Fremen">
+card.imperium.sardaukarcoordination.reveal	<size=150%><sprite name="Persuasion_2"></size><br>你每揭示一张皇帝卡牌就会获得 +<sprite name="Strength"> (包括本牌)。
+card.imperium.shishakli.agent	<size=150%><sprite name="TrashCard"> <sprite name="IfThenArrow"> <sprite name="DrawCard">
+card.imperium.shishakli.reveal	<sprite name="Strength"><sprite name="Strength"><br><size=70%>弗雷曼的义气：</size> <sprite name="FremenRankUp">
+card.imperium.smugglershaven.agent	<size=150%><sprite name="Spice_4"> <sprite name="IfThenArrow"> <sprite name="VictoryPoint">
+card.imperium.smugglershaven.reveal	<size=150%><sprite name="Persuasion_1"></size><br>若你有间谍标记与造物主位置相连: <sprite name="Spice_2">
+card.imperium.spacetimefolding.agent	<size=180%><sprite name="Discard"> <sprite name="IfThenArrow"> <sprite name="DrawCard"></size><br><br>若弃置了1张宇航公会卡牌: <sprite name="DrawCard">
+card.imperium.spacingguildsfavor.reveal	<sprite name="Persuasion_2"> <size=60%>—并且—</size> <size=90%><sprite name="Spice_3"></size> <sprite name="IfThenArrow"> <sprite name="WildRankUp">
+card.imperium.spynetwork.reveal	<size=150%><sprite name="Persuasion_2"> <sprite name="Strength"></size><br>若你在版图上派遣了至少2名间谍 <size=70%><sprite name="RecallSpy"></size><sprite name="IfThenArrow"> <sprite name="IntrigueCard">
+card.imperium.strikefleet.reveal	<sprite name="Persuasion_1"> <sprite name="Strength"><sprite name="Strength"><sprite name="Strength">
+card.imperium.thebeastsspoils.agent	根据你正面朝上的战斗图标获得奖励：\\n<size=110%><sprite name="Conflict_Knife">：<sprite name="TrashCard"> <sprite name="Conflict_Mouse">：<sprite name="Spice_1"> <sprite name="Conflict_Thopter">：<sprite name="Troop">
+card.imperium.undercoverasset.reveal	<sprite name="Spy"> <size=50%>—或—</size> <sprite name="Strength"><sprite name="Strength">
+card.imperium.wheelswithinwheels.agent	<sprite name="Emperor"> 2 影响力: <size=85%><sprite name="Solari_2"></size><br><sprite name="SpacingGuild"> 2 影响力: <size=85%><sprite name="Spice_1">
+card.intrigue.backedbychoam.text.1	<size=150%><sprite name="WildRankDown"> <sprite name="IfThenArrow"> <sprite name="Solari_4"></size>
+card.intrigue.backedbychoam.text.2	若你已经完成了至少 2个合约:<br><br><sprite name="Strength"><sprite name="Strength"><sprite name="Strength"><sprite name="Strength">
+card.intrigue.buyaccess.text.1	<size=150%><sprite name="Solari_5"></size><br><br><sprite name="ArrowDown"><br>选择两个：<br><br><sprite name="EmperorRankUp"> <sprite name="SpacingGuildRankUp"> <sprite name="BeneGesseritRankUp"> <sprite name="FremenRankUp">
+card.intrigue.bypassprotocol.text2	从公共牌中获得一张 <size=100%><sprite name="Persuasion_5"></size> <br>费或以下的牌，<br>将其放到你的牌库顶。
+card.intrigue.changeallegiances.text.1	<size=150%><sprite name="WildRankDown"> <sprite name="IfThenArrow"> <sprite name="WildRankUp">\\n<br><sprite name="Spice_3"> <sprite name="IfThenArrow"> <sprite name="WildRankUp">
+card.intrigue.charisma.text	在你的这个回合<br>的展示阶段获得  <voffset=0.2em><size=100%><sprite name="Persuasion_2"></size></voffset>
+card.intrigue.contingencyplan.text.2	<size=150%><sprite name="Strength"><sprite name="Strength"><sprite name="Strength">
+card.intrigue.crysknife.text.2	<line-height=130%>失去一个<sprite name="Conflict_Knife">或<sprite name="Conflict_Wild"><br><sprite name="ArrowDown"><br><sprite name="VictoryPoint">
+card.intrigue.cunning.text.2	<sprite name="Spice_1"><br><br><sprite name="ArrowDown"><br><br><sprite name="DrawCard"> <sprite name="TrashCard">
+card.intrigue.departforarrakis.text.1	<sprite name="Spice_2"> <sprite name="IfThenArrow"> <sprite name="Troop"><sprite name="Troop"><sprite name="Troop"><br><br><br><sprite name="SpacingGuild"> 3 影响力: <sprite name="DrawCard">
+card.intrigue.desertmouse.text.2	<line-height=130%>失去一个<sprite name="Conflict_Mouse">或<sprite name="Conflict_Wild"><br><sprite name="ArrowDown"><br><sprite name="VictoryPoint">
+card.intrigue.devour.text.1	<sprite name="Strength"><sprite name="Strength"><br><br>若你在冲突区域中有部署沙虫:<br><br>+<sprite name="Strength"><sprite name="Strength"> <sprite name="TrashCard">
+card.intrigue.findweakness.text.1	<sprite name="Strength"><sprite name="Strength"><br><br><sprite name="RecallSpy"> <sprite name="IfThenArrow"> +<sprite name="Strength"><sprite name="Strength"><sprite name="Strength">
+card.intrigue.imperiumpolitics.text.1	<size=150%><sprite name="Solari_1"></size><br><br><sprite name="ArrowDown"><br><br><size=150%><sprite name="EmperorRankUp"></size> —或— <size=150%><sprite name="SpacingGuildRankUp"></size>
+card.intrigue.impress.text.1	<size=150%><sprite name="Strength"><sprite name="Strength"></size><br><br>获得1张招募费用至多为 <sprite name="Persuasion_3"> 的卡牌。
+card.intrigue.intelligencereport.text.1	<size=150%><sprite name="DrawCard"></size><br><br>若你已派遣了至少2名间谍:<br><br><size=150%><sprite name="DrawCard"></size>
+card.intrigue.marketopportunity.text.1	<size=150%><sprite name="Spice_2"> <sprite name="IfThenArrow"> <sprite name="Solari_5">
+card.intrigue.marketopportunity.text.2	<size=150%><sprite name="Solari_5"> <sprite name="IfThenArrow"> <sprite name="Spice_5">
+card.intrigue.mercenaries.text.1	<size=150%><sprite name="Solari_3"><br><br><sprite name="ArrowDown"><br><br><size=150%><sprite name="IntrigueCard"> <sprite name="Troop"><sprite name="Troop">
+card.intrigue.opportunism.text.1	<size=150%><sprite name="WildRankDown"><sprite name="WildRankDown"><sprite name="Solari_2"><br><br><sprite name="ArrowDown"><br><br><sprite name="VictoryPoint">
+card.intrigue.ornithopter.text.2	<line-height=130%>失去一个<sprite name="Conflict_Thopter">或<sprite name="Conflict_Wild"><br><sprite name="ArrowDown"><br><size=120%><sprite name="VictoryPoint">
+card.intrigue.questionablemethods.text.1	<size=150%><sprite name="Strength"></size><br><br><sprite name="WildRankDown"> <sprite name="IfThenArrow"> + <sprite name="Strength"><sprite name="Strength"><sprite name="Strength"><sprite name="Strength">
+card.intrigue.reachagreement.text.1	撤退1-2支军队<br><br><sprite name="ArrowDown"><br><br><size=150%><sprite name="Contract"></size>
+card.intrigue.recruitmentmission.text1	在你本回合的展示<br>阶段获得 <voffset=0.2em><size=100%><sprite name="Persuasion_1"></size></voffset>
+card.intrigue.securespicetrade.text.1	若持有至少2张香料永流传<br><br><size=150%><sprite name="VictoryPoint"> <sprite name="Spice_2">
+card.intrigue.shaddamsfavor.text.1	<size=150%><sprite name="Troop"></size>\\n\\n<sprite name="Emperor"> 3 影响力: <sprite name="Solari_3">
+card.intrigue.sietchritual.text.1	<size=150%><sprite name="Discard"></size><br><br><sprite name="ArrowDown"><br><br><size=150%><sprite name="BeneGesseritRankUp"></size> —或— <size=150%><sprite name="FremenRankUp"></size>
+card.intrigue.specialmission.text.2	<sprite name="RecallSpy"><br><br><sprite name="ArrowDown"><br><br><sprite name="ShieldWallBreak"> <sprite name="Spice_2">
+card.intrigue.spiceispower.text.1	撤退3支军队<br><br><sprite name="ArrowDown"><br><br><size=150%><sprite name="Spice_3">
+card.intrigue.spiceispower.text.2	<size=150%><sprite name="Spice_3"><br><br></size><sprite name="ArrowDown"><br><br><size=150%><sprite name="Strength"><sprite name="Strength"><sprite name="Strength"><sprite name="Strength"><sprite name="Strength"><sprite name="Strength">
+card.intrigue.springthetrap.text.1	<sprite name="RecallSpy"><sprite name="RecallSpy"><br><br><sprite name="ArrowDown"><br><br><sprite name="Strength"><sprite name="Strength"><sprite name="Strength"><sprite name="Strength"><br><br><sprite name="Strength"><sprite name="Strength"><sprite name="Strength">
+card.intrigue.strategicstockpiling.text.1	<size=150%><sprite name="Spice_5"> <sprite name="IfThenArrow"> <sprite name="VictoryPoint"></size><br><br><br><sprite name="Fremen"> 3 影响力:<br><br><sprite name="Water"><sprite name="Water"><sprite name="Water"> <sprite name="IfThenArrow"> <sprite name="VictoryPoint">
+card.intrigue.unexpectedallies.text.1	<size=150%><sprite name="Water"><sprite name="Water"></size><br><br><sprite name="ArrowDown"><br><br><size=150%><sprite name="ShieldWallBreak"> <sprite name="Worm">
+card.intrigue.weirdingcombat.text.1	<size=150%><sprite name="Strength"><sprite name="Strength"><sprite name="Strength"></size><br><br><sprite name="BeneGesserit"> 3 影响力:<br><br><size=150%>+<sprite name="Strength"><sprite name="Strength">
+card.techtile.detonationdevices.ability	若部署了无畏舰并在冲突中获<br>胜，可选择不控制地点，<br>改为将自己的1艘无畏舰放回个<br>人供应区以获得<sprite name=VictoryPoint>。
+card.techtile.holtzmanengine.ability	轮次开始阶段：<br><size=200%><sprite name=DrawCard></size><br>终局：<br>若持有至少2张香料永<br>流传则获得<sprite name=VictoryPoint>。
+card.techtile.restrictedordinance.ability	揭示回合：<br>若在最高委员会放<br>有议员指示物：<br><size=150%><br><sprite name=Strength><sprite name=Strength><sprite name=Strength><sprite name=Strength>
+card.techtile.spysatellites.ability	<size=125%><sprite name=Spice_3></size> 销毁此板块 <sprite name=IfThenArrow> <size=125%><sprite name=VictoryPoint></size><br>终局：<br>每有1个派系影响力不多于1点，<br>就获得<sprite name=VictoryPoint>。
+worm.canis.abilities.BypassProtocolAbility.acquirefive	<sprite name="Spice_2"> <sprite name="IfThenArrow">获得一张<sprite name="Persuasion_5">费或以下的牌，放置到你的牌组顶端。
+worm.canis.abilities.Recall2SpiesVPAbility	<sprite name=RecallSpy><sprite name=RecallSpy> <sprite name=IfThenArrow> <sprite name="VictoryPoint">
+worm.canis.abilities.uprising.CunningAbility.paytrash	<sprite name="Spice_1"> <sprite name="IfThenArrow"> <sprite name="DrawCard"> <sprite name="TrashCard">
+worm.canis.abilities.uprising.DepartForArrakisAbility.optional	要花费<sprite name="Spice_2">以招募<sprite name="Troop"><sprite name="Troop"><sprite name="Troop">吗？
+worm.canis.abilities.uprising.FindWeaknessAbility	要召回一名间谍，以额外获得<sprite name="Strength"><sprite name="Strength"> <sprite name="Strength">吗？
+worm.canis.abilities.uprising.SpecialMissionAbility.recall	<sprite name=RecallSpy> <sprite name=IfThenArrow> <sprite name="ShieldWallBreak"> <sprite name="Spice_2">
+worm.canis.abilities.uprising.SpecialMissionAbility.recall.spy	<sprite name=RecallSpy> <sprite name=IfThenArrow> <sprite name="ShieldWallBreak"> <sprite name="Spice_2">
+worm.canis.abilities.uprising.SpiceIsPowerAbility.strength	<sprite name="Spice_3"> <sprite name="IfThenArrow"> <sprite name="Strength"><sprite name="Strength"><sprite name="Strength"><sprite name="Strength"><sprite name="Strength"><sprite name="Strength">
+worm.canis.abilities.uprising.StrategicStockpilingAbility.water	要花费<sprite name="Water"><sprite name="Water"><sprite name="Water">以获得<sprite name="VictoryPoint">吗？
+worm.leader.archdukearmandecaz.staticability.desc	揭示回合: 若玩家有至少兩名特使在<sprite name="Landsraad">/<sprite name="PopulationCenter">/<sprite name="Commerce">位置，则可以销毁1张已打出的卡牌。
+worm.leader.baronvladimirharkonnen.signetability.desc	<sprite name="Solari_1"> <sprite name="IfThenArrow"> <sprite name="IntrigueCard">
+worm.leader.dukeletoatreides.signetability.desc	<sprite name="Spice_1"> <sprite name="IfThenArrow"> 在一个你的对手比你的影响力更<br>多的阵营获得一点影响力。
+worm.leader.feydrauthaharkonnen.staticability.desc	揭示回合： <sprite name="RecallSpy"> <sprite name="IfThenArrow"> <sprite name="Strength"><sprite name="Strength">
+worm.leader.glossuthebeastrabban.signetability.desc	<sprite name="Troop"> —或者— <sprite name="Troop"> <sprite name="Troop"> 如果你至少有一<br>个同盟阵营的话。
+worm.leader.ilesaecaz.signetability.desc	<sprite name="Solari_1"> <sprite name="IfThenArrow"> <sprite name="WarpSpaceCard">
+worm.leader.ilesaecaz.staticability.desc	轮次开始阶段：将1张手牌置于一旁。<br>在一轮第二回合开始时，展示并拿回置于一旁的手牌。如果在此回合使用此牌执行了一个特使回合：<br>* 若该牌只有1个特使图标， <sprite name="Spice_1"><br>* 否则， <sprite name="Solari_1">
+worm.leader.ladyjessica.signetability.desc	<sprite name="Spice_1"> <sprite name="IfThenArrow"> <sprite name="IntrigueCard"> ， 然后你拿取个人供应区中1个玩家方块放在版图贝尼·杰瑟里特姐妹会派系位置， 以标示你持有的记忆。
+worm.leader.ladyjessica.staticability.desc	当你将特使派遣到版图位置 <size=70%><sprite name="BeneGesserit"></size> 时， 可以将所有的记忆返回个人供应区， 并抽取与记忆数量相同的卡牌。然后翻面本领袖牌。
+worm.leader.ladymargotfenring.staticability.desc	当你达到2 <size=70%><sprite name="BeneGesserit"></size> 影响力时: <size=70%><sprite name="Spice_2">
+worm.leader.princessirulan.signetability.desc	选择: 获得1张费用为 <sprite name="Persuasion_1"> 的卡牌并加入手牌 --或-- 从手中销毁1张牌，若其费用不小于 <sprite name="Persuasion_1"> : <size=70%><sprite name="Spice_2">
+worm.leader.princessirulan.staticability.desc	当你达到2 <size=70%><sprite name="Emperor"></size> 影响力时: <size=70%><sprite name="IntrigueCard"></size>
+worm.leader.princessyunamoritani.signetability.desc	<sprite name="Solari_7"> <sprite name="IfThenArrow"> <sprite name="WildRankUp"><sprite name="Troop"><sprite name="Spice_1">
+worm.leader.reverendmotherjessica.staticability.desc	每阶段一次，你可以花费<sprite name="Water">来重复本阶段你派遣特使前往的<sprite name="BeneGesserit">或<sprite name="Fremen">面板区域的效果。
+worm.leader.shaddamcorrinoiv.signetability.desc	本阶段单位无法被部署到冲突。<br><br><sprite name="Solari_1"> <sprite name="Troop"> —或者— <sprite name="Solari_3"> <sprite name="IfThenArrow"> <sprite name="WildRankUp">
+worm.leader.stabantuek.signetability.desc	<sprite name="Spy"> - 若派遣至... <sprite name="Landsraad"> : <sprite name="Spice_1"> <sprite name="IfThenArrow"> <sprite name="Solari_3"><br><br><sprite name="Emperor"> / <sprite name="SpacingGuild"> / <sprite name="BeneGesserit"> / <sprite name="Fremen"> : <sprite name="Solari_2"> <sprite name="IfThenArrow"> <sprite name="IntrigueCard">
+worm.leader.stabantuek.signetability.desc.modified	<sprite name="Spy"><br><br>如果被放置在……<br><br><sprite name="Landsraad">：<sprite name="Spice_1"> <sprite name="IfThenArrow"> <sprite name="Solari_3"><br><br><sprite name="Emperor">/<sprite name="SpacingGuild">/<sprite name="BeneGesserit">/<sprite name="Fremen">：<sprite name="Solari_2"> <sprite name="IfThenArrow"> <sprite name="IntrigueCard">
+worm.leader.tessiavernius.staticability.desc	游戏开始时，在每个派系影响力记录条2影响力的位置放置一个探测器标记。当玩家达到放有探测器标记的位置时，拿取该探测器标记覆盖到领袖牌最上方未被覆盖的奖励格并获得该格奖励。

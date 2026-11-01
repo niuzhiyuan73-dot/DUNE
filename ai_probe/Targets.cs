@@ -131,9 +131,16 @@ namespace DuneAiProbe
 
                 var sb = new System.Text.StringBuilder();
                 int rows = 0, withTargets = 0, withEffect = 0;
+                int mapTotal = map.Count;
                 foreach (var kv in map)
                 {
-                    if (rows++ >= 12) { sb.Append("- …\n"); break; }
+                    if (rows >= DetailRowMax)
+                    {
+                        // 显式标记截断：模型必须知道还有未列出的选项
+                        sb.Append("- 〔另有 " + (mapTotal - rows) + " 个选项未列出〕\n");
+                        break;
+                    }
+                    rows++;
 
                     string kid = null;
                     try { if (kv.Key != null) kid = kv.Key.ToString(); } catch { }
@@ -142,15 +149,24 @@ namespace DuneAiProbe
                     if (kid != null)
                     {
                         string eff = EffectFor(kid, match);
-                        if (!string.IsNullOrEmpty(eff)) { key = key + "〔" + eff + "〕"; withEffect++; }
+                        if (!string.IsNullOrEmpty(eff))
+                        {
+                            key = key + "〔" + eff + "〕";
+                            withEffect++;
+                            if (eff == AMBIGUOUS_MARK)
+                            {
+                                // 歧义不算"缺数据"，是"多版本待确认"，单独计数
+                                RecordGap(GapKind.Ambiguous, key.Split('(')[0].Trim());
+                            }
+                        }
                         else
                         {
-                            // 关键：沉默会被模型误读成"这牌没效果"，标注出来它就知道是数据缺失
+                            // 关键：沉默会被模型误读成"这牌没效果"，标注出来它就知道是数据缺失。
+                            // 这里记录的是"尚未采集到"，不是"确认没有该效果"。
                             key = key + "〔效果待查〕";
                             // 记录缺口时先剥掉 <sprite name=...>：能力实体常以图标名作名字，
                             // 直接记会把整行变成标签，gaps.txt 不可读
-                            string gname = StripTags(key.Split('(')[0].Trim());
-                            _gapCount[gname] = _gapCount.TryGetValue(gname, out int g) ? g + 1 : 1;
+                            RecordGap(GapKind.Unknown, StripTags(key.Split('(')[0].Trim()));
                         }
                     }
                     sb.Append("- ").Append(key);
@@ -159,8 +175,14 @@ namespace DuneAiProbe
                     if (list == null || list.Count == 0) { sb.Append("：（无子目标）\n"); continue; }
 
                     var parts = new List<string>();
-                    for (int i = 0; i < list.Count && parts.Count < 12; i++)
+                    for (int i = 0; i < list.Count; i++)
                     {
+                        if (parts.Count >= SubTargetMax)
+                        {
+                            // 显式标记截断
+                            parts.Add("〔另有 " + (list.Count - i) + " 个子目标未列出〕");
+                            break;
+                        }
                         string one = Describe(list[i], match, log);
                         if (!string.IsNullOrEmpty(one))
                         {
@@ -211,8 +233,16 @@ namespace DuneAiProbe
         }
 
         /// <summary>
-        /// 两种带 ValidTargets 的目标类型，走 TryCast 拿到真正的派生类型包装器后反射取列表。
+        /// 带 ValidTargets 的目标类型，走 TryCast 拿到真正的派生类型包装器后反射取列表。
         /// 取不到（类型不符 / 列表为空）返回 null，交给调用方退回 ToString。
+        ///
+        /// 覆盖的类型（从 Networking.dll 实测枚举出 14 种，这里按"能拿到实体列表"的取）：
+        ///   EntityListTargetInformation / EntityGroupingTargetInformation
+        ///   KnapsackEntityListTargetInformation / RevealEntityListTargetInformation
+        ///   RevealDetailedEntityListTargetInformation / ArchetypeCustomChoiceTargetInformation
+        ///   CompositeTargetInformationListTargetInformation
+        /// 其余（CustomChoiceTargetInformation / XTargetInformation / 各类 Orientation）
+        /// 由 ToString 自己输出 Choices 等提示，不做展开。
         /// </summary>
         private static string ValidTargetsOf(object ti, Canis.Match match, ManualLogSource log)
         {
@@ -221,13 +251,14 @@ namespace DuneAiProbe
             {
                 var obj = ti as Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase;
                 if (obj == null) return null;
-                try { cast = obj.TryCast<Networking.selection.targetinformation.EntityListTargetInformation>(); }
-                catch { }
-                if (cast == null)
-                {
-                    try { cast = obj.TryCast<Networking.selection.targetinformation.EntityGroupingTargetInformation>(); }
-                    catch { }
-                }
+                cast = TryCastAny(obj,
+                    "EntityListTargetInformation",
+                    "EntityGroupingTargetInformation",
+                    "KnapsackEntityListTargetInformation",
+                    "RevealEntityListTargetInformation",
+                    "RevealDetailedEntityListTargetInformation",
+                    "ArchetypeCustomChoiceTargetInformation",
+                    "CompositeTargetInformationListTargetInformation");
             }
             catch { }
             if (cast == null) return null;
@@ -240,18 +271,60 @@ namespace DuneAiProbe
                 if (arr == null) return null;
 
                 var names = new List<string>();
+                int total = 0;
+                int shown = 0;
                 foreach (object o in arr)
                 {
-                    if (names.Count >= 10) { names.Add("…"); break; }
+                    total++;
+                    if (shown >= TargetListMax)
+                    {
+                        // 显式标记截断：不能静默省略，模型必须知道还有未列出的目标
+                        names.Add("〔另有 " + (total - shown) + " 项未列出〕");
+                        break;
+                    }
                     string s = DescribeTarget(o, match, log);
-                    if (!string.IsNullOrEmpty(s)) names.Add(s);
+                    if (!string.IsNullOrEmpty(s)) { names.Add(s); shown++; }
                 }
                 return names.Count == 0 ? null : "可选 " + string.Join("/", names.ToArray());
             }
             catch { return null; }
         }
 
-        /// <summary>选项的效果摘要：优先用 Resolve 记下的效果键，GUID 查不到再按中文名回退。</summary>
+        /// 目标列表最多列出多少项（超出部分显式标记"另有 N 项未列出"）。
+        private const int TargetListMax = 20;
+
+        /// 按类型名依次 TryCast，返回第一个成功的包装器。
+        /// IL2CPP 的真实类型要靠原生侧 TryCast 问出来，反射只能看到基类。
+        private static object TryCastAny(Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase obj,
+                                         params string[] typeNames)
+        {
+            for (int i = 0; i < typeNames.Length; i++)
+            {
+                try
+                {
+                    var t = Type.GetType("Networking.selection.targetinformation." + typeNames[i] +
+                                         ", Networking");
+                    if (t == null) continue;
+                    var mi = obj.GetType().GetMethod("TryCast", new Type[] { t });
+                    if (mi == null) continue;
+                    var res = mi.Invoke(obj, new object[] { null });
+                    if (res != null) return res;
+                }
+                catch { }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 查某个实体的效果文本。
+        ///
+        /// 返回 null 表示"查不到"。调用方要区分三种情况，不能一律当成"没有效果"：
+        ///   1. 查到了 —— 附上文本；
+        ///   2. 查不到且该实体有歧义（同名多版本）—— 必须显式告诉模型"多版本，无法确定"；
+        ///   3. 查不到且无歧义 —— 属于"尚未采集到"，标注待查。
+        ///
+        /// 按名兜底只在中文名唯一对应一个原型时允许，否则会把别的扩展的规则搬过来。
+        /// </summary>
         private static string EffectFor(string idString, Canis.Match match)
         {
             string key = null;
@@ -263,27 +336,67 @@ namespace DuneAiProbe
             if (string.IsNullOrEmpty(key)) return null;
 
             string e = Coach.EffectOf(key);        // key 可能是 GUID，也可能是能力本地化键
-            if (string.IsNullOrEmpty(e))
+            if (string.IsNullOrEmpty(e) && IsGuidish(key))
             {
-                if (IsGuidish(key))
+                string nm = Coach.NameOf(key);
+                // 同名多版本时禁止按名兜底：Coach.EffectOf 内部已拦截，
+                // 这里只负责把"歧义"这个事实带出去。
+                if (!string.IsNullOrEmpty(nm))
                 {
-                    string nm = Coach.NameOf(key);
-                    if (!string.IsNullOrEmpty(nm)) e = Coach.EffectOf(nm);
+                    if (Coach.IsAmbiguousName(nm)) return AMBIGUOUS_MARK;
+                    e = Coach.EffectOf(nm);
                 }
-                else
-                {
-                    // worm.canis.abilities.<类名> 在 name_map 里存的就是效果描述
-                    e = Coach.NameOf(key);
-                }
+            }
+            else if (string.IsNullOrEmpty(e))
+            {
+                // worm.canis.abilities.<类名> 在 name_map 里存的就是效果描述
+                e = Coach.NameOf(key);
             }
             return string.IsNullOrEmpty(e) ? null : e;
         }
 
+        /// 同名多版本时的占位标记：明确告诉模型"这个实体有多个版本、规则不同、无法确定"。
+        private const string AMBIGUOUS_MARK = "〔同名多版本·规则不同·无法确定，请按版本确认〕";
+
         private static bool _elemLogged;
         private static readonly Dictionary<string, int> _gapCount = new Dictionary<string, int>(StringComparer.Ordinal);
 
+        /// 明细里最多列出多少个选项 / 每个选项多少个子目标。
+        /// 超出部分一律显式标记"另有 N 项未列出"，不做静默截断。
+        private const int DetailRowMax = 24;
+        private const int SubTargetMax = 24;
+
+        /// 缺口的三种状态。区分"确认没有该效果"与"该效果尚未采集到"，
+        /// 否则一张只提取到半张效果的卡会被误判成信息齐全。
+        private enum GapKind
+        {
+            /// 尚未采集到：可能有该效果，但文本还没被提取/核对。
+            Unknown,
+            /// 同名多版本：不是缺数据，是无法确定该用哪个版本的规则。
+            Ambiguous,
+            /// 已确认没有：原型属性里确实不存在该效果。
+            Absent,
+        }
+
+        private static readonly Dictionary<GapKind, Dictionary<string, int>> _gaps =
+            new Dictionary<GapKind, Dictionary<string, int>>
+            {
+                { GapKind.Unknown, new Dictionary<string, int>(StringComparer.Ordinal) },
+                { GapKind.Ambiguous, new Dictionary<string, int>(StringComparer.Ordinal) },
+                { GapKind.Absent, new Dictionary<string, int>(StringComparer.Ordinal) },
+            };
+
+        private static void RecordGap(GapKind kind, string name)
+        {
+            if (string.IsNullOrEmpty(name)) return;
+            var d = _gaps[kind];
+            d[name] = d.TryGetValue(name, out int c) ? c + 1 : 1;
+            _gapCount[name] = _gapCount.TryGetValue(name, out int g) ? g + 1 : 1;
+        }
+
         /// 把「查不到文本」的实体按出现次数写到 dump/ai/gaps.txt：
         /// 洞从"感觉有"变成可枚举清单，补一条少一条。
+        /// 三类分开统计：待采集 / 多版本歧义 / 已确认没有。
         private static void DumpGaps()
         {
             try
@@ -291,10 +404,25 @@ namespace DuneAiProbe
                 string dir = System.IO.Path.Combine(DuneAiProbe.Plugin.RootDir, "dump", "ai");
                 System.IO.Directory.CreateDirectory(dir);
                 var sb = new System.Text.StringBuilder();
-                sb.Append("# 缺少效果文本的实体（按出现次数降序）\n# 行数: ").Append(_gapCount.Count).Append('\n');
-                var list = new List<KeyValuePair<string, int>>(_gapCount);
-                list.Sort((a, b) => b.Value.CompareTo(a.Value));
-                foreach (var kv in list) sb.Append(kv.Value).Append('\t').Append(kv.Key).Append('\n');
+                sb.Append("# 效果文本缺口清单（按状态分组，组内按出现次数降序）\n");
+                sb.Append("# 说明：unknown=尚未采集到（可能有该效果）；ambiguous=同名多版本无法确定；");
+                sb.Append("absent=已确认没有该效果\n");
+
+                var groups = new List<KeyValuePair<string, Dictionary<string, int>>>
+                {
+                    new KeyValuePair<string, Dictionary<string, int>>("unknown", _gaps[GapKind.Unknown]),
+                    new KeyValuePair<string, Dictionary<string, int>>("ambiguous", _gaps[GapKind.Ambiguous]),
+                    new KeyValuePair<string, Dictionary<string, int>>("absent", _gaps[GapKind.Absent]),
+                };
+                for (int gi = 0; gi < groups.Count; gi++)
+                {
+                    var d = groups[gi].Value;
+                    sb.Append("# [").Append(groups[gi].Key).Append("] 行数: ").Append(d.Count).Append('\n');
+                    var list = new List<KeyValuePair<string, int>>(d);
+                    list.Sort((a, b) => b.Value.CompareTo(a.Value));
+                    for (int i = 0; i < list.Count; i++)
+                        sb.Append(list[i].Value).Append('\t').Append(list[i].Key).Append('\n');
+                }
                 System.IO.File.WriteAllText(System.IO.Path.Combine(dir, "gaps.txt"), sb.ToString(),
                     new System.Text.UTF8Encoding(false));
             }
@@ -321,7 +449,7 @@ namespace DuneAiProbe
             }
 
             string en = PropString(t, o, "EntityName");
-            if (!string.IsNullOrEmpty(en)) return en;
+            if (!string.IsNullOrEmpty(en)) return WithEffect(en, null, match);
 
             string id = PropString(t, o, "_ID")
                         ?? PropString(t, o, "ID")
@@ -333,7 +461,37 @@ namespace DuneAiProbe
                 try { raw = o.ToString(); } catch { }
                 if (IsGuidish(raw)) id = raw;
             }
-            return id == null ? null : Replace(id, match);
+            if (id == null) return null;
+            // 子目标也要附上自己的规则：从这些牌中弃一张/送入版图时，
+            // 模型必须知道每个候选各自的作用，否则无从比较。
+            return WithEffect(Replace(id, match), id, match);
+        }
+
+        /// 给一个已解析的名字附上〔效果〕。
+        /// id 为实体实例 GUID 时用于取效果；查不到时按"尚未采集到"标注，不与"确认没有"混淆。
+        private static string WithEffect(string label, string id, Canis.Match match)
+        {
+            if (string.IsNullOrEmpty(label)) return label;
+            string eff = null;
+            if (!string.IsNullOrEmpty(id))
+            {
+                try { eff = EffectFor(id, match); } catch { }
+            }
+            else
+            {
+                // 已经有 EntityName 的元素：先按名字查效果
+                try { eff = Coach.EffectOf(label); } catch { }
+                if (string.IsNullOrEmpty(eff))
+                {
+                    try
+                    {
+                        if (Coach.IsAmbiguousName(label)) eff = AMBIGUOUS_MARK;
+                    }
+                    catch { }
+                }
+            }
+            if (string.IsNullOrEmpty(eff)) return label;
+            return label + "〔" + eff + "〕";
         }
 
         private static string PropString(Type t, object o, string name)
