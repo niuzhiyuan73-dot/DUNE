@@ -388,7 +388,7 @@ namespace DuneAiProbe
                 if (!key.StartsWith("name:", StringComparison.Ordinal))
                 {
                     string nm = NameOf(key);
-                    if (!string.IsNullOrEmpty(nm) && !_ambiguousNames.Contains(nm))
+                    if (!string.IsNullOrEmpty(nm) && (!_ambiguousNames.Contains(nm) || HasVerifiedNameEffect(nm)))
                     {
                         string nkey = "name:" + nm;
                         string e2;
@@ -407,6 +407,20 @@ namespace DuneAiProbe
         }
 
         /// 该中文名是否因多版本而歧义（禁止按名兜底）。
+        /// <summary>
+        /// 该中文名是否有**人工核验过**的按名文本（优先级 ≥30：人工补充表 30 / 人工复核 40）。
+        /// 同名多版本只应拦"自动提取"的兜底：自动提取的两个版本可能规则不同，
+        /// 但人工表里那条是逐条核对过本玩法的，可以直接用。
+        /// </summary>
+        public static bool HasVerifiedNameEffect(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return false;
+            string k = "name:" + name;
+            string e;
+            if (!_effects.TryGetValue(k, out e) || string.IsNullOrEmpty(e)) return false;
+            return EffectPriorityOf(k) >= 30;
+        }
+
         public static bool IsAmbiguousName(string name)
         {
             if (string.IsNullOrEmpty(name)) return false;
@@ -633,6 +647,10 @@ namespace DuneAiProbe
             }
             int seq = _sent;
 
+            // 指派领袖用的是 Buttons（没有 entityID），实选回来只有序号。
+            // 这里按按钮顺序把名字登记成 0,1,2…，事后才能把序号还原成人名。
+            try { NoteLeaderButtons(seq, counter, pending); } catch { }
+
             pending = human;
 
             // 按需组织：规则在数据层已完整保存，这里只决定"这一条 prompt 能放多少"。
@@ -656,6 +674,28 @@ namespace DuneAiProbe
             user += "待选列表：\n" + pending;
 
             Task.Run(() => Send(seq, playerName, user, pending, stateBlock, memoryBlock, counter, playerKey));
+        }
+
+        /// <summary>从 Buttons 里按顺序抽领袖名，登记给实选解析用（失败不影响主流程）。</summary>
+        private static void NoteLeaderButtons(int seq, int counter, string pending)
+        {
+            if (string.IsNullOrEmpty(pending)) return;
+            if (pending.IndexOf("Kind AssignLeader", StringComparison.Ordinal) < 0) return;
+            var names = new List<string>();
+            var ms = System.Text.RegularExpressions.Regex.Matches(pending, @"\[\d{3,6}-([^\]\[]+)\]");
+            for (int i = 0; i < ms.Count; i++)
+            {
+                string nm = ms[i].Groups[1].Value;
+                nm = System.Text.RegularExpressions.Regex.Replace(nm, @"\([0-9a-f]{8}\)", "").Trim();
+                if (nm.Length == 0) continue;
+                if (nm.StartsWith("System.", StringComparison.Ordinal)) continue;
+                if (nm.StartsWith("Canis.", StringComparison.Ordinal)) continue;
+                if (nm.StartsWith("worm.", StringComparison.Ordinal)) continue;
+                if (nm == "True" || nm == "False" || nm == "Leader") continue;
+                if (System.Text.RegularExpressions.Regex.IsMatch(nm, @"^[\d.\-]+$")) continue;
+                names.Add(nm);
+            }
+            if (names.Count > 0) Actual.NoteIndexedOptions(counter, names);
         }
 
         /// 单次 prompt 的字符预算。

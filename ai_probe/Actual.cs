@@ -49,6 +49,27 @@ namespace DuneAiProbe
         }
 
         /// <summary>生成目标明细时调用：登记"实体ID → 中文名"，供事后还原实选。</summary>
+        /// <summary>
+        /// 按**序号**登记选项：GameCustomChoice 返回的是序号，而指派领袖这类选择
+        /// 根本不是 TargetMap（用的是 Buttons），没有 entityID 可作为键。
+        /// 记成 "0","1","2"… 后 LabelByIndex 就能把序号还原成名字。
+        /// </summary>
+        public static void NoteIndexedOptions(int counter, List<string> names)
+        {
+            if (counter <= 0 || names == null || names.Count == 0) return;
+            try
+            {
+                lock (_lock)
+                {
+                    var list = new List<KeyValuePair<string, string>>();
+                    for (int i = 0; i < names.Count; i++)
+                        list.Add(new KeyValuePair<string, string>(i.ToString(), names[i]));
+                    _options[counter] = list;
+                }
+            }
+            catch { }
+        }
+
         public static void NoteOption(int counter, string kid, string label)
         {
             if (counter <= 0 || string.IsNullOrEmpty(kid) || string.IsNullOrEmpty(label)) return;

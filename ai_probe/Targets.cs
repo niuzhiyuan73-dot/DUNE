@@ -394,7 +394,8 @@ namespace DuneAiProbe
                 // 这里只负责把"歧义"这个事实带出去。
                 if (!string.IsNullOrEmpty(nm))
                 {
-                    if (Coach.IsAmbiguousName(nm)) return AMBIGUOUS_MARK;
+                    // 人工核验过的名字直接放行；只有"自动提取且多版本"才标歧义
+                    if (Coach.IsAmbiguousName(nm) && !Coach.HasVerifiedNameEffect(nm)) return AMBIGUOUS_MARK;
                     e = Coach.EffectOf(nm);
                 }
             }
@@ -545,6 +546,31 @@ namespace DuneAiProbe
 
         private static bool _shapeLogged;
 
+        private static bool _spaceLogged;
+
+        /// <summary>只打一次：版图位置实体的原型 GUID / 子节点名，用于补「位置名」映射。</summary>
+        private static void DumpSpaceOnce(string archGuid, Entity ent)
+        {
+            if (_spaceLogged || _log == null) return;
+            _spaceLogged = true;
+            try
+            {
+                var parts = new List<string>();
+                parts.Add("archetype=" + (archGuid ?? "null"));
+                string nm = null;
+                try { nm = ent != null ? ent.EntityName : null; } catch { }
+                parts.Add("name=" + (nm ?? "null"));
+                string parent = null;
+                try { parent = ent != null && ent.Parent != null ? ent.Parent.EntityName : null; } catch { }
+                parts.Add("parent=" + (parent ?? "null"));
+                int idx = -1;
+                try { idx = ent != null ? ent.PositionInParent : -1; } catch { }
+                parts.Add("pos=" + idx);
+                _log.LogInfo("[TARGETS] 版图位置未识别：" + string.Join(" ", parts.ToArray()));
+            }
+            catch { }
+        }
+
         /// <summary>类型不熟时的兜底：遍历属性与字段，取第一个像 GUID 的值。</summary>
         private static string ScanGuidishMember(Type t, object o)
         {
@@ -609,7 +635,7 @@ namespace DuneAiProbe
                 {
                     try
                     {
-                        if (Coach.IsAmbiguousName(label)) eff = AMBIGUOUS_MARK;
+                        if (Coach.IsAmbiguousName(label) && !Coach.HasVerifiedNameEffect(label)) eff = AMBIGUOUS_MARK;
                     }
                     catch { }
                 }
@@ -696,6 +722,15 @@ namespace DuneAiProbe
 
                 if (human == null && en != null) human = Coach.NameOf("button." + en);
                 if (human == null) human = en;
+
+                // 版图位置实体在存档里只有类名 "Space"，原型也没进名字表。
+                // 直接写 "Space" 会让模型自己编位置名（实测编出了"皇帝位置"，进而说"效果待查"）。
+                // 这里改成显式的"名称未解析"，并打一次诊断，便于下次补原型映射。
+                if (en == "Space")
+                {
+                    DumpSpaceOnce(archGuid, ent);
+                    human = "某位置（名称未解析，勿猜）";
+                }
 
                 _effKey[id] = BestEffectKey(abilityKey ?? archGuid, ent, 3);
                 if (string.IsNullOrEmpty(human)) { _miss++; return shortId; }
