@@ -108,6 +108,15 @@ namespace DuneAiProbe
 
                 AppendStrengthRank(sb, strengths, asker);
 
+                // 科技市场：以前完全没有入口，模型只能写"可获取技术的具体选项未知"
+                try
+                {
+                    var techs = BoardMap.TechNames();
+                    if (techs != null && techs.Count > 0)
+                        sb.Append("【科技市场】").Append(string.Join("、", techs.ToArray())).Append('\n');
+                }
+                catch { }
+
                 // 全局局面：当前冲突 + 版图占用
                 string shared = RenderShared(match, log);
                 if (!string.IsNullOrEmpty(shared)) sb.Append(shared);

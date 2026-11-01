@@ -731,8 +731,18 @@ namespace DuneAiProbe
                 // （实测 archetype=0610a0a1… → 沙漠战术），上一版无条件覆盖把它们全盖掉了。
                 if (en == "Space" && (human == null || human == "Space"))
                 {
-                    DumpSpaceOnce(archGuid, ent, human);
-                    human = "某位置（名称未解析，勿猜）";
+                    // 退一步：用 Board 枚举出来的「实例 ID → 位置名」兜底
+                    string byBoard = null;
+                    try { byBoard = BoardMap.NameOf(id); } catch { }
+                    if (!string.IsNullOrEmpty(byBoard))
+                    {
+                        human = byBoard;
+                    }
+                    else
+                    {
+                        DumpSpaceOnce(archGuid, ent, human);
+                        human = "某位置（名称未解析，勿猜）";
+                    }
                 }
 
                 _effKey[id] = BestEffectKey(abilityKey ?? archGuid, ent, 3);

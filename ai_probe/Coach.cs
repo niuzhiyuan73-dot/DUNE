@@ -354,7 +354,12 @@ namespace DuneAiProbe
         {
             if (string.IsNullOrEmpty(key)) return null;
             string n;
-            return _names.TryGetValue(key, out n) ? n : null;
+            if (_names.TryGetValue(key, out n)) return n;
+            // name_map.tsv 的 GUID 键都是小写，而 ArchetypeID.ToString() 可能给大写；
+            // 不做这一步会让"原型本来查得到"的名字也落空（实测版图位置全变成 Space）。
+            string lower = key.ToLowerInvariant();
+            if (!string.Equals(lower, key, StringComparison.Ordinal) && _names.TryGetValue(lower, out n)) return n;
+            return null;
         }
 
         private static readonly Dictionary<string, string> _effects =

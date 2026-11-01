@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>DuneTrainingRecorder</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GameDir>$(MSBuildThisFileDirectory)..\game</GameDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="$(GameDir)\BepInEx\core\BepInEx.Core.dll" Private="false" />
+    <Reference Include="$(GameDir)\BepInEx\core\BepInEx.Unity.IL2CPP.dll" Private="false" />
+    <Reference Include="$(GameDir)\BepInEx\core\Il2CppInterop.Runtime.dll" Private="false" />
+    <Reference Include="$(GameDir)\BepInEx\core\0Harmony.dll" Private="false" />
+    <Reference Include="$(GameDir)\BepInEx\interop\Il2Cppmscorlib.dll" Private="false" />
+    <Reference Include="$(GameDir)\BepInEx\interop\Canis.dll" Private="false" />
+    <Reference Include="$(GameDir)\BepInEx\interop\worm-canis.dll" Private="false" />
+    <Reference Include="$(GameDir)\BepInEx\interop\Networking.dll" Private="false" />
+    <Reference Include="$(GameDir)\BepInEx\interop\Attributes.dll" Private="false" />
+    <Reference Include="$(GameDir)\BepInEx\interop\core-canis.dll" Private="false" />
+    <Reference Include="$(GameDir)\BepInEx\interop\Utils.dll" Private="false" />
+    <Reference Include="$(GameDir)\BepInEx\interop\DwdJson.dll" Private="false" />
+  </ItemGroup>
+</Project>

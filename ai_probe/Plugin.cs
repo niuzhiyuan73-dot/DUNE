@@ -41,7 +41,7 @@ namespace DuneAiProbe
         internal const string RootDir = Root;
 
         /// 每次改动手工递增：日志里能一眼确认加载的是哪份构建（DLL 被锁时会照旧版本跑）
-        internal const string BuildTag = "2026-11-01I";
+        internal const string BuildTag = "2026-11-01J";
         private const string DumpPath = Root + "/dump/ai_constants_runtime.json";
         private const string OverridePath = Root + "/mods/ai/ai_override.json";
         private const string ForceLevelPath = Root + "/mods/ai/force_level.txt";
@@ -342,6 +342,9 @@ namespace DuneAiProbe
                 long matchPtr = 0;
                 try { matchPtr = match != null ? match.Pointer.ToInt64() : 0; } catch { }
                 if (!Coach.IsTarget(matchPtr, pkey, who, log)) return;
+
+                // 版图结构（每局一次）：位置名映射 + 科技市场/研究轨/泰莱拉轨的入口
+                try { BoardMap.Scan(match, Root, L); } catch (Exception e) { L.LogInfo("[BOARD] " + e.Message); }
 
                 // 局势先渲染：回合判定要用「可用特使数」区分「新回合」和「同一回合又弹出一次」。
                 string stateBlock0 = null;
