@@ -191,12 +191,34 @@ def build():
             pairs[key] = text
             kb_added += 1
 
+    # 第三张表：待补清单（kb_todo_fill.tsv）。第 1 列键、第 4 列填好的文本；空着就跳过。
+    todo = os.path.join(ROOT, "mods", "ai", "kb_todo_fill.tsv")
+    todo_added = 0
+    if os.path.exists(todo):
+        for line in open(todo, encoding="utf-8-sig"):
+            line = line.rstrip("\n")
+            if not line.strip() or line.lstrip().startswith("#"):
+                continue
+            parts = line.split("\t")
+            if len(parts) < 4:
+                continue
+            raw, text = parts[0].strip(), parts[3].strip()
+            if not raw or not text:
+                continue
+            key = raw if raw.count("-") == 4 else "name:" + raw
+            if key in pairs:
+                continue
+            if len(text) > EFFECT_MAX:
+                text = text[:EFFECT_MAX] + "…"
+            pairs[key] = text
+            todo_added += 1
+
     with open(OUT, "w", encoding="utf-8", newline="\n") as f:
         for k in sorted(pairs):
             v = pairs[k].replace("\\", "\\\\").replace("\t", " ").replace("\n", " ")
             f.write("%s\t%s\n" % (k, v))
 
-    print("写出 %d 条（卡表 %d / kb %d）-> %s" % (len(pairs), added, kb_added, OUT))
+    print("写出 %d 条（卡表 %d / kb %d / 待补表 %d）-> %s" % (len(pairs), added, kb_added, todo_added, OUT))
 
 
 if __name__ == "__main__":
