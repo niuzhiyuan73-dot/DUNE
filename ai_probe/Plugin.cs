@@ -41,7 +41,7 @@ namespace DuneAiProbe
         internal const string RootDir = Root;
 
         /// 每次改动手工递增：日志里能一眼确认加载的是哪份构建（DLL 被锁时会照旧版本跑）
-        internal const string BuildTag = "2026-11-01z";
+        internal const string BuildTag = "2026-11-01A";
         private const string DumpPath = Root + "/dump/ai_constants_runtime.json";
         private const string OverridePath = Root + "/mods/ai/ai_override.json";
         private const string ForceLevelPath = Root + "/mods/ai/force_level.txt";
@@ -286,14 +286,23 @@ namespace DuneAiProbe
             try
             {
                 if (string.IsNullOrEmpty(pending)) return null;
+                // Kind 在部分选择上是空串（「放置一名间谍」等），所以先看 Prompt 再看 Kind。
+                string prompt = null;
+                var m = System.Text.RegularExpressions.Regex.Match(pending, @"Prompt\s+(.+?)。");
+                if (m.Success) prompt = m.Groups[1].Value;
+
+                if (pending.IndexOf("Kind Combat", StringComparison.Ordinal) >= 0
+                    || (prompt != null && prompt.IndexOf("打出一张密牌", StringComparison.Ordinal) >= 0))
+                    return "【阶段】战斗阶段：只能从这次给出的选项里打出一张**战斗**密谋，或选择过牌。" +
+                           "过牌不等于退出（还没全体连续过牌时，之后轮到你仍可再打）。";
+                if (prompt != null && prompt.IndexOf("打出一张牌", StringComparison.Ordinal) >= 0)
+                    return "【阶段】行动开始（打出阶段）：这次选择决定这个行动打哪张牌、把特使派到哪个位置。"
+                         + "一次冲突里这样的行动有「可用特使数」次，最后再加一次展示行动。";
+                if (prompt != null && prompt.IndexOf("进入展示阶段", StringComparison.Ordinal) >= 0)
+                    return "【阶段】进入展示阶段前的确认。";
                 if (pending.IndexOf("Kind RevealTurn", StringComparison.Ordinal) >= 0)
                     return "【阶段】展示回合：只能执行手牌的展示效果、花说服购买卡牌；**不能派特使**，"
                          + "渗透/原子武器这类只在派特使时才有用的牌一律进「保留」。";
-                if (pending.IndexOf("Kind PlayerTurn", StringComparison.Ordinal) >= 0)
-                    return "【阶段】行动开始（打出阶段）：这次选择决定这个行动打哪张牌、把特使派到哪个位置。"
-                         + "一次冲突里这样的行动有「可用特使数」次，最后再加一次展示行动。";
-                if (pending.IndexOf("Kind AgentTurn", StringComparison.Ordinal) >= 0)
-                    return "【阶段】同一行动内的后续操作（打密谋/选目标/派兵/抽牌）。";
                 if (pending.IndexOf("Kind AssignLeader", StringComparison.Ordinal) >= 0)
                     return "【阶段】开局指派领袖。";
             }
@@ -334,9 +343,14 @@ namespace DuneAiProbe
                 try { matchPtr = match != null ? match.Pointer.ToInt64() : 0; } catch { }
                 if (!Coach.IsTarget(matchPtr, pkey, who, log)) return;
 
-                // 回合判定：一次「打出一张牌」= 一个行动（回合），行动内的后续选择合并；
-                // 展示阶段每次冲突只问一次；「选择展示」的收尾确认不问。
-                if (!Turn.ShouldAsk(pkey, counter, pending, log)) return;
+                // 局势先渲染：回合判定要用「可用特使数」区分「新回合」和「同一回合又弹出一次」。
+                string stateBlock0 = null;
+                try { stateBlock0 = State.Render(asker, log); }
+                catch (Exception e) { log.LogInfo("[STATE] " + e.Message); }
+
+                // 回合判定：一次「打出一张牌」= 一个回合，行动内的后续选择合并；
+                // 展示阶段每次冲突只问一次；「选择展示」的收尾确认一般不问。
+                if (!Turn.ShouldAsk(pkey, counter, pending, stateBlock0, log)) return;
 
                 // 实体实例 ID → 中文名；顺带砍掉执行栈快照（否则 targetMap 会被截断挤掉）
                 try
@@ -349,9 +363,7 @@ namespace DuneAiProbe
 
                 string name = who;
 
-                string stateBlock = null;
-                try { stateBlock = State.Render(asker, log); }
-                catch (Exception e) { log.LogInfo("[STATE] " + e.Message); }
+                string stateBlock = stateBlock0;
 
                 // 本局记忆：在游戏线程做快照差分，失败即当作"没有记忆"，不影响决策。
                 // 玩家键用对象指针而不是名字——出现过 "AI（困难）" 这类占位名，按名分桶会串味。

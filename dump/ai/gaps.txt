@@ -1,24 +1,10 @@
 # 效果文本缺口清单（按状态分组，组内按出现次数降序）
 # 说明：unknown=尚未采集到（可能有该效果）；ambiguous=同名多版本无法确定；absent=已确认没有该效果
-# [unknown] 行数: 19
-91	ReturnSpecimenAbility
-26	DeployUnitsAbility
-25	FreighterAgentAbility
-10	GainResearchAgentAbility
-8	ShippingTrackAbility3
-5	将此牌放回你的手牌
-4	箱中诞生
-3	TrashCustomAbility
-3	宇联商会代表
-2	PlaceSpyAgentAbility
-2	ForHumanityAgentAbility
-2	藏于暗影
+# [unknown] 行数: 5
+20	ReturnSpecimenAbility
+5	伊克斯工程师
 2	Player
-2	改造义眼
-1	使用获取一张牌
-1	TrashAgentAbility
-1	ConnectionsInfluenceAbility
-1	SietchTabrUprisingDeferredSpaceAbility
-1	IxGuildCompactAgentAbility
+1	RecallSpyIntelligenceAbility
+1	IxianEngineerAbility
 # [ambiguous] 行数: 0
 # [absent] 行数: 0

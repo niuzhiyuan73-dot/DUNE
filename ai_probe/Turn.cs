@@ -47,6 +47,8 @@ namespace DuneAiProbe
         }
 
         private static readonly Dictionary<long, Progress> _prog = new Dictionary<long, Progress>();
+        // 上一次「打出」提示时的可用特使数：用来判断这次是同一回合的重复提示还是新回合
+        private static readonly Dictionary<long, int> _lastPlayAgents = new Dictionary<long, int>();
 
         private static int _asked, _skipped;
         private static ManualLogSource _log;
@@ -61,12 +63,15 @@ namespace DuneAiProbe
             _log = log;
         }
 
+        /// <summary>选择点的性质。Kind 在部分选择上是空串（实测「放置一名间谍」等），所以按 Prompt 判。</summary>
+        private enum Sel { Play, RevealConfirm, Reveal, Combat, Leader, Inner }
+
         /// <summary>返回 true 表示这次选择应当请求教练。</summary>
-        public static bool ShouldAsk(long playerKey, int counter, string pending, ManualLogSource log)
+        public static bool ShouldAsk(long playerKey, int counter, string pending, string stateBlock, ManualLogSource log)
         {
             try
             {
-                string kind = KindOf(pending);
+                Sel sel = Classify(pending);
                 string id = playerKey.ToString("x") + "#" + counter;
 
                 lock (_lock)
@@ -74,54 +79,62 @@ namespace DuneAiProbe
                     if (counter > 0 && !_handled.Add(id))
                         return false;   // 同一次选择已经被另一条入口处理过
 
-                    if (kind == "AgentTurn")
+                    switch (sel)
                     {
-                        // 行动内的后续操作（打密谋 / 选目标 / 派兵 / 抽牌）：已问过就合并
-                        if (_askedAgent.Contains(playerKey)) { Merge(log, "行动内后续操作"); return false; }
-                        return true;
-                    }
-
-                    if (kind == "PlayerTurn")
-                    {
-                        // 收尾确认「选择展示来进入展示阶段」：
-                        // 一般只有一个选项，问它没意义（真正的展示决策要等揭示完、说服到手）。
-                        // 但若手里有魁萨茨·哈德拉克，这一步是**真选择**：它允许在 0 特使时再派一次特使，
-                        // 确认进入展示就白白浪费掉（本地化 prompt.earlyskiptoreveal.kwisatzhaderach）。
-                        if (IsRevealConfirm(pending))
+                        case Sel.Play:
                         {
-                            if (pending.IndexOf("魁萨茨·哈德拉克", StringComparison.Ordinal) < 0)
-                            { Merge(log, "进入展示阶段的确认"); return false; }
+                            // 判「是不是新回合」不看提示本身：同一回合内先打一张阴谋牌，
+                            // 游戏会再弹一次「打出一张牌」（实测 #24/#25 同秒两条），
+                            // 唯一可靠的判据是**可用特使数有没有减少**。
+                            int now = AgentsOf(stateBlock);
+                            int prev;
+                            bool repeat = _lastPlayAgents.TryGetValue(playerKey, out prev)
+                                          && now >= 0 && prev >= 0 && now >= prev;
+                            _lastPlayAgents[playerKey] = now;
+                            if (repeat) { Merge(log, "同一回合内又弹出打出提示（未消耗特使）", pending); return false; }
+
+                            _askedAgent.Add(playerKey);
+                            _askedReveal.Remove(playerKey);
                             _asked++;
                             return true;
                         }
 
-                        // 打出一张牌 = 一个新行动开始
-                        _askedAgent.Add(playerKey);
-                        _askedReveal.Remove(playerKey);
-                        _asked++;
-                        return true;
-                    }
+                        case Sel.RevealConfirm:
+                            // 「选择展示来进入展示阶段」：只有一个选项，问它没意义。
+                            // 但手里有魁萨茨·哈德拉克时这一步是真选择（确认即放弃额外回合）。
+                            // 只看 Prompt：游戏在哈德拉克可用时会把提示改成
+                            // 「你依然可以进行一次特使阶段（受魁萨茨·哈德拉克影响）」。
+                            // 不能搜整段 pending —— 公共牌池里也可能有这张牌，会误判。
+                            if (PromptOf(pending).IndexOf("魁萨茨·哈德拉克", StringComparison.Ordinal) < 0)
+                            { Merge(log, "进入展示阶段的确认", pending); return false; }
+                            _asked++;
+                            return true;
 
-                    if (kind == "RevealTurn")
-                    {
-                        // 展示阶段内的连续买牌：本次冲突只问一次，后面的合并进同一份计划
-                        if (_askedReveal.Contains(playerKey)) { Merge(log, "展示阶段内连续买牌"); return false; }
-                        _askedReveal.Add(playerKey);
-                        _asked++;
-                        return true;
-                    }
+                        case Sel.Reveal:
+                            // 展示阶段（含连续买牌）：每次冲突只问一次
+                            if (_askedReveal.Contains(playerKey)) { Merge(log, "展示阶段内连续买牌", pending); return false; }
+                            _askedReveal.Add(playerKey);
+                            _asked++;
+                            return true;
 
-                    if (kind == "AssignLeader")
-                    {
-                        if (_askedLeader.Contains(playerKey)) return false;
-                        _askedLeader.Add(playerKey);
-                        _asked++;
-                        return true;
-                    }
+                        case Sel.Combat:
+                            // 战斗阶段每步都有真选择（打哪张战斗密谋 / 过牌），不能合并
+                            _asked++;
+                            return true;
 
-                    // 其它 Kind（含未来的战斗入口）：保守地问，不压制
-                    _asked++;
-                    return true;
+                        case Sel.Leader:
+                            if (_askedLeader.Contains(playerKey)) return false;
+                            _askedLeader.Add(playerKey);
+                            _asked++;
+                            return true;
+
+                        default:
+                            // 行动内的后续（放置间谍、选阵营、确认召回…）：本回合已问过就合并。
+                            // 若本回合还没问过（例如中途接入），照问一次，不要整段丢掉。
+                            if (_askedAgent.Contains(playerKey)) { Merge(log, "行动内后续操作", pending); return false; }
+                            _asked++;
+                            return true;
+                    }
                 }
             }
             catch (Exception e)
@@ -129,6 +142,27 @@ namespace DuneAiProbe
                 if (log != null) log.LogWarning("[TURN] " + e.Message);
                 return true;   // 出错时宁可问
             }
+        }
+
+        /// <summary>按 Kind + Prompt 判定选择点性质。Kind 可能为空串，Prompt 才是稳定的判据。</summary>
+        private static Sel Classify(string pending)
+        {
+            string kind = KindOf(pending);
+            string prompt = PromptOf(pending);
+
+            if (kind == "Combat" || prompt.IndexOf("打出一张密牌", StringComparison.Ordinal) >= 0)
+                return Sel.Combat;
+            if (prompt.IndexOf("打出一张牌", StringComparison.Ordinal) >= 0)
+                return Sel.Play;
+            if (prompt.IndexOf("进入展示阶段", StringComparison.Ordinal) >= 0)
+                return Sel.RevealConfirm;
+            if (kind == "RevealTurn"
+                || prompt.IndexOf("使用一项能力或获取一张牌", StringComparison.Ordinal) >= 0
+                || prompt.IndexOf("选择一项能力来使用", StringComparison.Ordinal) >= 0)
+                return Sel.Reveal;
+            if (kind == "AssignLeader") return Sel.Leader;
+            if (kind == "PlayerTurn") return Sel.Play;      // 兜底：Kind 有值但 Prompt 没匹配上
+            return Sel.Inner;
         }
 
         /// <summary>
@@ -139,7 +173,7 @@ namespace DuneAiProbe
         {
             try
             {
-                string kind = KindOf(pending);
+                Sel sel = Classify(pending);
                 string conflict = ConflictOf(stateBlock);
                 int remain = AgentsOf(stateBlock);
 
@@ -159,7 +193,7 @@ namespace DuneAiProbe
                         if (_prog.Count > 64) _prog.Clear();   // 防长跑累积
                     }
 
-                    if (kind == "RevealTurn")
+                    if (sel == Sel.Reveal)
                     {
                         int total = p.Agents > 0 ? p.Agents + 1 : p.PlayNo + 1;
                         return "【本回合】本冲突第 " + total + " 次行动 = **展示回合**（本冲突共 " +
@@ -170,9 +204,9 @@ namespace DuneAiProbe
                                "如果本阶段可以连续买多张，按顺序写进同一份计划，并注明每张付多少说服、买完还剩多少（剩余点数轮末作废）。";
                     }
 
-                    if (kind == "PlayerTurn")
+                    if (sel == Sel.Play || sel == Sel.RevealConfirm)
                     {
-                        if (IsRevealConfirm(pending))
+                        if (sel == Sel.RevealConfirm)
                             return "【本回合】进入展示阶段前的最后一次机会。可用特使已全部派出（0 个），" +
                                    "但手里有**魁萨茨·哈德拉克**：打出它可以在 0 特使时再派 1 名特使，等于多出一个行动。\n" +
                                    "要么用掉它再打一个行动，要么确认进入展示（本次冲突的最后一个行动）。" +
@@ -202,8 +236,15 @@ namespace DuneAiProbe
                                "全部写在这一份计划里；不需要为下一步另做打算，也不要安排两次特使行动。";
                     }
 
-                    if (kind == "AssignLeader")
+                    if (sel == Sel.Combat)
+                        return "【阶段】战斗阶段：每步只能「打出一张**战斗**密谋」或「过牌」。"
+                             + "阴谋牌（自己回合用的那类，如战略储备）在这里打不了；"
+                             + "过牌不等于退出，只要全员还没连续过牌，之后轮到你仍可再打。";
+
+                    if (sel == Sel.Leader)
                         return "【本回合】开局指派领袖，只做一次选择，没有行动链。";
+
+                    return null;   // 行动内后续：不加额外说明，合并后不需要
                 }
             }
             catch (Exception e)
@@ -218,6 +259,7 @@ namespace DuneAiProbe
             lock (_lock)
             {
                 _handled.Clear(); _askedAgent.Clear(); _askedReveal.Clear(); _askedLeader.Clear();
+                _lastPlayAgents.Clear();
                 _prog.Clear(); _asked = 0; _skipped = 0;
             }
         }
@@ -227,11 +269,19 @@ namespace DuneAiProbe
             lock (_lock) return "asked=" + _asked + " merged=" + _skipped;
         }
 
-        private static void Merge(ManualLogSource log, string what)
+        // 合并过的 Prompt 首句（去重，只记首次）：万一将来出现没识别的新阶段，日志里能看见
+        private static readonly HashSet<string> _mergedPrompts = new HashSet<string>(StringComparer.Ordinal);
+
+        private static void Merge(ManualLogSource log, string what, string pending)
         {
             _skipped++;
             if (log != null && _skipped % 3 == 1)
                 log.LogInfo("[TURN] 已合并「" + what + "」（累计合并 " + _skipped + " 次，已问 " + _asked + " 次）");
+
+            if (log == null || _mergedPrompts.Count >= 40) return;
+            string pr = PromptOf(pending);
+            if (string.IsNullOrEmpty(pr) || !_mergedPrompts.Add(pr)) return;
+            log.LogInfo("[TURN] 合并过的新 Prompt：「" + pr + "」");
         }
 
         /// <summary>打出一张牌 = 真行动；「选择展示来进入展示阶段」= 收尾确认。</summary>

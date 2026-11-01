@@ -280,48 +280,64 @@ namespace DuneAiProbe
         /// </summary>
         private static string ValidTargetsOf(object ti, Canis.Match match, ManualLogSource log)
         {
-            object cast = null;
+            var b = ti as Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase;
+            if (b == null) return null;
+
+            // 直接按具体类型 TryCast：Il2CppInterop 只提供泛型 TryCast<T>()，
+            // 用 GetMethod("TryCast", new[]{Type}) 永远找不到方法 —— 上一版就是这么静默失败的，
+            // 结果所有「可选目标」都取不到名字（日志里 withTargets 一直是 0）。
             try
             {
-                var obj = ti as Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase;
-                if (obj == null) return null;
-                cast = TryCastAny(obj,
-                    "EntityListTargetInformation",
-                    "EntityGroupingTargetInformation",
-                    "KnapsackEntityListTargetInformation",
-                    "RevealEntityListTargetInformation",
-                    "RevealDetailedEntityListTargetInformation",
-                    "ArchetypeCustomChoiceTargetInformation",
-                    "CompositeTargetInformationListTargetInformation");
+                var el = b.TryCast<Networking.selection.targetinformation.EntityListTargetInformation>();
+                if (el != null) return FormatTargets(el.ValidTargets, el.NumberToSelect, match, log);
             }
             catch { }
-            if (cast == null) return null;
-
             try
             {
-                var pi = cast.GetType().GetProperty("ValidTargets");
-                if (pi == null) return null;
-                var arr = pi.GetValue(cast) as System.Collections.IEnumerable;
-                if (arr == null) return null;
-
-                var names = new List<string>();
-                int total = 0;
-                int shown = 0;
-                foreach (object o in arr)
-                {
-                    total++;
-                    if (shown >= TargetListMax)
-                    {
-                        // 显式标记截断：不能静默省略，模型必须知道还有未列出的目标
-                        names.Add("〔另有 " + (total - shown) + " 项未列出〕");
-                        break;
-                    }
-                    string s = DescribeTarget(o, match, log);
-                    if (!string.IsNullOrEmpty(s)) { names.Add(s); shown++; }
-                }
-                return names.Count == 0 ? null : "可选 " + string.Join("/", names.ToArray());
+                var eg = b.TryCast<Networking.selection.targetinformation.EntityGroupingTargetInformation>();
+                if (eg != null) return FormatTargets(eg.ValidTargets, eg.NumberToSelect, match, log);
             }
-            catch { return null; }
+            catch { }
+            try
+            {
+                var kn = b.TryCast<Networking.selection.targetinformation.KnapsackEntityListTargetInformation>();
+                if (kn != null) return FormatTargets(kn.ValidTargets, 0, match, log);
+            }
+            catch { }
+
+            if (!_castLogged)
+            {
+                _castLogged = true;
+                try { log.LogInfo("[TARGETS] 无可枚举目标列表，类型=" + ti.GetType().Name); } catch { }
+            }
+            return null;
+        }
+
+        private static bool _castLogged;
+
+        /// <summary>把 ValidTargets 列表转成「可选 A/B/C（需选 N 项）」。取不到返回 null。</summary>
+        private static string FormatTargets(object listObj, int need, Canis.Match match, ManualLogSource log)
+        {
+            if (listObj == null) return null;
+            var arr = listObj as System.Collections.IEnumerable;
+            if (arr == null) return null;
+
+            var names = new List<string>();
+            int total = 0, shown = 0;
+            foreach (object o in arr)
+            {
+                total++;
+                if (shown >= TargetListMax)
+                {
+                    names.Add("〔另有 " + (total - shown) + " 项未列出〕");
+                    break;
+                }
+                string s = DescribeTarget(o, match, log);
+                if (!string.IsNullOrEmpty(s)) { names.Add(s); shown++; }
+            }
+            if (names.Count == 0) return null;
+            string head = need > 0 ? "可选(需选 " + need + " 项) " : "可选 ";
+            return head + string.Join("/", names.ToArray());
         }
 
         /// 目标列表最多列出多少项（超出部分显式标记"另有 N 项未列出"）。
