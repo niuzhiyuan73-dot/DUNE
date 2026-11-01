@@ -1,4 +1,4 @@
-# 实体总数 2694，其中 Space 84 个
+# 实体总数 2695，其中 Space 84 个
 # 空间实体诊断：原型 GUID | 子实体名 | 子实体原型 GUID
 # entityName	archetypeGUID	children
 Space	?	Abilities[?] | FactionInfluenceMarker[?] | FactionInfluenceMarker[?] | FactionInfluenceMarker[?] | FactionInfluenceMarker[?]

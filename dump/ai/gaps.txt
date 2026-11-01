@@ -1,8 +1,10 @@
 # 缺少效果文本的实体（按出现次数降序）
-# 行数: 6
-3	降落许可
+# 行数: 8
+7	
+6	DeployUnitsAbility
+4	ReturnSpecimenAbility
 3	FreighterAgentAbility
-1	Player
+3	巨沙虫夏胡鲁
+2	GainResearchAgentAbility
 1	伊克斯舰组
-1	巨沙虫夏胡鲁
-1	为了全人类
+1	ShaiHuludAbility

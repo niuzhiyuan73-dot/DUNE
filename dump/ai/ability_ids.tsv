@@ -1,3 +1,3 @@
-# 原型总数 534，其中能力原型 1
-# AbilityID -> 能力类名（来自 AbilityArchetype）
-ead79dfb-02b7-4538-a665-f593a950eaeb	Canis.entities.IEntityName
+# 原型表 1 条；工厂 0 条；ID 无条目 281；取名字失败 0
+# AbilityID	能力类名
+ead79dfb-02b7-4538-a665-f593a950eaeb	Playable
