@@ -7,18 +7,18 @@ using Canis.utils.ids;
 namespace DuneAiProbe
 {
     /// <summary>
-    /// 一次性诊断：导出「AbilityID → 能力类名」映射。
+    /// 一次性诊断：导出「原型 → 能力 ID 列表」与「能力 ID → 类名」。
     ///
-    /// 为什么需要：存档里每张卡带属性 900013 = 一串 AbilityID（GUID），
-    /// 而效果文案在本地化 `worm.canis.abilities.&lt;类名&gt;` 下（380 条，338 条有中文）。
-    /// 中间的 AbilityID → 类名 映射只在运行时存在，离线拿不到。
+    /// 背景：本地化对 106 张卡只给了标题，效果是图标化表达。存档里的 Abilities 子树
+    /// 只含**已实例化**的能力，缺条件能力与未触发的分支。卡牌 archetype 上的
+    /// AbilityIDsAttribute（List&lt;AbilityID&gt;）才是完整清单。
     ///
-    /// 两条路都试：
-    ///   1) 遍历 Archetypes 里的 AbilityArchetype（快，但实测只返回 1 个——能力原型不在该表里）；
-    ///   2) 读 mods/ai/ability_ids_input.txt（由 join_cards 从存档导出的 900013 清单），
-    ///      逐个让 IAbilityEntityFactory 造实体，读 EntityName.Name。
+    /// 上一版失败原因：先调 IAbilityEntityFactory.HasEntry(id) 判存在，281 个全 false。
+    /// 工厂是懒加载的，HasEntry 只看缓存。这一版跳过 HasEntry，直接 CreateEntity。
     ///
-    /// 输出：dump/ai/ability_ids.tsv（只写一次）
+    /// 输出（只写一次）：
+    ///   dump/ai/arch_abilities.tsv  原型类名/ID <TAB> 能力ID 列表
+    ///   dump/ai/ability_ids.tsv     AbilityID <TAB> 能力类名
     /// </summary>
     internal static class CardDiag
     {
@@ -33,88 +33,86 @@ namespace DuneAiProbe
                 var inst = canis.archetypes.Archetypes._instance;
                 if (inst == null) { log.LogWarning("[ABILITYMAP] Archetypes._instance is null"); return; }
 
-                var sb = new StringBuilder();
-                sb.Append("# AbilityID\t能力类名\r\n");
-
-                int viaArch = 0, viaFactory = 0, miss = 0, fail = 0;
-
-                // 路线 1：已加载的原型表（能力原型通常不在这里，留着兜底）
-                try
-                {
-                    var all = inst.AllArchetypes();
-                    if (all != null)
-                    {
-                        var list = new Il2CppSystem.Collections.Generic.List<canis.archetypes.Archetype>(all);
-                        for (int i = 0; i < list.Count; i++)
-                        {
-                            canis.archetypes.Archetype a = null;
-                            try { a = list[i]; } catch { }
-                            if (a == null) continue;
-
-                            canis.archetypes.AbilityArchetype ab = null;
-                            try { ab = a.TryCast<canis.archetypes.AbilityArchetype>(); } catch { }
-                            if (ab == null) continue;
-
-                            string id = null, name = null;
-                            try { id = IdOf(ab.ArchetypeAbilityID); } catch { }
-                            try { name = NameOf(ab.EntityName); } catch { }
-                            if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(name)) continue;
-                            sb.Append(id).Append('\t').Append(name).Append("\r\n");
-                            viaArch++;
-                        }
-                    }
-                }
-                catch (Exception e) { log.LogWarning("[ABILITYMAP] arch scan: " + e.Message); }
-
-                // 路线 2：按存档里的 ID 清单，让工厂造实体读名字
-                try
-                {
-                    var factory = inst.AbilityFactory;
-                    string input = Path.Combine(Plugin.RootDir, "mods", "ai", "ability_ids_input.txt");
-                    if (factory == null)
-                    {
-                        log.LogWarning("[ABILITYMAP] AbilityFactory is null");
-                    }
-                    else if (!File.Exists(input))
-                    {
-                        log.LogWarning("[ABILITYMAP] 缺少 " + input + "（先跑 mods/tools/join_cards.py 导出）");
-                    }
-                    else
-                    {
-                        var lines = File.ReadAllLines(input);
-                        var seen = new HashSet<string>(StringComparer.Ordinal);
-                        for (int i = 0; i < lines.Length; i++)
-                        {
-                            string s = lines[i].Trim();
-                            if (s.Length == 0 || s.StartsWith("#")) continue;
-                            if (!seen.Add(s)) continue;
-
-                            try
-                            {
-                                AbilityID aid = new AbilityID(s);
-                                if (!factory.HasEntry(aid)) { miss++; continue; }
-                                var ent = factory.CreateEntity(aid, match, null, null);
-                                if (ent == null) { fail++; continue; }
-                                string nm = null;
-                                try { nm = ent.EntityName; } catch { }
-                                if (string.IsNullOrEmpty(nm)) { fail++; continue; }
-                                sb.Append(s).Append('\t').Append(nm).Append("\r\n");
-                                viaFactory++;
-                            }
-                            catch { fail++; }
-                        }
-                    }
-                }
-                catch (Exception e) { log.LogWarning("[ABILITYMAP] factory: " + e.Message); }
-
-                sb.Insert(0, "# 原型表 " + viaArch + " 条；工厂 " + viaFactory + " 条；"
-                              + "ID 无条目 " + miss + "；取名字失败 " + fail + "\r\n");
                 string dir = Path.Combine(Plugin.RootDir, "dump", "ai");
                 Directory.CreateDirectory(dir);
-                string path = Path.Combine(dir, "ability_ids.tsv");
-                File.WriteAllText(path, sb.ToString(), new UTF8Encoding(false));
-                log.LogWarning("[ABILITYMAP] arch=" + viaArch + " factory=" + viaFactory
-                               + " miss=" + miss + " fail=" + fail + " -> " + path);
+
+                var archSb = new StringBuilder();
+                archSb.Append("# 原型类名\t原型ID\t能力ID列表\r\n");
+
+                var idSb = new StringBuilder();
+                idSb.Append("# AbilityID\t能力类名\r\n");
+
+                var all = inst.AllArchetypes();
+                if (all == null) { log.LogWarning("[ABILITYMAP] AllArchetypes is null"); return; }
+                var list = new Il2CppSystem.Collections.Generic.List<canis.archetypes.Archetype>(all);
+
+                int archCount = 0, withAbil = 0, idCount = 0, resolved = 0, fail = 0;
+                var seenId = new HashSet<string>(StringComparer.Ordinal);
+                var factory = inst.AbilityFactory;
+
+                for (int i = 0; i < list.Count; i++)
+                {
+                    canis.archetypes.Archetype a = null;
+                    try { a = list[i]; } catch { }
+                    if (a == null) continue;
+                    archCount++;
+
+                    string name = null, archId = null;
+                    try { name = NameOf(a.EntityName); } catch { }
+                    try { if (a.ArchetypeID != null) archId = IdOf(a.ArchetypeID); } catch { }
+
+                    // 读 AbilityIDsAttribute（AttributeDefinition<List<AbilityID>>）
+                    var ids = new List<string>();
+                    try
+                    {
+                        var lst = a.GetAttributeValue<Il2CppSystem.Collections.Generic.List<Canis.utils.ids.AbilityID>>(
+                            a.AbilityIDsAttribute, null);
+                        if (lst != null)
+                        {
+                            for (int k = 0; k < lst.Count; k++)
+                            {
+                                string s = null;
+                                try { s = IdOf(lst[k]); } catch { }
+                                if (!string.IsNullOrEmpty(s)) ids.Add(s);
+                            }
+                        }
+                    }
+                    catch (Exception e) { if (i < 3) log.LogWarning("[ABILITYMAP] attr: " + e.Message); }
+
+                    if (ids.Count > 0) withAbil++;
+                    archSb.Append(name ?? "?").Append('\t').Append(archId ?? "?")
+                          .Append('\t').Append(string.Join(",", ids.ToArray())).Append("\r\n");
+
+                    // 每个新 ID 造一次实体拿类名（不做 HasEntry，工厂懒加载）
+                    if (factory == null) continue;
+                    for (int k = 0; k < ids.Count; k++)
+                    {
+                        string aid = ids[k];
+                        if (!seenId.Add(aid)) continue;
+                        idCount++;
+                        try
+                        {
+                            var ent = factory.CreateEntity(new AbilityID(aid), match, null, null);
+                            string nm = null;
+                            try { if (ent != null) nm = ent.EntityName; } catch { }
+                            if (string.IsNullOrEmpty(nm)) { fail++; continue; }
+                            idSb.Append(aid).Append('\t').Append(nm).Append("\r\n");
+                            resolved++;
+                        }
+                        catch { fail++; }
+                    }
+                }
+
+                File.WriteAllText(Path.Combine(dir, "arch_abilities.tsv"),
+                    "# 原型 " + archCount + "，带能力 " + withAbil + "\r\n" + archSb,
+                    new UTF8Encoding(false));
+                File.WriteAllText(Path.Combine(dir, "ability_ids.tsv"),
+                    "# 唯一 ID " + idCount + "，解析成功 " + resolved + "，失败 " + fail + "\r\n" + idSb,
+                    new UTF8Encoding(false));
+
+                log.LogWarning("[ABILITYMAP] arch=" + archCount + " withAbilities=" + withAbil
+                               + " ids=" + idCount + " resolved=" + resolved + " failed=" + fail
+                               + " -> " + dir);
             }
             catch (Exception ex)
             {
@@ -122,7 +120,6 @@ namespace DuneAiProbe
             }
         }
 
-        /// IEntityName 是接口，直接 ToString 只会得到类型名，必须取 Name
         private static string NameOf(Canis.entities.IEntityName en)
         {
             if (en == null) return null;
@@ -135,7 +132,6 @@ namespace DuneAiProbe
             return null;
         }
 
-        /// TypedID 的字符串值：优先反射 _ID / ID，退回 ToString
         private static string IdOf(object typed)
         {
             if (typed == null) return null;
