@@ -63,26 +63,67 @@ def load_sprites():
     return out
 
 
+def merge_counts(parts):
+    """同一段内相邻同种资源合并计数。
+
+    要处理两种写法：水1、水1、水1 -> 水3（数字在尾部）
+                  弃1张牌、弃1张牌 -> 弃2张牌（数字在中间）
+    只认「名字 + 数字 + 可选后缀」都相同的情况，避免把「香料1、太阳币1」误合并。
+    """
+    out = []                              # (名字, 数量, 后缀)；数量 0 表示无数字
+    for p in parts:
+        m = re.match(r"^(.*?)(\d+)(\D*)$", p)
+        if m and m.group(1):
+            nm, n, suf = m.group(1), int(m.group(2)), m.group(3)
+            if out and out[-1][0] == nm and out[-1][2] == suf:
+                out[-1] = (nm, out[-1][1] + n, suf)
+                continue
+            out.append((nm, n, suf))
+        else:
+            out.append((p, 0, ""))
+    txt = ""
+    for nm, n, suf in out:
+        if n == 0:
+            piece = nm
+        elif n == 1:
+            piece = "%s1%s" % (nm, suf)    # 保留「香料1」而不是「香料」
+        else:
+            piece = "%s%d%s" % (nm, n, suf)
+        txt += ("、" if txt else "") + piece
+    return txt
+
+
 def from_icons(cls, btn_map, sprites):
-    """button.<能力> 的图标序列 -> 中文。图标缺任何一个就整条放弃，避免半句。"""
+    """button.<能力> 的图标序列 -> 中文。任一图标未翻译就整条放弃，避免半句。"""
     raw = btn_map.get(cls)
     if not raw:
         return None
     tokens = [m.strip() for m in SPRITE_RE.findall(raw)]
     if not tokens:
         return None
-    out = ""
+    groups = [[]]                       # 按「→」切成若干段
     for tok in tokens:
         t = sprites.get(tok)
         if not t:
-            return None                     # 有未翻译的图标，宁可不写
+            return None
         if t == "→":
-            out += "→"
+            groups.append([])
         else:
-            if out and not out.endswith("→"):
-                out += "、"
-            out += t
-    return out or None
+            groups[-1].append(t)
+    segs = [merge_counts(g) for g in groups if g]
+    return "→".join(segs) or None
+
+
+def dedupe_parts(parts):
+    """去掉被更完整条目覆盖的片段：
+    ["弃1张牌", "弃1张牌→无畏舰1"] -> ["弃1张牌→无畏舰1"]
+    两个能力各自登记了同一动作的前半段时会出现这种重复。"""
+    out = []
+    for p in parts:
+        covered = any(q != p and q.startswith(p + "→") for q in parts)
+        if not covered:
+            out.append(p)
+    return out
 
 
 def walk_dicts(o):
@@ -132,10 +173,11 @@ def ability_text(cls, abil_text, btn_map, sprites):
         if cls.endswith(suf + "Ability"):
             cands.append(cls[: -len(suf) - len("Ability")] + "Ability")
 
-    for c in cands:
-        t = from_icons(c, btn_map, sprites)
-        if t:
-            return t, c
+    # 图标序列是精确的：只认原名，剥后缀回退会把通用能力当成某时机专属
+    # （例：ShaiHuludRevealAbility 回退到 ShaiHuludAbility，导致展示写成特使的效果）
+    t = from_icons(cls, btn_map, sprites)
+    if t:
+        return t, cls
 
     for c in cands:
         raw = abil_text.get(c)
@@ -176,7 +218,7 @@ def main():
             continue
         stats["gap"] += 1
 
-        agent_parts, reveal_parts = [], []
+        agent_parts, reveal_parts, common_parts = [], [], []
         for cls in names:
             txt, used = ability_text(cls, abil_text, btn_map, sprites)
             if not txt:
@@ -187,9 +229,15 @@ def main():
             elif base.endswith("Reveal"):
                 target = reveal_parts
             else:
-                target = reveal_parts if agent_parts else agent_parts   # 无后缀：放到先出现的那一组
+                # 无后缀 = 不知道属于哪个时机，单独放 common。
+                # 之前塞进 Reveal 组，导致「巨沙虫夏胡鲁」特使/展示写成同一条。
+                target = common_parts
             if txt not in target and len(target) < MAX_PARTS:
                 target.append(txt)
+
+        agent_parts = dedupe_parts(agent_parts)
+        reveal_parts = dedupe_parts(reveal_parts)
+        common_parts = dedupe_parts(common_parts)
 
         segs = []
         if agent_parts:
@@ -197,8 +245,16 @@ def main():
         if reveal_parts:
             segs.append("展示：" + "；".join(reveal_parts))
         if not segs:
-            stats["none"] += 1
-            continue
+            # 只有无后缀能力时，不硬标时机，写成「效果：」
+            if common_parts:
+                segs.append("效果：" + "；".join(common_parts))
+            else:
+                stats["none"] += 1
+                continue
+        else:
+            extra = [c for c in common_parts if c not in agent_parts and c not in reveal_parts]
+            if extra:
+                segs.append("另：" + "；".join(extra))
 
         text = "；".join(segs)
         if len(text) > MAX_LEN:
