@@ -41,7 +41,7 @@ namespace DuneAiProbe
         internal const string RootDir = Root;
 
         /// 每次改动手工递增：日志里能一眼确认加载的是哪份构建（DLL 被锁时会照旧版本跑）
-        internal const string BuildTag = "2026-10-31h";
+        internal const string BuildTag = "2026-11-01b";
         private const string DumpPath = Root + "/dump/ai_constants_runtime.json";
         private const string OverridePath = Root + "/mods/ai/ai_override.json";
         private const string ForceLevelPath = Root + "/mods/ai/force_level.txt";
@@ -220,6 +220,18 @@ namespace DuneAiProbe
             Networking.selection.messages.SelectionMessage selection)
         {
             _wormChoices++;
+
+            // 诊断与教练配额无关：只要进过一次 AI 决策就把空间表导出来（只写一次）
+            try
+            {
+                Canis.Match m0 = null;
+                try { m0 = __instance.Match; } catch { }
+                SpaceDiag.Dump(m0, L);
+                // 卡牌 -> 效果能力：本地化里没有效果文本的卡，靠能力实体的中文文案还原
+                CardDiag.Dump(m0, L);
+            }
+            catch { }
+
             if (!Coach.Enabled) return;
             try
             {

@@ -147,7 +147,10 @@ namespace DuneAiProbe
                         {
                             // 关键：沉默会被模型误读成"这牌没效果"，标注出来它就知道是数据缺失
                             key = key + "〔效果待查〕";
-                            _gapCount[key.Split('(')[0].Trim()] = _gapCount.TryGetValue(key.Split('(')[0].Trim(), out int g) ? g + 1 : 1;
+                            // 记录缺口时先剥掉 <sprite name=...>：能力实体常以图标名作名字，
+                            // 直接记会把整行变成标签，gaps.txt 不可读
+                            string gname = StripTags(key.Split('(')[0].Trim());
+                            _gapCount[gname] = _gapCount.TryGetValue(gname, out int g) ? g + 1 : 1;
                         }
                     }
                     sb.Append("- ").Append(key);

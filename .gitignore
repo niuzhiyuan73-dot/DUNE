@@ -40,3 +40,8 @@ tools/*/obj/
 
 # 抓取中间产物
 dump/tmp/
+
+# 官方 PDF 原件（49MB，按需重下：docs/官方资源清单.md 里有一键命令）
+docs/pdf/
+# PDF 转文本的中间产物
+dump/pdf_txt/
