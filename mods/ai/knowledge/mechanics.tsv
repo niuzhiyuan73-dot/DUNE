@@ -35,3 +35,4 @@ agent_icons	特使图标与位置	特使图标|已占据|派遣|位置费用	图
 
 atomics	家族原子武器	家族原子|原子标记	每场游戏限一次，在自己的阶段内使用，移除并替换整个公共牌池。	不消耗特使、不占行动；替换后公共牌池重抽，可能改变后续可买的牌。	官方 tooltip.familyatomics + tutorialimm.atomics02
 agent_recall	召回特使	召回特使|RecallAgent|收回特使	召回会把版图上的特使收回领袖牌，之后可以再次派遣。	召回不返还该位置已支付的费用，也不撤销已经结算的效果；被召回的特使本回合可继续使用。	规则书·起义 特使回合 / 本地化 RecallAgentAbility
+kwisatz	魁萨茨·哈德拉克	魁萨茨|哈德拉克|Kwisatz	费用 8 说服、贝尼·杰瑟里特图标。特使效果：将你在任何区域的任何特使派遣到任何地区（即便是已经有其他特使的地区）——移动一个已有特使，不消耗可用特使。	因此可用特使为 0 时仍可打出（相当于本次冲突多一个特使回合），目标也可以是被占据的位置；此时确认进入展示会提示「你依然可以进行一次特使阶段（受魁萨茨·哈德拉克影响）」，确认即放弃该额外行动。	本地化 card.imperium.kwisatzhaderach.agent / prompt.earlyskitreveal.kwisatzhaderach / log.turn.agent.kwisatz

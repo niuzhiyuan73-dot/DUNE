@@ -530,15 +530,18 @@ namespace DuneAiProbe
                     return;
                 }
                 var l = new Il2CppSystem.Collections.Generic.List<WormAgent>(rem);
-                if (l != null && l.Count > 0)
+                if (l != null)
                 {
                     if (!_agentsOk) { _agentsOk = true; log.LogWarning("[STATE] diag: RemainingAgents ok, count=" + l.Count); }
+                    // 0 也要写出来：省略会让人分不清「特使已派完」和「字段读不到」，
+                    // 而这两者决定「还能不能派特使」，实测导致教练在 0 特使时仍安排派遣。
                     sb.Append("｜可用特使 ").Append(l.Count);
+                    if (l.Count == 0) sb.Append("（已全部派出）");
                 }
                 else
                 {
                     _agentsFail++;
-                    if (_agentsFail <= 3) log.LogWarning("[STATE] diag: RemainingAgents empty (第" + _agentsFail + "次)");
+                    if (_agentsFail <= 3) log.LogWarning("[STATE] diag: RemainingAgents 列表构造失败 (第" + _agentsFail + "次)");
                 }
             }
             catch (Exception e)

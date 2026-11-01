@@ -41,7 +41,7 @@ namespace DuneAiProbe
         internal const string RootDir = Root;
 
         /// 每次改动手工递增：日志里能一眼确认加载的是哪份构建（DLL 被锁时会照旧版本跑）
-        internal const string BuildTag = "2026-11-01y";
+        internal const string BuildTag = "2026-11-01z";
         private const string DumpPath = Root + "/dump/ai_constants_runtime.json";
         private const string OverridePath = Root + "/mods/ai/ai_override.json";
         private const string ForceLevelPath = Root + "/mods/ai/force_level.txt";
@@ -276,19 +276,24 @@ namespace DuneAiProbe
             catch (Exception e) { L.LogWarning("[SELECTFROM] " + e.Message); }
         }
 
-        /// <summary>按 selection 的 Kind 给出阶段说明：揭示回合不能派特使，这一点必须写进请求。</summary>
+        /// <summary>
+        /// 按 selection 的 Kind 给出阶段说明。
+        /// 术语按游戏实际含义：一个「行动（回合）」= 打出一张牌 + 它带来的全部后续；
+        /// 一次冲突 = 可用特使数 次打出 + 1 次展示。展示阶段不能派特使，这一点必须写进请求。
+        /// </summary>
         private static string StageHintOf(string pending)
         {
             try
             {
                 if (string.IsNullOrEmpty(pending)) return null;
                 if (pending.IndexOf("Kind RevealTurn", StringComparison.Ordinal) >= 0)
-                    return "【阶段】揭示回合：只能执行揭示效果、购买卡牌或丢弃；**不能派特使**，"
+                    return "【阶段】展示回合：只能执行手牌的展示效果、花说服购买卡牌；**不能派特使**，"
                          + "渗透/原子武器这类只在派特使时才有用的牌一律进「保留」。";
                 if (pending.IndexOf("Kind PlayerTurn", StringComparison.Ordinal) >= 0)
-                    return "【阶段】特使回合：这次选择决定本回合打哪张牌、把特使派到哪个位置。一个回合只有一次特使行动。";
+                    return "【阶段】行动开始（打出阶段）：这次选择决定这个行动打哪张牌、把特使派到哪个位置。"
+                         + "一次冲突里这样的行动有「可用特使数」次，最后再加一次展示行动。";
                 if (pending.IndexOf("Kind AgentTurn", StringComparison.Ordinal) >= 0)
-                    return "【阶段】特使回合内的后续操作（打密谋/选目标/派兵/抽牌）。";
+                    return "【阶段】同一行动内的后续操作（打密谋/选目标/派兵/抽牌）。";
                 if (pending.IndexOf("Kind AssignLeader", StringComparison.Ordinal) >= 0)
                     return "【阶段】开局指派领袖。";
             }
@@ -329,7 +334,8 @@ namespace DuneAiProbe
                 try { matchPtr = match != null ? match.Pointer.ToInt64() : 0; } catch { }
                 if (!Coach.IsTarget(matchPtr, pkey, who, log)) return;
 
-                // 回合判定：PlayerTurn 才开新回合；同回合的后续选择合并，不重复问
+                // 回合判定：一次「打出一张牌」= 一个行动（回合），行动内的后续选择合并；
+                // 展示阶段每次冲突只问一次；「选择展示」的收尾确认不问。
                 if (!Turn.ShouldAsk(pkey, counter, pending, log)) return;
 
                 // 实体实例 ID → 中文名；顺带砍掉执行栈快照（否则 targetMap 会被截断挤掉）
@@ -353,7 +359,19 @@ namespace DuneAiProbe
                 try { memoryBlock = Memory.Update(match, asker, pkey, name, log); }
                 catch (Exception e) { log.LogWarning("[MEMORY] " + e.Message); }
 
-                Coach.Observe(name, counter, stateBlock, pending, memoryBlock, pkey, StageHintOf(pending));
+                // 阶段 + 位置：告诉它这是本冲突第几个行动、整局共几次行动。
+                // 术语按游戏实际含义：一个行动 = 打出一张牌 + 其全部后续；
+                // 一次冲突 = 可用特使数 次打出 + 1 次展示。
+                string stageHint = StageHintOf(pending);
+                try
+                {
+                    string where = Turn.Describe(pkey, pending, stateBlock);
+                    if (!string.IsNullOrEmpty(where))
+                        stageHint = string.IsNullOrEmpty(stageHint) ? where : stageHint + "\n" + where;
+                }
+                catch (Exception e) { log.LogInfo("[TURN] describe: " + e.Message); }
+
+                Coach.Observe(name, counter, stateBlock, pending, memoryBlock, pkey, stageHint, matchPtr);
             }
             catch (Exception e) { log.LogWarning("[COACH] observe: " + e.Message); }
         }

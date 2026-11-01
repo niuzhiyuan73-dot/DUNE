@@ -34,8 +34,11 @@ namespace DuneAiProbe
         private static string _targetName;
         private static string _targetPattern;   // coach_target.txt 指定的名字片段（可选）
         private static string _outDir;
-        private static int _max;
-        private static int _sent;
+        private static int _max;            // coach.txt 的值 = **每局**配额
+        private static int _sent;           // 本局已发
+        private static int _sentTotal;      // 本次启动累计（仅日志用）
+        private static long _quotaMatch;    // 当前配额所属对局
+        private static bool _quotaWarned;
         private static readonly object _lock = new object();
         private static readonly object _fileLock = new object();
         private static readonly Dictionary<string, string> _names = new Dictionary<string, string>();
@@ -154,6 +157,27 @@ namespace DuneAiProbe
                 _targetPattern = t;
             }
             catch (Exception e) { _log.LogWarning("[COACH] target: " + e.Message); }
+        }
+
+        /// <summary>
+        /// 换局就重置配额与去重池：配额是「每局」的，否则一局用满 30 次之后
+        /// 第二局全程静默（实测过：重启游戏才恢复）。
+        /// </summary>
+        private static void ResetQuotaForNewMatch(long matchPtr)
+        {
+            if (matchPtr == 0) return;
+            if (_quotaMatch == matchPtr) return;
+            lock (_lock)
+            {
+                if (_quotaMatch == matchPtr) return;
+                bool first = _quotaMatch == 0;
+                _quotaMatch = matchPtr;
+                _sent = 0;
+                _seen.Clear();
+                _quotaWarned = false;
+                if (!first)
+                    _log.LogWarning("[COACH] 新对局：配额重置为 " + _max + "/局（上次累计已发 " + _sentTotal + "）");
+            }
         }
 
         /// <summary>是否观察这个玩家。第一次命中后锁定，其余 AI 一律忽略。</summary>
@@ -583,9 +607,10 @@ namespace DuneAiProbe
 
         /// 在游戏线程里调用：pending 必须是已经转成托管字符串的文本。
         public static void Observe(string playerName, int counter, string stateBlock, string pending,
-            string memoryBlock = null, long playerKey = 0, string stageHint = null)
+            string memoryBlock = null, long playerKey = 0, string stageHint = null, long matchPtr = 0)
         {
             if (!Enabled || string.IsNullOrEmpty(pending)) return;
+            ResetQuotaForNewMatch(matchPtr);
 
             string human = Humanize(pending);
             // 棋盘状态也算进去：同样的选项、不同的局势，答案可能不同
@@ -593,8 +618,18 @@ namespace DuneAiProbe
             lock (_lock)
             {
                 if (!_seen.Add(dedupeKey)) return;   // 同一组选项不重复问
-                if (_sent >= _max) return;
+                if (_sent >= _max)
+                {
+                    if (!_quotaWarned)
+                    {
+                        _quotaWarned = true;
+                        _log.LogWarning("[COACH] 本局配额已用完（" + _max + " 次），本局后续不再提问；"
+                                        + "改 mods/ai/coach.txt 调大即可（约 5 次/冲突 × 10 冲突）");
+                    }
+                    return;
+                }
                 _sent++;
+                _sentTotal++;
             }
             int seq = _sent;
 
