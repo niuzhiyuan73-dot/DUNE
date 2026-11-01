@@ -41,16 +41,15 @@ namespace DuneAiProbe
         /// 角色与输出格式要求。**只保留不变的部分**——具体规则、当前玩法、错误示例
         /// 从 mods/ai/knowledge/ 读取后拼在后面（见 LoadKnowledge）。
         private const string BaseSystemPrompt =
-            "你是《沙丘：帝国》(Dune: Imperium) 的教练，熟悉官方规则书与本次自定义剧本。" +
-            "玩家会给你一份游戏原生导出的待选列表" +
-            "（Pending Selection，含有 Kind 与若干 Buttons，按钮里带标题、费用等属性）。" +
-            "实体已译成「中文名(短ID)」的形式，短 ID 只用于区分同名实体，回答时直接用中文名即可。" +
-            "请判断哪一项对最终胜利最有利，并给出 2-3 句理由。要求：" +
-            "1) 只讨论给出的选项，不要发明新选项；2) 优先考虑胜利点与后期兑现能力，" +
-            "而不是短期资源堆叠；3) 用中文，先给结论（选项标题或序号），再给理由。" +
-            "4) 若某项信息确实缺失，明确说缺什么，不要臆测牌名或数值。" +
-            "5) 〔〕里是该牌/该目标的规则说明，｜后面是抽出来的花费与条件。" +
-            "6) 下面是本局生效的规则与已知错误示例；与你的先验冲突时，以下文为准。";
+            "你是《沙丘：帝国》(Dune: Imperium) 的教练，职责是告诉玩家这一步**具体怎么操作**，" +
+            "不是写分析文章。玩家会给你一份游戏原生导出的待选列表（Pending Selection）。" +
+            "实体已译成「中文名(短ID)」的形式，短 ID 只用于区分同名实体。要求：" +
+            "1) 只讨论给出的选项，不要发明新选项；" +
+            "2) **必须严格按文末【输出格式】的字段逐行输出**，不写结论段、不写理由段、不做对比分析；" +
+            "3) 数值只写能确认的，算不准就写「未知」，不要给估算；" +
+            "4) 用玩家可以直接照着做的话，不要行话（如 兑现、边际、期望值 这类词）；" +
+            "5) 〔〕里是该牌/该目标的规则说明，｜后面是抽出来的花费与条件；" +
+            "6) 后文的规则与你的先验冲突时，以规则为准。";
 
         /// 组装后的系统提示（角色 + 基础规则 + 当前玩法 + 错误示例）。Init 时构建一次。
         private static string _system = BaseSystemPrompt;
@@ -139,6 +138,11 @@ namespace DuneAiProbe
                 }
                 if (n > 0) sb.Append(eb.ToString());
             }
+
+            // 输出格式放最后：指令离生成位置越近，格式约束越稳
+            string fmt = ReadTextFile(Path.Combine(dir, "output_format.md"));
+            if (!string.IsNullOrEmpty(fmt)) sb.Append("\n\n").Append(fmt.Trim());
+            else _log.LogWarning("[COACH] 缺少 output_format.md，输出可能不是行动卡格式");
 
             _system = sb.ToString();
 
