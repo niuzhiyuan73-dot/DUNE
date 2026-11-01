@@ -492,7 +492,8 @@ namespace DuneAiProbe
         }
 
         /// 在游戏线程里调用：pending 必须是已经转成托管字符串的文本。
-        public static void Observe(string playerName, int counter, string stateBlock, string pending)
+        public static void Observe(string playerName, int counter, string stateBlock, string pending,
+            string memoryBlock = null)
         {
             if (!Enabled || string.IsNullOrEmpty(pending)) return;
 
@@ -520,13 +521,15 @@ namespace DuneAiProbe
             _log.LogInfo("[COACH] observe #" + seq + " len=" + pending.Length + " player=" + (playerName ?? "?"));
             string user = "AI 玩家：" + (playerName ?? "?") + "（第 " + counter + " 号选择）\n";
             if (!string.IsNullOrEmpty(stateBlock)) user += stateBlock + "\n";
+            // 本局记忆：只含已确认发生的变化 + 明确标注的建议，紧贴局势，便于对照"刚发生了什么"。
+            if (!string.IsNullOrEmpty(memoryBlock)) user += memoryBlock + "\n";
             // 按需机制：只带本次选项/局势涉及的机制，避免整本规则书重复发送。
             // 放在系统提示之外 —— 系统提示是稳定前缀，才能吃到上下文缓存。
             string mech = MatchMechanics(pending + "\n" + (stateBlock ?? ""));
             if (!string.IsNullOrEmpty(mech)) user += "【相关机制】\n" + mech;
             user += "待选列表：\n" + pending;
 
-            Task.Run(() => Send(seq, playerName, user, pending, stateBlock));
+            Task.Run(() => Send(seq, playerName, user, pending, stateBlock, memoryBlock));
         }
 
         /// 单次 prompt 的字符预算。
@@ -589,7 +592,7 @@ namespace DuneAiProbe
         }
 
         /// 在后台线程同步完成一次请求（不能用 async lambda：本工程引用的 Il2Cppmscorlib 缺 NullableAttribute）。
-        private static void Send(int seq, string playerName, string user, string pending, string state)
+        private static void Send(int seq, string playerName, string user, string pending, string state, string memory)
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
             try
@@ -608,7 +611,7 @@ namespace DuneAiProbe
                     int code = (int)resp.StatusCode;
                     _log.LogInfo("[COACH] #" + seq + " " + (int)sw.ElapsedMilliseconds + "ms http=" + code
                                  + " -> " + Short(answer, 300));
-                    Append(seq, playerName, pending, answer, (int)sw.ElapsedMilliseconds, code, text, state);
+                    Append(seq, playerName, pending, answer, (int)sw.ElapsedMilliseconds, code, text, state, memory);
                 }
             }
             catch (Exception e)
@@ -616,12 +619,14 @@ namespace DuneAiProbe
                 sw.Stop();
                 _log.LogWarning("[COACH] #" + seq + " failed after " + (int)sw.ElapsedMilliseconds + "ms: "
                                 + e.GetType().Name + ": " + e.Message);
-                Append(seq, playerName, pending, null, (int)sw.ElapsedMilliseconds, -1, e.Message, state);
+                Append(seq, playerName, pending, null, (int)sw.ElapsedMilliseconds, -1, e.Message, state, memory);
             }
         }
 
-        private static void Append(int seq, string player, string pending, string answer, int ms, int http, string raw, string state = null)
+        private static void Append(int seq, string player, string pending, string answer, int ms, int http, string raw, string state = null, string memory = null)
         {
+            // 记进本局记忆时只当"建议"，绝不写成已执行 —— 我们并不知道玩家是否照做。
+            if (!string.IsNullOrEmpty(answer)) Memory.NoteAdvice(player, answer, _log);
             try
             {
                 string line = "{\"seq\":" + seq
@@ -631,6 +636,7 @@ namespace DuneAiProbe
                     + ",\"answer\":" + Json.Str(answer)
                     + ",\"pending\":" + Json.Str(pending)
                     + ",\"state\":" + Json.Str(state ?? "")
+                    + ",\"memory\":" + Json.Str(memory ?? "")
                     + (http >= 200 && http < 300 ? "" : ",\"raw\":" + Json.Str(Short(raw, 500)))
                     + "}";
                 // 多个回答线程可能同时落盘，File.AppendAllText 会撞 "being used by another process"。

@@ -41,7 +41,7 @@ namespace DuneAiProbe
         internal const string RootDir = Root;
 
         /// 每次改动手工递增：日志里能一眼确认加载的是哪份构建（DLL 被锁时会照旧版本跑）
-        internal const string BuildTag = "2026-11-01r";
+        internal const string BuildTag = "2026-11-01s";
         private const string DumpPath = Root + "/dump/ai_constants_runtime.json";
         private const string OverridePath = Root + "/mods/ai/ai_override.json";
         private const string ForceLevelPath = Root + "/mods/ai/force_level.txt";
@@ -244,14 +244,14 @@ namespace DuneAiProbe
                 if (string.IsNullOrEmpty(pending)) return;
 
                 // 实体实例 ID → 中文名；顺带砍掉执行栈快照（否则 targetMap 会被截断挤掉）
+                Canis.Match mt2 = null;
+                try { mt2 = __instance.Match; } catch { }
                 try
                 {
-                    Canis.Match mt = null;
-                    try { mt = __instance.Match; } catch { }
-                    pending = Targets.Rewrite(mt, pending, L);
+                    pending = Targets.Rewrite(mt2, pending, L);
 
                     // ValidTargets 在原生 ToString 里只有数量，追加一份"可选目标"明细
-                    string detail = Targets.Detail(selection, mt, L);
+                    string detail = Targets.Detail(selection, mt2, L);
                     if (!string.IsNullOrEmpty(detail)) pending = pending + "\n" + detail;
                 }
                 catch (Exception e) { L.LogWarning("[TARGETS] " + e.Message); }
@@ -263,7 +263,12 @@ namespace DuneAiProbe
                 try { stateBlock = State.Render(asker, L); }
                 catch (Exception e) { L.LogInfo("[STATE] " + e.Message); }
 
-                Coach.Observe(name, _wormChoices, stateBlock, pending);
+                // 本局记忆：在游戏线程做快照差分，失败即当作"没有记忆"，不影响决策
+                string memoryBlock = null;
+                try { memoryBlock = Memory.Update(mt2, asker, name, L); }
+                catch (Exception e) { L.LogWarning("[MEMORY] " + e.Message); }
+
+                Coach.Observe(name, _wormChoices, stateBlock, pending, memoryBlock);
             }
             catch (Exception e) { L.LogWarning("[COACH] worm: " + e.Message); }
         }

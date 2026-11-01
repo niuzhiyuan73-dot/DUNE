@@ -27,6 +27,12 @@ namespace DuneAiProbe
         private static bool _probed;
 
         private static readonly string[] FactionNames = { "皇帝", "宇航公会", "姐妹会", "弗雷曼" };
+
+        /// <summary>阵营序号 -> 中文名（记忆层与渲染共用同一份取名，避免两处写死不同译名）。</summary>
+        internal static string FactionName(int i)
+        {
+            return (i >= 0 && i < FactionNames.Length) ? FactionNames[i] : "?";
+        }
         private static readonly Factions[] FactionIds =
             { Factions.Emperor, Factions.SpacingGuild, Factions.BeneGesserit, Factions.Fremen };
 
@@ -582,6 +588,108 @@ namespace DuneAiProbe
         private static string SafeStr(PlayerEntity p)
         {
             try { return p.PlayerName ?? "?"; } catch { return "?"; }
+        }
+
+        // ---------- 快照：供记忆模块做差分 ----------
+        //
+        // 只读一份「可比较的数值」，不解析明细。取不到就保持默认值并标记该字段未知，
+        // 记忆层据此跳过该字段的差分 —— 宁可不记，也不要把"读不到"当成"变成 0"。
+
+        internal struct Snapshot
+        {
+            public bool Valid;
+            public int Vp, Solari, Spice, Water;
+            public int[] Inf;      // 四阵营影响力，FactionIds 顺序
+            public bool[] Ally;    // 四阵营同盟
+            public int Hand, Deck, Intrigue, Discard, Agents;
+            public bool AgentsKnown;
+            public string Conflict;
+        }
+
+        internal static Snapshot Capture(PlayerEntity p)
+        {
+            var s = new Snapshot { Inf = new int[4], Ally = new bool[4] };
+            try
+            {
+                var wp = p != null ? p.TryCast<WormPlayer>() : null;
+                if (wp == null) return s;
+
+                try { s.Vp = WormEntityExtensions.VictoryPoints(p); } catch { }
+                try { s.Solari = WormEntityExtensions.Solari(p); } catch { }
+                try { s.Spice = WormEntityExtensions.Spice(p); } catch { }
+                try { s.Water = WormEntityExtensions.Water(p); } catch { }
+
+                for (int i = 0; i < 4; i++)
+                {
+                    try { s.Inf[i] = wp.GetFactionInfluence(FactionIds[i]); } catch { }
+                    try { s.Ally[i] = wp.InAlliance(FactionIds[i]); } catch { }
+                }
+
+                try { s.Hand = wp.HandCount; } catch { }
+                try { s.Deck = wp.DeckCount; } catch { }
+                try { s.Intrigue = wp.IntrigueHandCount; } catch { }
+                try { s.Discard = CountDiscard(wp); } catch { }
+                try { s.Agents = CountAgents(wp); s.AgentsKnown = true; } catch { }
+                try { s.Conflict = ConflictNameOf(wp); } catch { }
+
+                s.Valid = true;
+            }
+            catch { }
+            return s;
+        }
+
+        /// <summary>弃牌堆数量（Discard 是 WormPlayArea 容器；与渲染用的同一套取值路径）。</summary>
+        private static int CountDiscard(WormPlayer wp)
+        {
+            var area = wp.Discard;
+            if (area == null) return -1;
+            var cnt = area as System.Collections.ICollection;
+            if (cnt != null) return cnt.Count;
+            var e = area.TryCast<Entity>();
+            if (e != null && e.Children != null) return e.Children.Count;
+            return Il2CppCount(area);
+        }
+
+        /// <summary>可用特使数。开局领袖指派阶段集合可能未初始化（getter 抛 NRE），此时返回 -1。</summary>
+        private static int CountAgents(WormPlayer wp)
+        {
+            var rem = wp.RemainingAgents;
+            if (rem == null) return -1;
+            var l = new Il2CppSystem.Collections.Generic.List<WormAgent>(rem);
+            return l != null ? l.Count : -1;
+        }
+
+        /// <summary>当前冲突名（不含奖励文本），供记忆层判断"换轮/换局"。</summary>
+        private static string ConflictNameOf(WormPlayer wp)
+        {
+            try
+            {
+                var wm = wp.match;
+                if (wm == null) return null;
+                var wm2 = wm.TryCast<WormMatch>();
+                if (wm2 == null) return null;
+                var board = wm2.WormPlaymat != null ? wm2.WormPlaymat.Board : null;
+                if (board == null) return null;
+                var c = board.CurrentConflict;
+                if (c == null) return null;
+                var ent = c.TryCast<Entity>();
+                if (ent == null) return null;
+
+                string gid = null;
+                try
+                {
+                    var a = ent.GetArchetype();
+                    if (a != null && a.ArchetypeID != null) gid = a.ArchetypeID.ToString();
+                }
+                catch { }
+                string nm = gid != null ? Coach.NameOf(gid) : null;
+                if (string.IsNullOrEmpty(nm))
+                {
+                    try { nm = Coach.NameOf(ent.EntityName) ?? ent.EntityName; } catch { }
+                }
+                return nm;
+            }
+            catch { return null; }
         }
     }
 }

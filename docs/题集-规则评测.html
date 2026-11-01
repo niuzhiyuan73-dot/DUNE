@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>规则评测题集（8 道）</title>
+<style>
+  body { margin:0; padding:28px 24px 64px; background:#F7F7F5; color:#2C2C2A;
+         font-family: -apple-system, "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+         font-size:13px; line-height:1.65; }
+  h1 { font-size:18px; font-weight:600; margin:0 0 6px; }
+  .lead { color:#5F5E5A; margin:0 0 4px; }
+  .meta { color:#888780; font-size:12px; margin:0 0 20px; }
+  .rule { background:#fff; border:1px solid #E3E2DC; border-radius:10px;
+          padding:14px 16px; margin:0 0 20px; }
+  .rule b { font-weight:600; }
+  .rule ul { margin:6px 0 0; padding-left:18px; color:#444441; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(370px, 1fr)); gap:14px; }
+  .card { background:#fff; border:1px solid #E3E2DC; border-radius:10px; padding:14px 16px 16px;
+          break-inside:avoid; }
+  .card header { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+  .num { flex:none; width:22px; height:22px; border-radius:6px; background:#EEEDFE; color:#3C3489;
+         font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; }
+  .card h2 { font-size:13px; font-weight:600; margin:0; font-family:ui-monospace, Menlo, Consolas, monospace; }
+  .tag { margin-left:auto; font-size:11px; padding:2px 7px; border-radius:99px; flex:none; }
+  .tag.real { background:#E6F1FB; color:#185FA5; }
+  .tag.mock { background:#EAF3DE; color:#3B6D11; }
+  .note { margin:4px 0 2px; color:#2C2C2A; font-weight:500; }
+  .src { margin:0 0 10px; color:#888780; font-size:12px; }
+  .lbl { color:#888780; font-size:11px; margin:10px 0 4px; letter-spacing:.02em; }
+  pre { margin:0; padding:10px 12px; background:#FAFAF8; border:1px solid #EDECE7; border-radius:8px;
+        font-family:ui-monospace, Menlo, Consolas, monospace; font-size:12px; line-height:1.6;
+        white-space:pre-wrap; word-break:break-word; color:#3C3C3A; max-height:260px; overflow:auto; }
+  pre.quote { background:#FBF3EF; border-color:#F0DCD2; }
+  .judge { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+  code { display:inline-block; font-family:ui-monospace, Menlo, Consolas, monospace; font-size:11.5px;
+         padding:2px 7px; border-radius:5px; margin:0 4px 4px 0; }
+  code.yes { background:#EAF3DE; color:#27500A; border:1px solid #C0DD97; }
+  code.no { background:#FCEBEB; color:#791F1F; border:1px solid #F7C1C1; }
+  .none { color:#888780; font-size:12px; }
+  .warn { background:#FAEEDA; border:1px solid #FAC775; color:#633806; border-radius:8px;
+          padding:8px 10px; font-size:12px; margin:8px 0; }
+  footer { margin-top:22px; color:#888780; font-size:12px; }
+  @media (max-width:760px) { .grid { grid-template-columns:1fr; } .judge { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<h1>规则评测题集</h1>
+<p class="lead">同一道题、同一份用户消息，只换系统提示（仅角色要求 vs 角色+规则手册），每题跑 3 次。</p>
+<p class="meta">来源：mods/ai/eval/cases.json　·　题数 8　·　真实日志 2 道 / 构造 6 道　·　
+生成：python -X utf8 -B mods/tools/make_cases_page.py</p>
+
+<div class="rule">
+  <b>判分规则</b>
+  <ul>
+    <li><b>must_any</b>：至少命中一条；留空表示这题只判“不许说错”，不要求必须展开某点。</li>
+    <li><b>must_not</b>：一条都不能命中。带否定守卫——匹配点前 6 字含「不/没/非/无」视为否定句，不算踩雷。</li>
+    <li>“不许说错”类判据要写得窄，否则会误伤其他选项的正常表述（历史上踩过两次）。</li>
+  </ul>
+</div>
+
+<div class="grid">
+<article class="card">
+  <header>
+    <span class="num">1</span>
+    <h2>propaganda_pick_two</h2>
+    <span class="tag real">真实日志</span>
+  </header>
+  <p class="note">宣传策略 1st 是选择两个阵营各+1</p>
+  <p class="src">log seq=15 player=海伦娜·里奇塞（实测把四选二读成四家全加）</p>
+  <div class="lbl">局势（state）</div><pre>【局势】
+- 海伦娜·里奇塞（本 AI）｜VP 1｜太阳币 0｜香料 1｜水 0｜兵 0｜兵力分类 部队 战场0/兵营5｜影响力 皇帝0 宇航公会1 姐妹会0 弗雷曼0｜可用特使 2｜手牌 7｜牌库 2｜密谋 2｜弃牌 1
+  密谋明细：渗透×2
+- 斯塔班·图克（AI）｜VP 1｜太阳币 1｜香料 0｜水 1｜兵 0｜兵力分类 部队 战场0/兵营5｜影响力 皇帝0 宇航公会1 姐妹会0 弗雷曼0｜可用特使 3｜手牌 6｜牌库 4｜密谋 3｜弃牌 0
+- 艾莉安娜·托瓦尔德伯爵夫人（AI）｜VP 1｜太阳币 0｜香料 2｜水 1｜兵 0｜兵力分类 部队 战场3/兵营3｜影响力 皇帝0 宇航公会0 姐妹会0 弗雷曼0｜可用特使 3｜手牌 7｜牌库 4｜密谋 2｜弃牌 0
+- nzyyuan（玩家）｜VP 1｜太阳币 1｜香料 0｜水 0｜兵 0｜兵力分类 部队 战场2/兵营3｜影响力 皇帝0 宇航公会0 姐妹会0 弗雷曼0｜可用特使 3｜手牌 6｜牌库 5｜密谋 2｜弃牌 0
+【当前冲突】宣传策略：（III级冲突）1st：选择两个：皇帝/宇航公会/贝尼·杰瑟里特/弗雷曼轨道各前进1；2nd：抽1张阴谋牌、香料3；3rd：香料3
+【特使已占】沙漠腹地(?)、运送资源(?)、哈戈盆地(?)、厄拉奇恩(?)、走私(?)</pre><div class="lbl">待选（pending）</div><pre>[SelectionWithTargetsRequired] Prompt 选择一项能力来使用。 Counter 211, Kind AgentTurn, Forced: True, SourceID Player(5bac8e13)), TargetMap &lt;[RecallAgent(3205b55c): [EntityListTargetInformation] ValidTargets (1)], [DeepDesertDeferredAbility(499d173e): [CustomChoiceTargetInformation] Choices: &lt;sprite name=Spice_4&gt;, &lt;sprite name="MakerHook"&gt;: &lt;sprite name="Worm"&gt;&lt;sprite name="Worm"&gt;], [DeployUnitsAbility(32a78f7a): [EntityListTargetInformation] ValidTargets (2)], [渗透(783b9bce): ], [渗透(2af584cc): ], [FamilyAtomicsAbility(700929e5): [CustomChoiceTargetInformation] Choices: 拒绝, 确认]&gt;
+【目标明细】
+- RecallAgent(3205b55c)〔效果待查〕：（只能由按钮决定）
+- DeepDesertDeferredAbility(499d173e)〔效果待查〕：（只能由按钮决定）
+- DeployUnitsAbility(32a78f7a)〔效果待查〕：（只能由按钮决定）
+- 渗透(783b9bce)〔特使可去：任意位置（渗透）。阴谋牌。打出：本轮你的下一个特使行动不会被敌方特使阻挡〕：（无子目标）
+- 渗透(2af584cc)〔特使可去：任意位置（渗透）。阴谋牌。打出：本轮你的下一个特使行动不会被敌方特使阻挡〕：（无子目标）
+- FamilyAtomicsAbility(700929e5)〔移除并替换公共牌池？〕：（只能由按钮决定）</pre><div class="lbl">当时模型的原话（基线，供对照）</div><pre class="quote">**结论：选择「渗透(783b9bce)」或「渗透(2af584cc)」——两张效果完全相同，任选其一即可。**
+
+理由：
+1. 当前是 III 级冲突「宣传策略」，头名奖励是四个阵营轨道各前进 1 点影响力，这是直接通往胜利点与后期阵营兑现的关键资源；而其他三位 AI 都已有特使占位（沙漠腹地、运送资源、哈戈盆地、厄拉奇恩、走私），你的下一个特使行动很可能被敌方特使阻挡。渗透正好能保证这一轮的特使行动不被阻挡，让你稳稳抢下冲突头名。
+2. 相比之下，RecallAgent、DeepDesertDeferredAbility、DeployUnitsAbility 都是「效果待查」且只能由按钮决定，信息缺失，无法判断其收益；FamilyAtomicsAbility 是移除并替换公共牌池，属于破坏性操作，在 VP 均为 1 的均势局里不划算。
+3. 你手上有两张渗透，本轮用掉一张不影响后续储备，且渗透是阴谋牌，不占用特使名额，机会成本最低。
+
+（注：RecallAgent、DeepDesertDeferredAbility、DeployUnitsAbility 三项只给了 ID 与「效果待查」，缺具体牌名与效果说明，故不作臆测比较。）</pre>
+  <div class="judge">
+    <div><div class="lbl">必须提到（must_any）</div><span class="none">（不要求命中，只判“不许说错”）</span></div>
+    <div><div class="lbl">不许出现（must_not）</div><code class="no">四个阵营</code><code class="no">四个轨道</code><code class="no">四家各</code><code class="no">全部四个</code><code class="no">四个派系轨道各</code></div>
+  </div>
+</article>
+
+<article class="card">
+  <header>
+    <span class="num">2</span>
+    <h2>atomics_rules</h2>
+    <span class="tag real">真实日志</span>
+  </header>
+  <p class="note">家族原子武器：每场限一次、不占特使</p>
+  <p class="src">log 最后一条（FamilyAtomics 原文只有「移除并替换公共牌池？」）</p>
+  <div class="lbl">局势（state）</div><pre>【局势】
+- 海伦娜·里奇塞（AI）｜VP 1｜太阳币 0｜香料 5｜水 0｜兵 0｜兵力分类 部队 战场2/兵营3｜影响力 皇帝0 宇航公会1 姐妹会0 弗雷曼0｜可用特使 3｜手牌 7｜牌库 2｜密谋 2｜弃牌 1
+- 斯塔班·图克（AI）｜VP 2｜太阳币 1｜香料 0｜水 2｜兵 0｜兵力分类 部队 战场0/兵营5，无畏舰 战场0/兵营1｜影响力 皇帝0 宇航公会2 姐妹会0 弗雷曼0｜可用特使 2｜手牌 3｜牌库 4｜密谋 3｜弃牌 2
+- 艾莉安娜·托瓦尔德伯爵夫人（本 AI）｜VP 1｜太阳币 0｜香料 2｜水 2｜兵 0｜兵力分类 部队 战场3/兵营3｜影响力 皇帝0 宇航公会0 姐妹会0 弗雷曼1｜可用特使 2｜手牌 7｜牌库 3｜密谋 2｜弃牌 0
+  密谋明细：渗透×2
+- nzyyuan（玩家）｜VP 1｜太阳币 1｜香料 0｜水 0｜兵 0｜兵力分类 部队 战场2/兵营3｜影响力 皇帝0 宇航公会0 姐妹会0 弗雷曼0｜可用特使 3｜手牌 6｜牌库 5｜密谋 2｜弃牌 0
+【当前冲突】宣传策略：（III级冲突）1st：选择两个：皇帝/宇航公会/贝尼·杰瑟里特/弗雷曼轨道各前进1；2nd：抽1张阴谋牌、香料3；3rd：香料3
+【特使已占】沙漠腹地(?)、运送资源(?)、弗雷曼工具包(?)、哈戈盆地(?)、厄拉奇恩(?)、走私(?)</pre><div class="lbl">待选（pending）</div><pre>[SelectionWithTargetsRequired] Prompt 选择一项能力来使用。 Counter 290, Kind AgentTurn, Forced: False, SourceID Player(44f3b0bd)), TargetMap &lt;[DeployUnitsAbility(6cf2e4c1): [EntityListTargetInformation] ValidTargets (2)], [渗透(2f18c4c4): ], [渗透(643f9b87): ], [FamilyAtomicsAbility(700929e5): [CustomChoiceTargetInformation] Choices: 拒绝, 确认]&gt;
+【目标明细】
+- DeployUnitsAbility(6cf2e4c1)〔效果待查〕：（只能由按钮决定）
+- 渗透(2f18c4c4)〔特使可去：任意位置（渗透）。阴谋牌。打出：本轮你的下一个特使行动不会被敌方特使阻挡〕：（无子目标）
+- 渗透(643f9b87)〔特使可去：任意位置（渗透）。阴谋牌。打出：本轮你的下一个特使行动不会被敌方特使阻挡〕：（无子目标）
+- FamilyAtomicsAbility(700929e5)〔移除并替换公共牌池？〕：（只能由按钮决定）</pre><div class="lbl">当时模型的原话（基线，供对照）</div><pre class="quote">结论：选择「渗透(2f18c4c4)」或「渗透(643f9b87)」（两张同名，任选其一即可）。
+
+理由：当前是 III 级冲突「宣传策略」，头名奖励能一次性推进皇帝/宇航公会/姐妹会/弗雷曼中两个轨道各 1 格，这是直接通往胜利点与后期兑现的路径；而你的影响力目前只有弗雷曼 1，其他全为 0，正需要靠特使行动抢轨道。两张「渗透」都能让本轮下一个特使行动不被敌方特使阻挡，等于保证你能落到关键占位（如弗雷曼工具包、厄拉奇恩等已被占的点），比短期堆资源更有利于后期兑现。
+
+「DeployUnitsAbility」和「FamilyAtomicsAbility」的〔效果待查〕/〔移除并替换公共牌池？〕信息不完整，无法确认其具体收益与条件，因此不作为优先项；若你希望我比较它们，需要补充这两项的完整规则说明。</pre>
+  <div class="judge">
+    <div><div class="lbl">必须提到（must_any）</div><span class="none">（不要求命中，只判“不许说错”）</span></div>
+    <div><div class="lbl">不许出现（must_not）</div><code class="no">家族原子.{0,12}无法判断</code><code class="no">无法判断家族原子</code><code class="no">原子武器.{0,10}(不明|不清楚)</code><code class="no">不知道家族原子</code></div>
+  </div>
+</article>
+
+<article class="card">
+  <header>
+    <span class="num">3</span>
+    <h2>private_army_cost</h2>
+    <span class="tag mock">构造题</span>
+  </header>
+  <p class="note">私人军团要 2 香料换 +5 军力，有同盟再 +2</p>
+  <p class="src">constructed（实体卡表 + 同盟条件键）</p>
+  <div class="lbl">局势（state）</div><pre>【局势】
+- 测试者（本 AI）｜VP 6｜太阳币 2｜香料 4｜水 1｜兵 0｜影响力 皇帝1 宇航公会2 姐妹会0 弗雷曼1｜可用特使 1｜手牌 1｜牌库 3｜密谋 1｜弃牌 4
+  手牌明细：私人军团
+【当前冲突】厄拉奇恩之战：（II级冲突）1st：1 胜利点、控制厄拉奇恩；2nd：4 太阳币；3rd：2 太阳币</pre><div class="lbl">待选（pending）</div><pre>[SelectionWithTargetsRequired] Prompt 选择一项能力来使用。 Kind AgentTurn, TargetMap &lt;[私人军团(x1): ], [跳过(x2): ]&gt;
+【目标明细】
+- 私人军团(x1)〔战斗牌。若你有一个同盟阵营：同盟: +2 军力〕：（无子目标）
+- 跳过(x2)〔放弃本次战斗操作〕：（无子目标）</pre>
+  <div class="judge">
+    <div><div class="lbl">必须提到（must_any）</div><code class="yes">2 香料</code><code class="yes">2香料</code><code class="yes">两香料</code></div>
+    <div><div class="lbl">不许出现（must_not）</div><code class="no">免费</code><code class="no">无需费用</code><code class="no">不花费用</code></div>
+  </div>
+</article>
+
+<article class="card">
+  <header>
+    <span class="num">4</span>
+    <h2>for_humanity_agent</h2>
+    <span class="tag mock">构造题</span>
+  </header>
+  <p class="note">特使效果是选 1 阵营 +1 影响力，不是「选择失去 2 点影响力的阵营」</p>
+  <p class="src">constructed（用户确认 + log.card.reveal.forhumanity）</p>
+  <div class="lbl">局势（state）</div><pre>【局势】
+- 测试者（本 AI）｜VP 3｜太阳币 0｜香料 0｜水 1｜兵 0｜影响力 皇帝0 宇航公会0 姐妹会0 弗雷曼2｜可用特使 2｜手牌 1｜牌库 4｜密谋 0｜弃牌 3
+  手牌明细：为了全人类</pre><div class="lbl">待选（pending）</div><pre>[SelectionWithTargetsRequired] Prompt 选择一个阵营。 Kind AgentTurn, TargetMap &lt;[皇帝(x1): ], [宇航公会(x2): ], [姐妹会(x3): ], [弗雷曼(x4): ]&gt;
+【目标明细】
+- 皇帝(x1)〔当前影响力 0〕：（无子目标）
+- 宇航公会(x2)〔当前影响力 0〕：（无子目标）
+- 姐妹会(x3)〔当前影响力 0〕：（无子目标）
+- 弗雷曼(x4)〔当前影响力 2〕：（无子目标）</pre>
+  <div class="judge">
+    <div><div class="lbl">必须提到（must_any）</div><span class="none">（不要求命中，只判“不许说错”）</span></div>
+    <div><div class="lbl">不许出现（must_not）</div><code class="no">失去 2 点影响力的阵营</code><code class="no">失去2点影响力</code></div>
+  </div>
+</article>
+
+<article class="card">
+  <header>
+    <span class="num">5</span>
+    <h2>tie_for_first</h2>
+    <span class="tag mock">构造题</span>
+  </header>
+  <p class="note">多人并列第一：无人获胜、无人拿牌，并列者都拿第二栏</p>
+  <p class="src">constructed（规则书·平局）</p>
+  <div class="lbl">局势（state）</div><pre>【局势】
+- 测试者（本 AI）｜VP 4｜影响力 弗雷曼 1
+【当前冲突】迦太格之战：（II级冲突）1st：1 胜利点、控制迦太格；2nd：抽1张阴谋牌、香料2；3rd：香料2
+【战力】本 AI 9、对手甲 9、对手乙 5、对手丙 0</pre><div class="lbl">待选（pending）</div><pre>[CustomChoiceRequired] Prompt 战斗结算：本局为 4 人游戏，战力如下：测试者 9、对手甲 9、对手乙 5、对手丙 0。请说明各名次分别获得什么奖励。</pre>
+  <div class="judge">
+    <div><div class="lbl">必须提到（must_any）</div><code class="yes">第二栏</code><code class="yes">第二名奖励</code><code class="yes">2nd</code></div>
+    <div><div class="lbl">不许出现（must_not）</div><code class="no">并列者获得第一名奖励</code><code class="no">都拿第一名</code><code class="no">均获得榜首奖励</code></div>
+  </div>
+</article>
+
+<article class="card">
+  <header>
+    <span class="num">6</span>
+    <h2>victory_threshold_16</h2>
+    <span class="tag mock">构造题</span>
+  </header>
+  <p class="note">本局阈值 16，不是规则书默认的 10</p>
+  <p class="src">constructed（剧本 endgame_score=16）</p>
+  <div class="lbl">局势（state）</div><pre>【局势】
+- 测试者（本 AI）｜VP 12｜太阳币 3｜香料 2｜水 1｜兵 4｜影响力 皇帝1 宇航公会2 姐妹会1 弗雷曼3｜可用特使 1｜手牌 3
+- 对手甲（AI）｜VP 11
+- 对手乙（AI）｜VP 8
+【当前冲突】厄拉奇恩之战：（II级冲突）1st：1 胜利点、控制厄拉奇恩；2nd：4 太阳币；3rd：2 太阳币</pre><div class="lbl">待选（pending）</div><pre>[SelectionWithTargetsRequired] Prompt 选择一项能力来使用。 Kind AgentTurn, TargetMap &lt;[占领厄拉奇恩(x1): ], [抽取阴谋牌(x2): ]&gt;
+【目标明细】
+- 占领厄拉奇恩(x1)〔特使：放特使并投入 1 支部队；冲突 1st 有 1 胜利点〕：（无子目标）
+- 抽取阴谋牌(x2)〔抽 1 张阴谋牌〕：（无子目标）</pre>
+  <div class="judge">
+    <div><div class="lbl">必须提到（must_any）</div><code class="yes">16</code></div>
+    <div><div class="lbl">不许出现（must_not）</div><code class="no">阈值是 10</code><code class="no">10 分就结束</code><code class="no">到达 10 分</code></div>
+  </div>
+</article>
+
+<article class="card">
+  <header>
+    <span class="num">7</span>
+    <h2>recruit_points_expire</h2>
+    <span class="tag mock">构造题</span>
+  </header>
+  <p class="note">招募点数不能跨轮保存</p>
+  <p class="src">constructed（规则书·获得卡牌）</p>
+  <div class="lbl">局势（state）</div><pre>【局势】
+- 测试者（本 AI）｜VP 5｜太阳币 0｜香料 1｜水 1｜兵 2｜可用特使 0｜手牌 0｜牌库 1｜弃牌 9</pre><div class="lbl">待选（pending）</div><pre>[CustomChoiceRequired] Prompt 你本轮揭示阶段还剩下 2 点招募点数（说服），当前公共牌池最低费用的牌是 3 费。请说明这 2 点该怎么处理。</pre>
+  <div class="judge">
+    <div><div class="lbl">必须提到（must_any）</div><code class="yes">作废</code><code class="yes">不能保留</code><code class="yes">不会保留</code><code class="yes">轮末</code><code class="yes">浪费</code><code class="yes">消失</code></div>
+    <div><div class="lbl">不许出现（must_not）</div><code class="no">留到下一轮</code><code class="no">保留到下一轮</code><code class="no">存到下轮</code></div>
+  </div>
+</article>
+
+<article class="card">
+  <header>
+    <span class="num">8</span>
+    <h2>dreadnought_control</h2>
+    <span class="tag mock">构造题</span>
+  </header>
+  <p class="note">无畏舰控制是临时的，回合结束返回兵营</p>
+  <p class="src">constructed（tooltip.dreadnought.control）</p>
+  <div class="lbl">局势（state）</div><pre>【局势】
+- 测试者（本 AI）｜VP 7｜无畏舰 战场1/兵营0｜影响力 皇帝2 宇航公会1
+【当前冲突】帝国盆地之战：（II级冲突）1st：1 胜利点、控制帝国盆地；2nd：2 水；3rd：1 水</pre><div class="lbl">待选（pending）</div><pre>[CustomChoiceRequired] Prompt 你用无畏舰赢下了帝国盆地之战。请说明这艘无畏舰与帝国盆地的控制权之后会怎样。</pre>
+  <div class="judge">
+    <div><div class="lbl">必须提到（must_any）</div><code class="yes">返回</code><code class="yes">回合结束</code><code class="yes">回到兵营</code></div>
+    <div><div class="lbl">不许出现（must_not）</div><code class="no">永久控制</code><code class="no">永久获得该区域</code><code class="no">一直留在版图上</code></div>
+  </div>
+</article></div>
+
+<footer>改题：编辑 mods/ai/eval/cases.json 后重新生成本页；只测某几题用
+eval_rules.py --only &lt;id&gt;。</footer>
+</body>
+</html>
