@@ -166,27 +166,75 @@ def load_cards_from_saves():
     return {k: v for k, v in out.items() if v}
 
 
-def ability_text(cls, abil_text, btn_map, sprites):
-    """单个能力的完整效果：图标序列优先，退回文字（同样按后缀回退）。"""
-    cands = [cls]
+PROMPT_HINTS = ("来", "以", "获得", "然后", "→", "可", "若", "或", "并")
+
+
+def is_prompt_only(txt):
+    """判断一条文案是「选择提示」还是「完整效果」。
+
+    选择提示只说明要选什么，不说结果，例如
+        ForHumanityAbility = 「选择一个失去2点影响力的阵营。」
+    这是展示流程里选阵营那一步的提示（log.card.reveal.forhumanity 才是完整描述：
+    「失去了[faction]的2点影响力以获得1点胜利点」）。
+    完整效果会带结果或连接词，例如
+        IxGuildCompactAbility = 「选择弃掉两张牌来建造一艘无畏舰」。
+    """
+    if not txt.startswith("选择"):
+        return False
+    if len(txt) > 24:
+        return False
+    return not any(h in txt for h in PROMPT_HINTS)
+
+
+def stem_of(cls):
+    """XxxAgentAbility / XxxRevealAbility -> Xxx；无后缀则去掉 Ability。"""
     for suf in SUFFIXES:
         if cls.endswith(suf + "Ability"):
-            cands.append(cls[: -len(suf) - len("Ability")] + "Ability")
+            return cls[: -len(suf) - len("Ability")]
+    return cls[: -len("Ability")] if cls.endswith("Ability") else cls
 
-    # 图标序列是精确的：只认原名，剥后缀回退会把通用能力当成某时机专属
-    # （例：ShaiHuludRevealAbility 回退到 ShaiHuludAbility，导致展示写成特使的效果）
+
+def ability_text(cls, abil_text, btn_map, sprites, siblings=()):
+    """单个能力的完整效果。
+
+    三级来源，越往后越保守：
+      1) button.<原名> 的图标序列 —— 精确，只认原名；
+      2) worm.canis.abilities.<原名> 的文字；
+      3) 剥后缀回退到基础名 —— **仅当同一 base 下没有别的后缀能力时**。
+
+    第 3 条的约束是「为了全人类」踩出来的：这张卡同时有 ForHumanityAgentAbility 与
+    ForHumanityRevealAbility，而 ForHumanityAbility 的文案「选择一个失去2点影响力的阵营」
+    其实是 Reveal 流程里的选择提示（log.card.reveal.forhumanity 佐证：
+    「失去了[faction]的2点影响力以获得1点胜利点」）。回退会把展示的提示当成特使效果。
+    """
     t = from_icons(cls, btn_map, sprites)
     if t:
         return t, cls
 
-    for c in cands:
-        raw = abil_text.get(c)
-        if not raw:
-            continue
+    raw = abil_text.get(cls)
+    if raw:
         t = clean(raw)
-        if not t or len(t) < 6 or t.endswith("：") or t in ("选择一项能力来使用", "选择两项", "选择："):
-            continue
-        return t, c
+        if t and len(t) >= 6 and not t.endswith("：") and t not in ("选择一项能力来使用", "选择两项", "选择："):
+            if not is_prompt_only(t):
+                return t, cls
+
+    # 基础名文案（XxxAbility）的归属判断：
+    #   若同名兄弟里**有一个已经有图标表达**，说明那条时机被图标覆盖了，
+    #   剩下的这条文字就只能属于我方 —— 可以放心用。
+    #   若兄弟都没有图标，则归属不明，宁可不写。
+    # 例：ForHumanityRevealAbility 有图标 → ForHumanityAbility 的文字属于 Agent；
+    #     IxGuildCompactAgentAbility 有图标 → IxGuildCompactAbility 的文字属于 Reveal。
+    base = stem_of(cls)
+    others = [n for n in siblings if stem_of(n) == base and n != cls]
+    if others and not any(from_icons(n, btn_map, sprites) for n in others):
+        return None, None
+
+    raw = abil_text.get(base + "Ability")
+    if raw:
+        t = clean(raw)
+        if t and len(t) >= 6 and not t.endswith("：") and t not in ("选择一项能力来使用", "选择两项", "选择："):
+            if not is_prompt_only(t):
+                return t, base + "Ability"
     return None, None
 
 
@@ -220,7 +268,7 @@ def main():
 
         agent_parts, reveal_parts, common_parts = [], [], []
         for cls in names:
-            txt, used = ability_text(cls, abil_text, btn_map, sprites)
+            txt, used = ability_text(cls, abil_text, btn_map, sprites, names)
             if not txt:
                 continue
             base = cls[:-len("Ability")] if cls.endswith("Ability") else cls
