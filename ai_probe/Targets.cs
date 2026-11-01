@@ -517,20 +517,77 @@ namespace DuneAiProbe
             string en = PropString(t, o, "EntityName");
             if (!string.IsNullOrEmpty(en)) return WithEffect(en, null, match);
 
+            // ValidTargets 的元素实测是 Canis.utils.ids.EntityID（不是实体本身），
+            // 它没有 EntityName，必须取出里面的 GUID 再走 Replace 解析成中文名。
             string id = PropString(t, o, "_ID")
                         ?? PropString(t, o, "ID")
+                        ?? PropString(t, o, "Id")
                         ?? PropString(t, o, "EntityID")
-                        ?? PropString(t, o, "Value");
+                        ?? PropString(t, o, "Value")
+                        ?? PropString(t, o, "Guid");
             if (id == null)
             {
                 string raw = null;
                 try { raw = o.ToString(); } catch { }
                 if (IsGuidish(raw)) id = raw;
+                else id = ScanGuidishMember(t, o);
             }
-            if (id == null) return null;
+            if (id == null)
+            {
+                DumpTargetShape(t, o, log);
+                return null;
+            }
             // 子目标也要附上自己的规则：从这些牌中弃一张/送入版图时，
             // 模型必须知道每个候选各自的作用，否则无从比较。
             return WithEffect(Replace(id, match), id, match);
+        }
+
+        private static bool _shapeLogged;
+
+        /// <summary>类型不熟时的兜底：遍历属性与字段，取第一个像 GUID 的值。</summary>
+        private static string ScanGuidishMember(Type t, object o)
+        {
+            if (t == null) return null;
+            try
+            {
+                foreach (var pi in t.GetProperties())
+                {
+                    object v;
+                    try { v = pi.GetValue(o); } catch { continue; }
+                    if (v == null) continue;
+                    string s = v.ToString();
+                    if (IsGuidish(s)) return s;
+                }
+                foreach (var fi in t.GetFields())
+                {
+                    object v;
+                    try { v = fi.GetValue(o); } catch { continue; }
+                    if (v == null) continue;
+                    string s = v.ToString();
+                    if (IsGuidish(s)) return s;
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        /// <summary>只打一次：把这种目标元素的成员名与 ToString 打出来，便于下次定位。</summary>
+        private static void DumpTargetShape(Type t, object o, ManualLogSource log)
+        {
+            if (_shapeLogged || log == null || t == null) return;
+            _shapeLogged = true;
+            try
+            {
+                var names = new List<string>();
+                foreach (var pi in t.GetProperties()) names.Add("P:" + pi.Name);
+                foreach (var fi in t.GetFields()) names.Add("F:" + fi.Name);
+                string raw = null;
+                try { raw = o.ToString(); } catch { }
+                log.LogInfo("[TARGETS] 目标元素无法解析 类型=" + t.FullName +
+                            " 成员=" + string.Join(",", names.ToArray()) +
+                            " ToString=" + (raw ?? "null"));
+            }
+            catch { }
         }
 
         /// 给一个已解析的名字附上〔效果〕。

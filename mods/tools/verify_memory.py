@@ -143,6 +143,9 @@ def main():
     check("战斗：输出各方战力与排名", "【战力】" in state and "Strength" in state)
     check("战斗：战力全 0 时不刷噪声", "any" in state and "return" in state)
     check("战斗：并列要显式标出", "并列" in state or "rank" in state)
+    tg = read(os.path.join(SRC, "Targets.cs"))
+    check("目标元素是 EntityID 时按 GUID 解析", "ScanGuidishMember" in tg)
+    check("目标解析失败会打一次形状诊断", "DumpTargetShape" in tg)
     check("多 key 轮询", "NextKey()" in coach and "LoadKeys" in coach)
     check("不再用全局 Authorization", "DefaultRequestHeaders.Add" not in coach)
 
