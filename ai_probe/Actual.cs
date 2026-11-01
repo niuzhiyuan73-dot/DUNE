@@ -165,7 +165,27 @@ namespace DuneAiProbe
             }
             catch { }
 
+            // 走到这里说明三种具体类型都没命中——把真实类型打一次，下次照它补分支，
+            // 不要继续只记接口名（战斗/部分展示选择一直卡在这里）。
+            DiagOnce(bo, result);
             return SafeToString(result);
+        }
+
+        private static readonly HashSet<string> _diagTypes = new HashSet<string>(StringComparer.Ordinal);
+
+        private static void DiagOnce(Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase bo, object result)
+        {
+            try
+            {
+                string tn = bo.GetType().FullName;
+                lock (_lock)
+                {
+                    if (!_diagTypes.Add(tn) || _diagTypes.Count > 20) return;
+                }
+                if (_log != null) _log.LogInfo("[ACTUAL] 未识别的返回值类型=" + tn +
+                                              " ToString=" + SafeToString(result));
+            }
+            catch { }
         }
 
         private static string LabelOf(int counter, string kid)
