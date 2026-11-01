@@ -25,7 +25,9 @@ namespace DuneAiProbe
 
         private static ManualLogSource _log;
         private static HttpClient _http;
-        private static string _key;
+        private static string _key;          // 兼容旧单 key 文件
+        private static string[] _keys;       // 多 key 轮询（deepseek_keys.txt，每行一个）
+        private static int _keyCursor;
         private static string _outDir;
         private static int _max;
         private static int _sent;
@@ -84,14 +86,15 @@ namespace DuneAiProbe
             try
             {
                 _key = File.ReadAllText(keyPath).Trim();
+                LoadKeys(root);
                 string raw = File.ReadAllText(quotaPath).Trim();
                 if (!int.TryParse(raw, out _max) || _max <= 0)
                 {
                     _log.LogWarning("[COACH] coach.txt 内容无效: '" + raw + "'（应为正整数）");
                     return;
                 }
-                _http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
-                _http.DefaultRequestHeaders.Add("Authorization", "Bearer " + _key);
+                // 不在 HttpClient 上设全局 Authorization：四家同时请求时要按请求轮换 key
+                _http = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
                 Directory.CreateDirectory(_outDir);
                 LoadNameMap(root);
                 LoadEffectMap(root);
@@ -99,12 +102,44 @@ namespace DuneAiProbe
                 Enabled = true;
                 _log.LogWarning("[COACH] enabled, quota=" + _max + "/session, names=" + _names.Count
                                 + ", effects=" + _effects.Count + ", system=" + _system.Length + "字"
-                                + ", mechanics=" + _mechanics.Count + ", out=" + _outDir);
+                                + ", mechanics=" + _mechanics.Count
+                                + ", keys=" + (_keys != null ? _keys.Length : 0) + ", out=" + _outDir);
             }
             catch (Exception e)
             {
                 _log.LogWarning("[COACH] init failed: " + e.GetType().Name + ": " + e.Message);
             }
+        }
+
+        /// 多 key 支持：mods/ai/deepseek_keys.txt 每行一个 key（# 开头注释）。
+        /// 四家同时挂教练时并发会撞单 key 限流，按请求轮询使用。
+        private static void LoadKeys(string root)
+        {
+            var list = new List<string>();
+            try
+            {
+                string multi = Path.Combine(root, "mods", "ai", "deepseek_keys.txt");
+                if (File.Exists(multi))
+                {
+                    foreach (var line in File.ReadAllLines(multi, Encoding.UTF8))
+                    {
+                        string t = line.Trim();
+                        if (t.Length == 0 || t.StartsWith("#", StringComparison.Ordinal)) continue;
+                        if (!list.Contains(t)) list.Add(t);
+                    }
+                }
+            }
+            catch (Exception e) { _log.LogWarning("[COACH] keys: " + e.Message); }
+            if (list.Count == 0 && !string.IsNullOrEmpty(_key)) list.Add(_key);
+            _keys = list.ToArray();
+        }
+
+        private static string NextKey()
+        {
+            if (_keys == null || _keys.Length == 0) return _key;
+            if (_keys.Length == 1) return _keys[0];
+            int i = System.Threading.Interlocked.Increment(ref _keyCursor);
+            return _keys[Math.Abs(i) % _keys.Length];
         }
 
         /// 加载知识层：基础规则 + 当前玩法 + 错误示例进系统提示，机制索引留待按需命中。
@@ -607,8 +642,12 @@ namespace DuneAiProbe
                     + "\"max_tokens\":400,\"temperature\":0.3}";
 
                 using (var content = new StringContent(body, Encoding.UTF8, "application/json"))
-                using (var resp = _http.PostAsync(Endpoint, content).GetAwaiter().GetResult())
+                using (var req = new HttpRequestMessage(HttpMethod.Post, Endpoint))
                 {
+                    req.Headers.Add("Authorization", "Bearer " + NextKey());
+                    req.Content = content;
+                    using (var resp = _http.SendAsync(req).GetAwaiter().GetResult())
+                    {
                     string text = resp.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                     sw.Stop();
                     string answer = Json.ExtractContent(text);
@@ -616,6 +655,7 @@ namespace DuneAiProbe
                     _log.LogInfo("[COACH] #" + seq + " " + (int)sw.ElapsedMilliseconds + "ms http=" + code
                                  + " -> " + Short(answer, 300));
                     Append(seq, playerName, pending, answer, (int)sw.ElapsedMilliseconds, code, text, state, memory, gameCounter, playerKey);
+                    }
                 }
             }
             catch (Exception e)

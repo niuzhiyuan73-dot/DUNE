@@ -113,6 +113,19 @@ def main():
     agree = os.path.join(ROOT, "mods", "tools", "coach_agreement.py")
     check("离线比对脚本存在", os.path.exists(agree))
 
+    print("\n[8] 回合状态机与多入口")
+    turn = read(os.path.join(SRC, "Turn.cs"))
+    check("Turn.cs 存在", bool(turn))
+    if turn:
+        check("PlayerTurn 开新回合", '"PlayerTurn"' in turn)
+        check("AgentTurn 同回合合并", '"AgentTurn"' in turn and "_askedThisTurn" in turn)
+        check("同一次选择去重（人类/AI 两条入口）", "_handled.Add" in turn)
+        check("未知 Kind 保守提问", "其他 Kind" in turn or "保守" in turn)
+    check("Plugin 调用 Turn.ShouldAsk", "Turn.ShouldAsk(" in plugin)
+    check("人类入口 SelectFrom 已挂", "PlayerEntity.SelectFrom" in plugin and "OnSelectFrom" in plugin)
+    check("多 key 轮询", "NextKey()" in coach and "LoadKeys" in coach)
+    check("不再用全局 Authorization", "DefaultRequestHeaders.Add" not in coach)
+
     finish()
 
 
