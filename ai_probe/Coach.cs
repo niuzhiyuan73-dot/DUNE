@@ -233,11 +233,11 @@ namespace DuneAiProbe
             if (!string.IsNullOrEmpty(stateBlock)) user += stateBlock + "\n";
             user += "待选列表：\n" + pending;
 
-            Task.Run(() => Send(seq, playerName, user, pending));
+            Task.Run(() => Send(seq, playerName, user, pending, stateBlock));
         }
 
         /// 在后台线程同步完成一次请求（不能用 async lambda：本工程引用的 Il2Cppmscorlib 缺 NullableAttribute）。
-        private static void Send(int seq, string playerName, string user, string pending)
+        private static void Send(int seq, string playerName, string user, string pending, string state)
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
             try
@@ -256,7 +256,7 @@ namespace DuneAiProbe
                     int code = (int)resp.StatusCode;
                     _log.LogInfo("[COACH] #" + seq + " " + (int)sw.ElapsedMilliseconds + "ms http=" + code
                                  + " -> " + Short(answer, 300));
-                    Append(seq, playerName, pending, answer, (int)sw.ElapsedMilliseconds, code, text);
+                    Append(seq, playerName, pending, answer, (int)sw.ElapsedMilliseconds, code, text, state);
                 }
             }
             catch (Exception e)
@@ -264,11 +264,11 @@ namespace DuneAiProbe
                 sw.Stop();
                 _log.LogWarning("[COACH] #" + seq + " failed after " + (int)sw.ElapsedMilliseconds + "ms: "
                                 + e.GetType().Name + ": " + e.Message);
-                Append(seq, playerName, pending, null, (int)sw.ElapsedMilliseconds, -1, e.Message);
+                Append(seq, playerName, pending, null, (int)sw.ElapsedMilliseconds, -1, e.Message, state);
             }
         }
 
-        private static void Append(int seq, string player, string pending, string answer, int ms, int http, string raw)
+        private static void Append(int seq, string player, string pending, string answer, int ms, int http, string raw, string state = null)
         {
             try
             {
@@ -278,6 +278,7 @@ namespace DuneAiProbe
                     + ",\"ms\":" + ms + ",\"http\":" + http
                     + ",\"answer\":" + Json.Str(answer)
                     + ",\"pending\":" + Json.Str(pending)
+                    + ",\"state\":" + Json.Str(state ?? "")
                     + (http >= 200 && http < 300 ? "" : ",\"raw\":" + Json.Str(Short(raw, 500)))
                     + "}";
                 // 多个回答线程可能同时落盘，File.AppendAllText 会撞 "being used by another process"。

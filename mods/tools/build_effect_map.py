@@ -21,7 +21,7 @@ import build_name_map as B
 
 ROOT = B.ROOT
 OUT = os.path.join(ROOT, "mods", "ai", "effect_map.tsv")
-EFFECT_MAX = 70
+EFFECT_MAX = 110
 
 # 最常出现的图标 -> 中文；其余保留原名（模型看得懂 DrawCard 这类驼峰词）
 SPRITE_CN = {
