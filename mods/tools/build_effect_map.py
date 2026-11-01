@@ -21,7 +21,7 @@ import build_name_map as B
 
 ROOT = B.ROOT
 OUT = os.path.join(ROOT, "mods", "ai", "effect_map.tsv")
-EFFECT_MAX = 110
+EFFECT_MAX = 260  # 2026-11-01 复核：110 会把领袖/多段效果卡腰斩（杰西卡夫人、泰西娅等），放宽
 
 # 最常出现的图标 -> 中文；其余保留原名（模型看得懂 DrawCard 这类驼峰词）
 SPRITE_CN = {
@@ -65,6 +65,19 @@ def clean(v):
 def build():
     cards = json.load(open(B.CARDS, encoding="utf-8-sig"))
     kv = B.load_locale()
+
+    # 人工复核锁：kb_todo_fill.tsv 里第 4 列非空的键视为已人工核实，
+    # 优先级最高，前面的自动提取源（本地化/卡表/kb_extra）不得覆盖。
+    LOCK = set()
+    _todo_p = os.path.join(ROOT, "mods", "ai", "kb_todo_fill.tsv")
+    if os.path.exists(_todo_p):
+        for _l in open(_todo_p, encoding="utf-8-sig"):
+            _p = _l.rstrip("\n").split("\t")
+            if len(_p) >= 4 and _p[0].strip() and _p[3].strip():
+                _raw = _p[0].strip()
+                _raw = _raw[5:] if _raw.startswith("name:") else _raw
+                LOCK.add(_raw if _raw.count("-") == 4 else "name:" + _raw)
+                LOCK.add("name:" + _raw)
 
     # image -> [(后缀, 文本)]，保持固定顺序，避免同样内容每次生成顺序不同
     by_img = {}
@@ -114,7 +127,7 @@ def build():
             text = "；".join(effs)
         if len(text) > EFFECT_MAX:
             text = text[:EFFECT_MAX] + "…"
-        if text:
+        if text and gid not in LOCK:
             pairs[gid] = text
 
     # 很多卡有多个 GUID（不同版本/复刻），但只有其中一个有文本；
@@ -134,7 +147,8 @@ def build():
         if nm and nm not in by_name:
             by_name[nm] = text
     for nm, text in by_name.items():
-        pairs.setdefault("name:" + nm, text)
+        if "name:" + nm not in LOCK:
+            pairs.setdefault("name:" + nm, text)
 
     # 人工补充表：基础包卡牌在本地化里没有文本，只能靠公开卡表补（见文件头注释）。
     # 表里用英文卡名做键，这里借 image 反查官方中文名，避免手写译名对不上。
@@ -168,7 +182,7 @@ def build():
                 unmatched.append(en_name)
                 zh_name = en_name
             key = "name:" + zh_name
-            if key in pairs:
+            if key in pairs or key in LOCK:
                 continue
             text = parts[1].strip()
             if len(text) > EFFECT_MAX:
@@ -193,7 +207,7 @@ def build():
             raw = parts[0].strip()
             # 冲突牌同名跨扩展，必须用 GUID 作键；其余实体用中文名
             key = raw if raw.count("-") == 4 else "name:" + raw
-            if key in pairs:
+            if key in pairs or key in LOCK:
                 continue
             text = parts[1].strip()
             if len(text) > EFFECT_MAX:
