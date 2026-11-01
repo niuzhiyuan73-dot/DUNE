@@ -75,7 +75,7 @@ def main():
     check("Plugin 把记忆传给 Observe", re.search(r"Coach\.Observe\([^;]*memoryBlock", plugin) is not None)
     check("Observe 接收 memoryBlock 参数", "string memoryBlock" in coach)
     check("记忆块拼进 user 消息", 'user += memoryBlock' in coach)
-    check("Send 透传 memory", re.search(r"Send\(seq, playerName, user, pending, stateBlock, memoryBlock\)", coach) is not None)
+    check("Send 透传 memory", re.search(r"Send\(seq, playerName, user, pending, stateBlock, memoryBlock", coach) is not None)
     check("Append 写入 memory 字段", '"\\"memory\\":"' in coach or "\\\"memory\\\":" in coach)
     check("Append 记录建议", "Memory.NoteAdvice(" in coach)
 
@@ -92,6 +92,21 @@ def main():
     # 记忆只应读，不应出现写操作入口
     bad = [w for w in ("SetFactionInfluence", "AddVictoryPoints", "CreateEntity", "SetAttribute") if w in mem]
     check("Memory.cs 无写操作调用", not bad, ", ".join(bad) if bad else "仅调用 Capture 与日志")
+
+    print("\n[7] 一致率采集（建议 vs 实际选择）")
+    act = read(os.path.join(SRC, "Actual.cs"))
+    check("Actual.cs 存在", bool(act))
+    if act:
+        check("有 Begin/End/ResultFor 三入口",
+              all(k in act for k in ("public static void Begin(", "public static void End(", "public static string ResultFor(")))
+        check("只记录不修改（无写操作）",
+              not any(w in act for w in ("SetFactionInfluence", "CreateEntity", "SendResponse")))
+        check("结果有容量上限（长局不无限增长）", "_results.Count > 200" in act)
+    check("Plugin 挂了 postfix", "OnWormMakeChoicePost" in plugin and "postfix:" in plugin)
+    check("prefix 登记决策序号", "Actual.Begin(_wormChoices)" in plugin)
+    check("Append 写入 actual 字段", "\\\"actual\\\":" in coach or '"\\"actual\\":"' in coach)
+    agree = os.path.join(ROOT, "mods", "tools", "coach_agreement.py")
+    check("离线比对脚本存在", os.path.exists(agree))
 
     finish()
 

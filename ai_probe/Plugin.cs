@@ -41,7 +41,7 @@ namespace DuneAiProbe
         internal const string RootDir = Root;
 
         /// 每次改动手工递增：日志里能一眼确认加载的是哪份构建（DLL 被锁时会照旧版本跑）
-        internal const string BuildTag = "2026-11-01s";
+        internal const string BuildTag = "2026-11-01t";
         private const string DumpPath = Root + "/dump/ai_constants_runtime.json";
         private const string OverridePath = Root + "/mods/ai/ai_override.json";
         private const string ForceLevelPath = Root + "/mods/ai/force_level.txt";
@@ -68,6 +68,7 @@ namespace DuneAiProbe
             ReadTimeoutFactor();
             SurveyTimeoutApi(h);
             Coach.Init(L, Root);
+            Actual.Init(L);
 
             // 最可靠的一处：所有 AI 响应都在这里生成（含开局选领袖）
             try
@@ -107,6 +108,13 @@ namespace DuneAiProbe
                 {
                     h.Patch(wm, prefix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(OnWormMakeChoice),
                         BindingFlags.Static | BindingFlags.NonPublic)));
+                    // postfix 取“实际选了什么”，供事后与教练建议比对
+                    try
+                    {
+                        h.Patch(wm, postfix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(OnWormMakeChoicePost),
+                            BindingFlags.Static | BindingFlags.NonPublic)));
+                    }
+                    catch (Exception e) { L.LogWarning("[AIPROBE] MakeChoice postfix: " + e.Message); }
                     L.LogInfo("[AIPROBE] hooked WormAIProfile.MakeChoice on " + wm.DeclaringType.FullName);
                 }
                 else L.LogWarning("[AIPROBE] WormAIProfile.MakeChoice not found");
@@ -220,6 +228,8 @@ namespace DuneAiProbe
             Networking.selection.messages.SelectionMessage selection)
         {
             _wormChoices++;
+            // 登记本次决策序号：postfix 用同序号把“实际选择”挂上去
+            Actual.Begin(_wormChoices);
 
             // 诊断与教练配额无关：只要进过一次 AI 决策就把空间表导出来（只写一次）
             try
@@ -271,6 +281,15 @@ namespace DuneAiProbe
                 Coach.Observe(name, _wormChoices, stateBlock, pending, memoryBlock);
             }
             catch (Exception e) { L.LogWarning("[COACH] worm: " + e.Message); }
+        }
+
+        /// <summary>
+        /// postfix：MakeChoice 的返回值就是 AI 真正做出的选择。
+        /// 只记录，不修改——比对在离线脚本里做，改判据不必重编译、不必再开一局。
+        /// </summary>
+        private static void OnWormMakeChoicePost(object __result)
+        {
+            try { Actual.End(__result); } catch { }
         }
 
         private static void OnRunAIStart(Canis.hasExecutionStack.HasExecutionStack __instance)
