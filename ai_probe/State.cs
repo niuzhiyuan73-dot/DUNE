@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using BepInEx.Logging;
 using Canis.entities;
@@ -71,7 +72,7 @@ namespace DuneAiProbe
                     var wp2 = p.TryCast<WormPlayer>();
                     if (wp2 != null)
                     {
-                        TryAppendReflectList(sb, "可用特使", wp2, "AvailableAgents");
+                        AppendRemainingAgents(sb, wp2, log);
                         TryAppend(sb, "手牌", () => wp2.HandCount);
                         TryAppend(sb, "牌库", () => wp2.DeckCount);
                         TryAppend(sb, "密谋", () => wp2.IntrigueHandCount);
@@ -82,10 +83,10 @@ namespace DuneAiProbe
                     // 明细只给本 AI：对手手牌构成是隐藏信息，数量即可。
                     if (isMe && wp2 != null)
                     {
-                        string hand = EntityListNames(wp2.HandCards() as System.Collections.IEnumerable);
+                        string hand = EntityListNames(wp2.HandCards());
                         if (!string.IsNullOrEmpty(hand))
                             sb.Append("  手牌明细：").Append(hand).Append('\n');
-                        string intr = EntityListNames(GetIntrigueHand(p) as System.Collections.IEnumerable);
+                        string intr = EntityListNames(GetIntrigueHand(p));
                         if (!string.IsNullOrEmpty(intr))
                             sb.Append("  密谋明细：").Append(intr).Append('\n');
                     }
@@ -160,68 +161,109 @@ namespace DuneAiProbe
             catch { }
         }
 
-        /// <summary>弃牌堆数量：Discard 是 WormPlayArea，数量走 ICollection.Count 反射。</summary>
+        /// <summary>弃牌堆数量：Discard 是 WormPlayArea（Entity 容器），数量取子实体数。</summary>
         private static void AppendDiscardCount(StringBuilder sb, PlayerEntity p)
         {
             try
             {
-                var pi = p.GetType().GetProperty("Discard",
-                    System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.NonPublic);
-                if (pi == null) return;
-                var area = pi.GetValue(p);
+                var wp = p.TryCast<WormPlayer>();
+                if (wp == null) return;
+                var area = wp.Discard;
                 if (area == null) return;
+
                 var cnt = area as System.Collections.ICollection;
                 if (cnt != null) { sb.Append("｜弃牌 ").Append(cnt.Count); return; }
-                var cp = area.GetType().GetProperty("Count");
-                if (cp == null) return;
-                var v = cp.GetValue(area, null);
-                if (v is int iv) sb.Append("｜弃牌 ").Append(iv);
+
+                var e = area.TryCast<Entity>();
+                if (e != null)
+                {
+                    var ch = e.Children;
+                    if (ch != null) { sb.Append("｜弃牌 ").Append(ch.Count); return; }
+                }
+
+                int c = Il2CppCount(area);
+                if (c >= 0) sb.Append("｜弃牌 ").Append(c);
             }
             catch { }
         }
 
-        /// <summary>密谋手牌（get_IntrigueHand），失败返回 null。</summary>
+        /// <summary>
+        /// 密谋手牌：get_IntrigueHand 返回 WormPlayArea（Entity 容器），
+        /// 堆里的牌就是它的子实体（同 SpaceDiag 的 Children 模式）。
+        /// </summary>
         private static System.Collections.IEnumerable GetIntrigueHand(PlayerEntity p)
         {
             try
             {
                 var wp = p.TryCast<WormPlayer>();
                 if (wp == null) return null;
-                return EntitiesOf(wp.IntrigueHand);
+                var area = wp.IntrigueHand;
+                if (area == null) return null;
+                var e = area.TryCast<Entity>();
+                if (e == null) return null;
+                var ch = e.Children;
+                if (ch == null) return null;
+                var res = new List<Entity>();
+                int n = ch.Count;
+                for (int i = 0; i < n; i++)
+                {
+                    try { var c = ch[i]; if (c != null) res.Add(c); } catch { }
+                }
+                return res;
             }
             catch { return null; }
         }
 
-        /// <summary>实体集合 -> "名字×2、名字"，名字经 name_map（原型 GUID）转中文。</summary>
-        private static string EntityListNames(System.Collections.IEnumerable ents)
+        /// <summary>实体集合 -> "名字×2、名字"，名字经 name_map（原型 GUID）转中文。
+        /// 兼容托管 IEnumerable 与 Il2Cpp 非托管枚举两条路径。</summary>
+        private static string EntityListNames(object entsObj)
         {
-            if (ents == null) return null;
+            if (entsObj == null) return null;
+            var counts = new List<string>();
+            var order = new List<string>();
+            var tally = new Dictionary<string, int>(StringComparer.Ordinal);
+            int total = 0;
+
+            void AddOne(object o)
+            {
+                var e = o as Entity;
+                if (e == null && o is Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase)
+                    e = ((Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase)o).TryCast<Entity>();
+                if (e == null) return;
+                total++;
+                string nm = NameOfEntity(e);
+                if (string.IsNullOrEmpty(nm)) nm = "?";
+                if (!tally.ContainsKey(nm)) { tally[nm] = 1; order.Add(nm); }
+                else tally[nm]++;
+            }
+
             try
             {
-                var counts = new List<string>();
-                var order = new List<string>();
-                var tally = new Dictionary<string, int>(StringComparer.Ordinal);
-                int total = 0;
-                foreach (object o in ents)
+                if (entsObj is System.Collections.IEnumerable men && !(entsObj is string))
                 {
-                    var e = o as Entity;
-                    if (e == null && o is Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase)
-                        e = ((Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase)o).TryCast<Entity>();
-                    if (e == null) continue;
-                    total++;
-                    string nm = NameOfEntity(e);
-                    if (string.IsNullOrEmpty(nm)) nm = "?";
-                    if (!tally.ContainsKey(nm)) { tally[nm] = 1; order.Add(nm); }
-                    else tally[nm]++;
+                    foreach (object o in men) AddOne(o);
                 }
-                if (total == 0) return null;
-                foreach (var k in order)
-                    counts.Add(tally[k] > 1 ? k + "×" + tally[k] : k);
-                return string.Join("、", counts.ToArray());
             }
-            catch { return null; }
+            catch { }
+
+            if (total == 0)
+            {
+                try
+                {
+                    var ien = entsObj as Il2CppSystem.Collections.IEnumerable;
+                    if (ien != null)
+                    {
+                        var it = ien.GetEnumerator();
+                        while (it != null && it.MoveNext()) AddOne(it.Current);
+                    }
+                }
+                catch { }
+            }
+
+            if (total == 0) return null;
+            foreach (var k in order)
+                counts.Add(tally[k] > 1 ? k + "×" + tally[k] : k);
+            return string.Join("、", counts.ToArray());
         }
 
         /// <summary>实体 -> 中文名：优先原型 GUID 查 name_map，再试 EntityName。</summary>
@@ -319,11 +361,10 @@ namespace DuneAiProbe
             {
                 var occupied = new List<string>();
                 var controlled = new List<string>();
-                var se = board.Spaces as System.Collections.IEnumerable;
-                if (se == null) return;
-                foreach (object sObj in se)
+                var spaces = CopyIl2CppList<WormSpace>(board.Spaces);
+                if (spaces == null) return;
+                foreach (var s in spaces)
                 {
-                    var s = (sObj as Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase)?.TryCast<WormSpace>();
                     if (s == null) continue;
 
                     string nm = SpaceName(s);
@@ -364,6 +405,21 @@ namespace DuneAiProbe
             catch { }
         }
 
+        /// <summary>把 interop 集合拷成托管 List（CardDiag 验证过的稳定遍历模式）；失败返回 null。</summary>
+        private static List<T> CopyIl2CppList<T>(object src)
+            where T : Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+        {
+            try
+            {
+                var l = new Il2CppSystem.Collections.Generic.List<T>(
+                    (Il2CppSystem.Collections.Generic.IEnumerable<T>)src);
+                var res = new List<T>();
+                for (int i = 0; i < l.Count; i++) res.Add(l[i]);
+                return res;
+            }
+            catch { return null; }
+        }
+
         private static string SpaceName(WormSpace s)
         {
             try
@@ -395,15 +451,14 @@ namespace DuneAiProbe
         {
             try
             {
-                var ae2 = s.Agents as System.Collections.IEnumerable;
-                if (ae2 == null) return null;
+                List<WormAgent> agents = CopyIl2CppList<WormAgent>(s.Agents)
+                                         ?? CopyIl2CppList<Entity>(s.Agents)?.Select(x => x.TryCast<WormAgent>()).ToList();
+                if (agents == null) return null;
                 var names = new List<string>();
-                foreach (object aObj in ae2)
+                foreach (var a in agents)
                 {
-                    if (aObj == null) continue;
-                    var aBase = aObj as Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase;
-                    Entity ae = aBase != null ? aBase.TryCast<Entity>() : aObj as Entity;
-                    string who = ae != null ? OwnerNameOf(ae) : OwnerNameOf(aObj);
+                    if (a == null) { names.Add("?"); continue; }
+                    string who = OwnerNameOf(a);
                     names.Add(string.IsNullOrEmpty(who) ? "?" : who);
                 }
                 if (names.Count == 0) return null;
@@ -450,8 +505,45 @@ namespace DuneAiProbe
             catch { }
         }
 
-        /// <summary>按属性名反射取集合并输出元素个数；取不到不输出。</summary>
-        private static void TryAppendReflectList(StringBuilder sb, string label, object obj, string propName)
+        private static bool _agentsOk;
+        private static int _agentsFail;
+
+        /// <summary>
+        /// 可用特使数：RemainingAgents（强类型 IEnumerable&lt;WormAgent&gt;）。
+        /// 开局领袖指派阶段底层集合未初始化会抛 NRE —— 失败可重试（前 3 次记日志），成功即输出。
+        /// </summary>
+        private static void AppendRemainingAgents(StringBuilder sb, WormPlayer wp, ManualLogSource log)
+        {
+            try
+            {
+                var rem = wp.RemainingAgents;
+                if (rem == null)
+                {
+                    _agentsFail++;
+                    if (_agentsFail <= 3) log.LogWarning("[STATE] diag: RemainingAgents=null (第" + _agentsFail + "次)");
+                    return;
+                }
+                var l = new Il2CppSystem.Collections.Generic.List<WormAgent>(rem);
+                if (l != null && l.Count > 0)
+                {
+                    if (!_agentsOk) { _agentsOk = true; log.LogWarning("[STATE] diag: RemainingAgents ok, count=" + l.Count); }
+                    sb.Append("｜可用特使 ").Append(l.Count);
+                }
+                else
+                {
+                    _agentsFail++;
+                    if (_agentsFail <= 3) log.LogWarning("[STATE] diag: RemainingAgents empty (第" + _agentsFail + "次)");
+                }
+            }
+            catch (Exception e)
+            {
+                _agentsFail++;
+                if (_agentsFail <= 3) log.LogWarning("[STATE] diag: agents " + e.GetType().Name + ": " + e.Message + " (第" + _agentsFail + "次)");
+            }
+        }
+
+        /// <summary>按属性名反射取集合并输出元素个数；兼容 Il2Cpp 非托管枚举。</summary>
+        private static void TryAppendReflectCount(StringBuilder sb, string label, object obj, string propName)
         {
             try
             {
@@ -462,10 +554,29 @@ namespace DuneAiProbe
                 if (pi == null) return;
                 var v = pi.GetValue(obj);
                 if (v == null) return;
+
                 var cnt = v as System.Collections.ICollection;
-                if (cnt != null) sb.Append("｜").Append(label).Append(' ').Append(cnt.Count);
+                if (cnt != null) { sb.Append("｜").Append(label).Append(' ').Append(cnt.Count); return; }
+
+                int c = Il2CppCount(v);
+                if (c >= 0) sb.Append("｜").Append(label).Append(' ').Append(c);
             }
             catch { }
+        }
+
+        /// <summary>Il2Cpp 集合计数（interop 包装不实现托管 ICollection 时的兜底）；不可枚举返回 -1。</summary>
+        private static int Il2CppCount(object v)
+        {
+            try
+            {
+                var ien = v as Il2CppSystem.Collections.IEnumerable;
+                if (ien == null) return -1;
+                var it = ien.GetEnumerator();
+                int c = 0;
+                while (it != null && it.MoveNext()) c++;
+                return c;
+            }
+            catch { return -1; }
         }
 
         private static string SafeStr(PlayerEntity p)
