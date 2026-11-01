@@ -28,6 +28,10 @@ namespace DuneAiProbe
         private static string _key;          // 兼容旧单 key 文件
         private static string[] _keys;       // 多 key 轮询（deepseek_keys.txt，每行一个）
         private static int _keyCursor;
+        // 只观察一个 AI：锁定第一个做决策的 AI；换局时由 Memory 通知重置。
+        private static long _targetKey;
+        private static string _targetName;
+        private static string _targetPattern;   // coach_target.txt 指定的名字片段（可选）
         private static string _outDir;
         private static int _max;
         private static int _sent;
@@ -87,6 +91,7 @@ namespace DuneAiProbe
             {
                 _key = File.ReadAllText(keyPath).Trim();
                 LoadKeys(root);
+                LoadTarget(root);
                 string raw = File.ReadAllText(quotaPath).Trim();
                 if (!int.TryParse(raw, out _max) || _max <= 0)
                 {
@@ -103,7 +108,9 @@ namespace DuneAiProbe
                 _log.LogWarning("[COACH] enabled, quota=" + _max + "/session, names=" + _names.Count
                                 + ", effects=" + _effects.Count + ", system=" + _system.Length + "字"
                                 + ", mechanics=" + _mechanics.Count
-                                + ", keys=" + (_keys != null ? _keys.Length : 0) + ", out=" + _outDir);
+                                + ", keys=" + (_keys != null ? _keys.Length : 0)
+                                + ", target=" + (string.IsNullOrEmpty(_targetPattern) ? "第一个AI" : _targetPattern)
+                                + ", out=" + _outDir);
             }
             catch (Exception e)
             {
@@ -132,6 +139,46 @@ namespace DuneAiProbe
             catch (Exception e) { _log.LogWarning("[COACH] keys: " + e.Message); }
             if (list.Count == 0 && !string.IsNullOrEmpty(_key)) list.Add(_key);
             _keys = list.ToArray();
+        }
+
+        /// 观察对象：默认锁定第一个做决策的 AI；也可在 coach_target.txt 写名字片段指定。
+        private static void LoadTarget(string root)
+        {
+            try
+            {
+                string p = Path.Combine(root, "mods", "ai", "coach_target.txt");
+                if (!File.Exists(p)) return;
+                string t = File.ReadAllText(p, Encoding.UTF8).Trim();
+                if (t.Length == 0 || t.StartsWith("#", StringComparison.Ordinal)) return;
+                _targetPattern = t;
+            }
+            catch (Exception e) { _log.LogWarning("[COACH] target: " + e.Message); }
+        }
+
+        /// <summary>是否观察这个玩家。第一次命中后锁定，其余 AI 一律忽略。</summary>
+        public static bool IsTarget(long key, string name, ManualLogSource log)
+        {
+            lock (_lock)
+            {
+                if (_targetKey != 0) return _targetKey == key;
+                if (!string.IsNullOrEmpty(_targetPattern))
+                {
+                    if (string.IsNullOrEmpty(name) ||
+                        name.IndexOf(_targetPattern, StringComparison.Ordinal) < 0) return false;
+                }
+                _targetKey = key;
+                _targetName = name;
+                if (log != null)
+                    log.LogWarning("[COACH] 只观察这一个 AI：" + (name ?? "?")
+                                   + (string.IsNullOrEmpty(_targetPattern) ? "（未指定，取第一个做决策的 AI）" : "（按 coach_target.txt）"));
+                return true;
+            }
+        }
+
+        /// <summary>换局时清掉锁定，让新一局重新选目标。</summary>
+        public static void OnNewMatch()
+        {
+            lock (_lock) { _targetKey = 0; _targetName = null; }
         }
 
         private static string NextKey()

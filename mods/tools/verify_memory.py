@@ -122,7 +122,9 @@ def main():
         check("同一次选择去重（人类/AI 两条入口）", "_handled.Add" in turn)
         check("未知 Kind 保守提问", "其他 Kind" in turn or "保守" in turn)
     check("Plugin 调用 Turn.ShouldAsk", "Turn.ShouldAsk(" in plugin)
-    check("人类入口 SelectFrom 已挂", "PlayerEntity.SelectFrom" in plugin and "OnSelectFrom" in plugin)
+    check("人类入口默认关闭（只观察 AI）", "h.Patch(selM" not in plugin)
+    check("只观察一个 AI（IsTarget 锁定）", "IsTarget(" in coach and "_targetKey" in coach)
+    check("换局重置观察对象", "OnNewMatch" in coach and "Coach.OnNewMatch" in mem)
     check("多 key 轮询", "NextKey()" in coach and "LoadKeys" in coach)
     check("不再用全局 Authorization", "DefaultRequestHeaders.Add" not in coach)
 

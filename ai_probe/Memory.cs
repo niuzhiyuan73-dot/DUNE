@@ -67,6 +67,7 @@ namespace DuneAiProbe
                     if (_s == null || _s.MatchPtr != ptr)
                     {
                         _s = new Session { MatchPtr = ptr, Round = 1 };
+                        Coach.OnNewMatch();   // 换局：让教练重新挑选观察对象
                         if (log != null) log.LogInfo("[MEMORY] 新对局，记忆已重置 (match=" + ptr.ToString("x") + ")");
                     }
 

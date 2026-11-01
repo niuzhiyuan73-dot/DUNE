@@ -41,7 +41,7 @@ namespace DuneAiProbe
         internal const string RootDir = Root;
 
         /// 每次改动手工递增：日志里能一眼确认加载的是哪份构建（DLL 被锁时会照旧版本跑）
-        internal const string BuildTag = "2026-11-01w";
+        internal const string BuildTag = "2026-11-01x";
         private const string DumpPath = Root + "/dump/ai_constants_runtime.json";
         private const string OverridePath = Root + "/mods/ai/ai_override.json";
         private const string ForceLevelPath = Root + "/mods/ai/force_level.txt";
@@ -122,22 +122,9 @@ namespace DuneAiProbe
             }
             catch (Exception e) { L.LogWarning("[AIPROBE] WormAIProfile hook: " + e.Message); }
 
-            // 人类玩家的选择入口：AI 走 MakeChoice，人类走 PlayerEntity.SelectFrom。
-            // 两条入口共用 Turn 的去重（同一 counter 只问一次），实现四家同时挂教练。
-            try
-            {
-                var selM = typeof(PlayerEntity).GetMethod("SelectFrom",
-                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null,
-                    new[] { typeof(Networking.selection.messages.SelectionMessage), typeof(Canis.Match) }, null);
-                if (selM != null)
-                {
-                    h.Patch(selM, prefix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(OnSelectFrom),
-                        BindingFlags.Static | BindingFlags.NonPublic)));
-                    L.LogInfo("[AIPROBE] hooked PlayerEntity.SelectFrom（人类玩家入口）");
-                }
-                else L.LogWarning("[AIPROBE] PlayerEntity.SelectFrom not found（人类玩家不会获得教练）");
-            }
-            catch (Exception e) { L.LogWarning("[AIPROBE] SelectFrom hook: " + e.Message); }
+            // 人类玩家的选择入口（PlayerEntity.SelectFrom）暂时不挂：
+            // 当前只观察一个 AI，人类与其余 AI 都跳过。需要恢复时把下面这段放回 Awake。
+            // 实现见 OnSelectFrom（已保留，IsAI 为真时直接返回）。
 
             // 更早的触发点：AI 档案创建时（若此时常量已就绪，可省掉一次 AI 决策）
             try
@@ -312,6 +299,14 @@ namespace DuneAiProbe
                 long pkey = 0;
                 try { pkey = asker != null ? asker.Pointer.ToInt64() : 0; } catch { }
 
+                // 只观察 AI，且只观察选定的那一个（默认：第一个做出决策的 AI）
+                bool isAI = false;
+                try { isAI = asker != null && asker.IsAI; } catch { }
+                if (!isAI) return;
+                string who = null;
+                try { who = asker != null ? asker.PlayerName : null; } catch { }
+                if (!Coach.IsTarget(pkey, who, log)) return;
+
                 // 回合判定：PlayerTurn 才开新回合；同回合的后续选择合并，不重复问
                 if (!Turn.ShouldAsk(pkey, counter, pending, log)) return;
 
@@ -324,8 +319,7 @@ namespace DuneAiProbe
                 }
                 catch (Exception e) { log.LogWarning("[TARGETS] " + e.Message); }
 
-                string name = null;
-                try { name = asker != null ? asker.PlayerName : null; } catch { }
+                string name = who;
 
                 string stateBlock = null;
                 try { stateBlock = State.Render(asker, log); }
